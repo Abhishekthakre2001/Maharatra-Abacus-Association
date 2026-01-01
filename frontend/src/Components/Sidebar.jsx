@@ -32,7 +32,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { id: "student-list", label: "Student List", icon: Proportions, path: "/students-list" },
     { id: "add-student", label: "Add Student", icon: Users, path: "/add-student" },
-    { id: "result", label: "Result", icon: List, path: "/result" },
+    { id: "result", label: "Result", icon: List, path: "/results" },
     { id: "questions", label: "Questions", icon: QrCode, path: "/questions" },
     { id: "exam-schedule", label: "Exam Schedule", icon: CaptionsOff, path: "/exam-schedule" },
     // { id: "settings", label: "Settings", icon: Settings, path: "/settings" },

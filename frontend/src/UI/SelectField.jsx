@@ -37,9 +37,10 @@ const SelectField = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredOptions = options.filter((opt) =>
-    opt.toLowerCase().includes(search.toLowerCase())
-  );
+const filteredOptions = options.filter((opt) =>
+  String(opt).toLowerCase().includes(search.toLowerCase())
+);
+
 
   const handleSelect = (option) => {
     onChange(option); // ✅ sends selected value
