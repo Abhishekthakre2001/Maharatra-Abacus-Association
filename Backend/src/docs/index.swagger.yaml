@@ -1,0 +1,218 @@
+components:
+  schemas:
+
+    User:
+      type: object
+      required: [name, username]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        class:
+          type: string
+        address:
+          type: string
+        mobilenumber:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        level:
+          type: string
+        dob:
+          type: string
+          format: date
+        subscription_end_date:
+          type: string
+          format: date
+          example: "2026-12-31"
+        usertype:
+          type: string
+        status:
+          type: integer
+        createdat:
+          type: string
+          format: date-time
+        createdby:
+          type: integer
+
+    Level:
+      type: object
+      required: [level]
+      properties:
+        id:
+          type: integer
+        level:
+          type: string
+        createdat:
+          type: string
+          format: date-time
+        createdby:
+          type: integer
+
+    Set:
+      type: object
+      required: [set_name, level_id]
+      properties:
+        id:
+          type: integer
+        set_name:
+          type: string
+        level_id:
+          type: integer
+        createdat:
+          type: string
+          format: date-time
+        createdby:
+          type: integer
+
+    Question:
+      type: object
+      required:
+        - question
+        - option1
+        - option2
+        - option3
+        - option4
+        - correctoption
+        - level
+        - set_id
+      properties:
+        id:
+          type: integer
+        question:
+          type: string
+        option1:
+          type: string
+        option2:
+          type: string
+        option3:
+          type: string
+        option4:
+          type: string
+        correctoption:
+          type: integer
+          description: Option number (1–4)
+        level:
+          type: integer
+        set_id:
+          type: integer
+        createdat:
+          type: string
+          format: date-time
+        createdby:
+          type: integer
+
+    ExamSchedule:
+      type: object
+      required: [exam_level, date, time]
+      properties:
+        id:
+          type: integer
+        exam_level:
+          type: integer
+        date:
+          type: string
+          format: date
+        time:
+          type: string
+          format: time
+        createdat:
+          type: string
+          format: date-time
+        createdby:
+          type: integer
+
+    Result:
+      type: object
+      required:
+        - user_id
+        - total_question
+        - total_answer
+        - total_correct
+        - total_unsolve
+        - date
+        - time
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        total_question:
+          type: integer
+        total_answer:
+          type: integer
+        total_correct:
+          type: integer
+        total_unsolve:
+          type: integer
+        date:
+          type: string
+          format: date
+        time:
+          type: string
+          format: time
+        totaltime:
+          type: string
+          format: time
+        time_taken:
+          type: string
+          format: time
+        createdat:
+          type: string
+          format: date-time
+        createdby:
+          type: integer
+
+    AdminSetting:
+      type: object
+      required: [admin_id]
+      properties:
+        id:
+          type: integer
+        admin_id:
+          type: integer
+
+        primary_main_color:
+          type: string
+        primary_light_color:
+          type: string
+        primary_dark_color:
+          type: string
+
+        secondary_main_color:
+          type: string
+        secondary_light_color:
+          type: string
+        secondary_dark_color:
+          type: string
+
+        neutral_main_color:
+          type: string
+        neutral_light_color:
+          type: string
+        neutral_dark_color:
+          type: string
+
+        semantic_main_color:
+          type: string
+        semantic_light_color:
+          type: string
+        semantic_dark_color:
+          type: string
+
+        logo_url:
+          type: string
+        disk_space:
+          type: integer
+        result_page_visibility:
+          type: integer
+          example: 1
+
+        createdat:
+          type: string
+          format: date-time
+        createdby:
+          type: integer

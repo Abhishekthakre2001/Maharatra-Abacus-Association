@@ -1,0 +1,95 @@
+paths:
+  /results:
+    get:
+      tags: [Results]
+      summary: Get all results
+      responses:
+        200:
+          description: Results list
+          content:
+            application/json:
+              example:
+                - id: 1
+                  user_id: 1
+                  user_name: Abhishek Thakre
+                  total_question: 20
+                  total_answer: 18
+                  total_correct: 15
+                  total_unsolve: 2
+                  date: "2026-01-10"
+                  time: "10:30:00"
+                  totaltime: "00:30:00"
+                  time_taken: "00:25:40"
+
+    post:
+      tags: [Results]
+      summary: Create result
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              user_id: 1
+              total_question: 20
+              total_answer: 18
+              total_correct: 15
+              total_unsolve: 2
+              date: "2026-01-10"
+              time: "10:30"
+              totaltime: "00:30:00"
+              time_taken: "00:25:40"
+              createdby: 1
+      responses:
+        201:
+          description: Result created
+
+  /results/{id}:
+    get:
+      tags: [Results]
+      summary: Get result by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Result found
+
+    put:
+      tags: [Results]
+      summary: Update result
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              total_question: 20
+              total_answer: 19
+              total_correct: 16
+              total_unsolve: 1
+              totaltime: "00:30:00"
+              time_taken: "00:26:10"
+      responses:
+        200:
+          description: Result updated
+
+    delete:
+      tags: [Results]
+      summary: Delete result
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Result deleted

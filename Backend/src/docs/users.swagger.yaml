@@ -1,0 +1,76 @@
+paths:
+  /users:
+    get:
+      tags: [Users]
+      summary: Get all users
+      responses:
+        200:
+          description: Users list
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: Abhishek Thakre
+                  username: abhishek01
+                - id: 2
+                  name: Rohit Sharma
+                  username: rohit09
+
+    post:
+      tags: [Users]
+      summary: Create user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        201:
+          description: User created
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Get user by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: User found
+
+    put:
+      tags: [Users]
+      summary: Update user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: User updated
+
+    delete:
+      tags: [Users]
+      summary: Delete user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: User deleted

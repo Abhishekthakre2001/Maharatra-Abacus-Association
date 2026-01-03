@@ -1,0 +1,86 @@
+paths:
+  /admin-settings:
+    get:
+      tags: [Admin Settings]
+      summary: Get all admin settings
+      responses:
+        200:
+          description: Admin settings list
+
+    post:
+      tags: [Admin Settings]
+      summary: Create admin setting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              admin_id: 1
+              primary_main_color: "#3B82F6"
+              primary_light_color: "#93C5FD"
+              primary_dark_color: "#1E40AF"
+              secondary_main_color: "#10B981"
+              secondary_light_color: "#6EE7B7"
+              secondary_dark_color: "#065F46"
+              neutral_main_color: "#6B7280"
+              neutral_light_color: "#D1D5DB"
+              neutral_dark_color: "#111827"
+              semantic_main_color: "#EF4444"
+              semantic_light_color: "#FCA5A5"
+              semantic_dark_color: "#7F1D1D"
+              logo_url: "https://example.com/logo.png"
+              disk_space: 500
+              result_page_visibility: 1
+              createdby: 1
+      responses:
+        201:
+          description: Admin setting created
+
+  /admin-settings/{id}:
+    get:
+      tags: [Admin Settings]
+      summary: Get admin setting by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Admin setting found
+
+    put:
+      tags: [Admin Settings]
+      summary: Update admin setting
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              primary_main_color: "#2563EB"
+              logo_url: "https://example.com/new-logo.png"
+              disk_space: 1000
+              result_page_visibility: 0
+      responses:
+        200:
+          description: Admin setting updated
+
+    delete:
+      tags: [Admin Settings]
+      summary: Delete admin setting
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Admin setting deleted

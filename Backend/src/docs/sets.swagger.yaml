@@ -1,0 +1,70 @@
+paths:
+  /sets:
+    get:
+      tags: [Sets]
+      summary: Get all sets
+      responses:
+        200:
+          description: Sets list
+
+    post:
+      tags: [Sets]
+      summary: Create set
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              set_name: Set A
+              level_id: 1
+              createdby: 1
+      responses:
+        201:
+          description: Set created
+
+  /sets/{id}:
+    get:
+      tags: [Sets]
+      summary: Get set by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Set found
+
+    put:
+      tags: [Sets]
+      summary: Update set
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              set_name: Set B
+              level_id: 2
+      responses:
+        200:
+          description: Set updated
+
+    delete:
+      tags: [Sets]
+      summary: Delete set
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Set deleted

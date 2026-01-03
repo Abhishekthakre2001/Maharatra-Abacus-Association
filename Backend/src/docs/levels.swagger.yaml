@@ -1,0 +1,68 @@
+paths:
+  /levels:
+    get:
+      tags: [Levels]
+      summary: Get all levels
+      responses:
+        200:
+          description: Levels list
+
+    post:
+      tags: [Levels]
+      summary: Create level
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              level: Beginner
+              createdby: 1
+      responses:
+        201:
+          description: Level created
+
+  /levels/{id}:
+    get:
+      tags: [Levels]
+      summary: Get level by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Level found
+
+    put:
+      tags: [Levels]
+      summary: Update level
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              level: Advanced
+      responses:
+        200:
+          description: Level updated
+
+    delete:
+      tags: [Levels]
+      summary: Delete level
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Level deleted

@@ -1,0 +1,54 @@
+paths:
+  /questions:
+    get:
+      tags: [Questions]
+      summary: Get all questions
+      responses:
+        200:
+          description: Question list
+
+    post:
+      tags: [Questions]
+      summary: Create question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Question'
+      responses:
+        201:
+          description: Question created
+
+  /questions/{id}:
+    put:
+      tags: [Questions]
+      summary: Update question
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Question'
+      responses:
+        200:
+          description: Question updated
+
+    delete:
+      tags: [Questions]
+      summary: Delete question
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Question deleted

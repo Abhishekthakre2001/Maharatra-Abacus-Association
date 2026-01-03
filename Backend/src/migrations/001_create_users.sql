@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  class VARCHAR(50),
+  address TEXT,
+  mobilenumber VARCHAR(15),
+  username VARCHAR(50) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  level VARCHAR(50),
+  dob DATE,
+  usertype VARCHAR(50),
+  createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  createdby INT,
+  status TINYINT DEFAULT 1
+);

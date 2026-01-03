@@ -1,0 +1,80 @@
+paths:
+  /exam-schedule:
+    get:
+      tags: [Exam Schedule]
+      summary: Get all exam schedules
+      responses:
+        200:
+          description: Exam schedule list
+          content:
+            application/json:
+              example:
+                - id: 1
+                  exam_level: 1
+                  level: Beginner
+                  date: "2026-01-15"
+                  time: "10:00:00"
+
+    post:
+      tags: [Exam Schedule]
+      summary: Create exam schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              exam_level: 1
+              date: "2026-01-15"
+              time: "10:00"
+              createdby: 1
+      responses:
+        201:
+          description: Exam schedule created
+
+  /exam-schedule/{id}:
+    get:
+      tags: [Exam Schedule]
+      summary: Get exam schedule by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Exam schedule found
+
+    put:
+      tags: [Exam Schedule]
+      summary: Update exam schedule
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              exam_level: 2
+              date: "2026-01-20"
+              time: "11:30"
+      responses:
+        200:
+          description: Exam schedule updated
+
+    delete:
+      tags: [Exam Schedule]
+      summary: Delete exam schedule
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Exam schedule deleted
