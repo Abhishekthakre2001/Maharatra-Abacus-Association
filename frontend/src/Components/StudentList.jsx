@@ -1,10 +1,13 @@
 import React from 'react'
+import { useNavigate } from "react-router-dom";
 import DataTable from '../UI/DataTable';
 import { Users } from 'lucide-react';
 import Button from '../UI/Button';
 
 
 export default function StudentList() {
+
+      const navigate = useNavigate();
     // Sample static data for display
     const students = [
         {
@@ -173,9 +176,9 @@ export default function StudentList() {
                 </div>
 
                 {/* Add Student Button - Responsive */}
-                <div className="flex justify-center md:justify-end mt-6">
+                {/* <div className="flex justify-center md:justify-end mt-6">
                     <Button icon={Users} variant="primary" onClick={() => window.location.href = "/add-student"}>Add Student</Button>
-                </div>
+                </div> */}
             </div>
 
             {/* Student Table */}
@@ -184,6 +187,7 @@ export default function StudentList() {
                     columns={columns}
                     data={students}
                     title="All Students"
+                    onCreate={() => navigate("/add-student")}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     searchable
