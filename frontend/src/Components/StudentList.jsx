@@ -11,15 +11,15 @@ export default function StudentList() {
 
     const navigate = useNavigate();
     const [deleteOpen, setDeleteOpen] = useState(false);
-const [selectedRow, setSelectedRow] = useState(null);
-const { remove, loading: deleteLoading } = useDelete(
-  userApi.delete,
-  () => {
-    setDeleteOpen(false);
-    setSelectedRow(null);
-    reload(); // 🔄 reload table after delete
-  }
-);
+    const [selectedRow, setSelectedRow] = useState(null);
+    const { remove, loading: deleteLoading } = useDelete(
+        userApi.delete,
+        () => {
+            setDeleteOpen(false);
+            setSelectedRow(null);
+            reload(); // 🔄 reload table after delete
+        }
+    );
 
 
     const user = JSON.parse(localStorage.getItem("user"));
@@ -31,15 +31,15 @@ const { remove, loading: deleteLoading } = useDelete(
         // Add edit logic here
     };
 
-   const handleDelete = (row) => {
-  setSelectedRow(row);
-  setDeleteOpen(true);
-};
-const handleConfirmDelete = () => {
-  if (selectedRow?.id) {
-    remove(selectedRow.id);
-  }
-};
+    const handleDelete = (row) => {
+        setSelectedRow(row);
+        setDeleteOpen(true);
+    };
+    const handleConfirmDelete = () => {
+        if (selectedRow?.id) {
+            remove(selectedRow.id);
+        }
+    };
 
     const columns = [
         {
@@ -101,14 +101,14 @@ const handleConfirmDelete = () => {
     return (
         <>
 
-        <DeleteConfirmModal
-  open={deleteOpen}
-  onClose={() => setDeleteOpen(false)}
-  onConfirm={handleConfirmDelete}
-  loading={deleteLoading}
-  title="Delete Student"
-  message={`Are you sure you want to delete "${selectedRow?.name}"? This action cannot be undone.`}
-/>
+            <DeleteConfirmModal
+                open={deleteOpen}
+                onClose={() => setDeleteOpen(false)}
+                onConfirm={handleConfirmDelete}
+                loading={deleteLoading}
+                title="Delete Student"
+                message={`Are you sure you want to delete "${selectedRow?.name}"? This action cannot be undone.`}
+            />
 
 
             <div className="max-w-7xl mx-auto">
