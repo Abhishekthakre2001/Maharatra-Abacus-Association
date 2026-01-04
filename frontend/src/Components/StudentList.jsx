@@ -1,138 +1,116 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import DataTable from '../UI/DataTable';
-import { Users } from 'lucide-react';
-import Button from '../UI/Button';
+import DeleteConfirmModal from "../UI/DeleteConfirmModal";
+import { useFetchData } from "../hooks/useFetchData";
+import userApi from "../api/userApi";
+import { useDelete } from "../hooks/useDelete";
 
 
 export default function StudentList() {
 
-      const navigate = useNavigate();
-    // Sample static data for display
-    const students = [
-        {
-            id: 1,
-            name: 'John Doe',
-            class: 'Grade 10-A',
-            address: '123 Main Street, New York, NY',
-            mobileNumber: '9876543210',
-            dob: '2008-05-15',
-            level: 'Intermediate',
-            username: 'johndoe',
+    const navigate = useNavigate();
+    const [deleteOpen, setDeleteOpen] = useState(false);
+const [selectedRow, setSelectedRow] = useState(null);
+const { remove, loading: deleteLoading } = useDelete(
+  userApi.delete,
+  () => {
+    setDeleteOpen(false);
+    setSelectedRow(null);
+    reload(); // 🔄 reload table after delete
+  }
+);
 
-        },
-        {
-            id: 2,
-            name: 'Sarah Smith',
-            class: 'Grade 9-B',
-            address: '456 Oak Avenue, Los Angeles, CA',
-            mobileNumber: '9876543211',
-            dob: '2009-08-22',
-            level: 'Beginner',
-            username: 'sarahsmith',
 
-        },
-        {
-            id: 3,
-            name: 'Michael Johnson',
-            class: 'Grade 11-C',
-            address: '789 Pine Road, Chicago, IL',
-            mobileNumber: '9876543212',
-            dob: '2007-03-10',
-            level: 'Advanced',
-            username: 'mikejohnson',
+    const user = JSON.parse(localStorage.getItem("user"));
+    const { data: students, loading, reload } = useFetchData(userApi.getAll);
 
-        },
-        {
-            id: 4,
-            name: 'Emily Davis',
-            class: 'Grade 8-A',
-            address: '321 Elm Street, Houston, TX',
-            mobileNumber: '9876543213',
-            dob: '2010-11-05',
-            level: 'Beginner',
-            username: 'emilydavis',
-
-        },
-        {
-            id: 5,
-            name: 'David Wilson',
-            class: 'Grade 12-B',
-            address: '654 Maple Drive, Phoenix, AZ',
-            mobileNumber: '9876543214',
-            dob: '2006-01-18',
-            level: 'Expert',
-            username: 'davidwilson',
-
-        }
-    ];
-    const loading = false;
 
     const handleEdit = (row) => {
         console.log('Edit student:', row);
         // Add edit logic here
     };
 
-    const handleDelete = (row) => {
-        console.log('Delete student:', row);
-        // Add delete logic here
-    };
+   const handleDelete = (row) => {
+  setSelectedRow(row);
+  setDeleteOpen(true);
+};
+const handleConfirmDelete = () => {
+  if (selectedRow?.id) {
+    remove(selectedRow.id);
+  }
+};
 
     const columns = [
         {
-            key: 'id',
-            label: 'Sr. No.',
+            key: "id",
+            label: "Sr. No.",
             render: (value, row, index, serial) => serial + 1
         },
         {
-            key: 'name',
-            label: 'Student Name',
+            key: "name",
+            label: "Student Name",
             sortable: true,
             render: (value) => <span className="font-medium">{value}</span>
         },
         {
-            key: 'class',
-            label: 'Class',
-            sortable: true,
-            render: (value) => <span>{value}</span>
+            key: "class",
+            label: "Class",
+            sortable: true
         },
         {
-            key: 'address',
-            label: 'Address',
+            key: "address",
+            label: "Address",
             sortable: true,
             render: (value) => <span className="text-sm">{value}</span>
         },
         {
-            key: 'mobileNumber',
-            label: 'Mobile Number',
-            sortable: true,
-            render: (value) => <span>{value}</span>
+            key: "mobilenumber",
+            label: "Mobile Number",
+            sortable: true
         },
         {
-            key: 'dob',
-            label: 'Date of Birth',
+            key: "dob",
+            label: "Date of Birth",
             sortable: true,
             isDate: true,
             render: (value) =>
                 value ? new Date(value).toLocaleDateString("en-GB") : ""
         },
         {
-            key: 'level',
-            label: 'Level',
+            key: "level",
+            label: "Level",
             sortable: true,
-            render: (value) => <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">{value}</span>
+            render: (value) => (
+                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
+                    {value}
+                </span>
+            )
         },
         {
-            key: 'username',
-            label: 'Username',
+            key: "username",
+            label: "Username",
             sortable: true,
-            render: (value) => <span className="font-medium text-gray-600">{value}</span>
-        },
-
+            render: (value) => (
+                <span className="font-medium text-gray-600">{value}</span>
+            )
+        }
     ];
+
 
     return (
         <>
+
+        <DeleteConfirmModal
+  open={deleteOpen}
+  onClose={() => setDeleteOpen(false)}
+  onConfirm={handleConfirmDelete}
+  loading={deleteLoading}
+  title="Delete Student"
+  message={`Are you sure you want to delete "${selectedRow?.name}"? This action cannot be undone.`}
+/>
+
+
             <div className="max-w-7xl mx-auto">
                 <div className="bg-gradient-to-r from-blue-600 to-[#110F12]
       bg-opacity-70
