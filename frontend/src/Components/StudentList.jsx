@@ -23,12 +23,12 @@ export default function StudentList() {
 
 
     const user = JSON.parse(localStorage.getItem("user"));
-    const { data: students, loading, reload } = useFetchData(userApi.getAll);
+    const { data: students, loading, reload } = useFetchData(() => userApi.getbyadminid(user.id));
 
 
     const handleEdit = (row) => {
-        console.log('Edit student:', row);
-        // Add edit logic here
+        // Navigate to add-student in update mode with id
+        navigate(`/add-student/${row.id}`);
     };
 
     const handleDelete = (row) => {

@@ -36,6 +36,11 @@ const UserModel = {
     return rows[0];
   },
 
+    findByadminId: async (id) => {
+    const [rows] = await pool.query("SELECT * FROM users WHERE createdby = ? && usertype= 'student'", [id]);
+    return rows;
+  },
+
   update: async (id, data) => {
     const sql = `
       UPDATE users SET

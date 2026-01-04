@@ -16,6 +16,11 @@ exports.getUserById = async (req, res) => {
   res.json(user);
 };
 
+exports.getUserByadminId = async (req, res) => {
+  const user = await UserService.getUserByadminId(req.params.id);
+  res.json(user);
+};
+
 exports.updateUser = async (req, res) => {
   await UserService.updateUser(req.params.id, req.body);
   res.json({ success: true });

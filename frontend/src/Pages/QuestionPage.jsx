@@ -216,7 +216,7 @@ export default function QuestionPage() {
                         showActions={true}
                         onEdit={handleUpdate}
                         onDelete={handleDelete}
-                        onCreate={handleCreate}
+                        onCreate={navigate('/add-question')}
                         searchable={true}
                         pagination={true}
                     />

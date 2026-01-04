@@ -4,6 +4,8 @@ import Button from "../UI/Button";
 import { Save, X } from "lucide-react";
 import userApi from "../api/userApi";
 import { useCreate } from "../hooks/useCreate";
+import { useUpdate } from "../hooks/useUpdate";
+import { useParams, useNavigate } from "react-router-dom";
 import MessageModal from "../utils/MessageModal";
 import { validateStudent } from "../utils/studentValidator";
 
@@ -34,7 +36,10 @@ export default function AddStudent() {
         message: ""
     });
 
-    const { create, loading } = useCreate(userApi.create, () => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+
+    const { create, loading: createLoading } = useCreate(userApi.create, () => {
         setModal({
             open: true,
             type: "success",
@@ -42,6 +47,16 @@ export default function AddStudent() {
             message: "Student added successfully"
         });
         handleCancel();
+    });
+
+    const { update, loading: updateLoading } = useUpdate(userApi.update, () => {
+        setModal({
+            open: true,
+            type: "success",
+            title: "Success",
+            message: "Student updated successfully"
+        });
+        navigate('/students-list');
     });
 
     const handleChange = (field) => (e) => {
@@ -94,7 +109,11 @@ export default function AddStudent() {
         };
 
         try {
-            await create(payload);
+            if (id) {
+                await update(id, payload);
+            } else {
+                await create(payload);
+            }
         } catch (err) {
             const errorMsg =
                 err?.response?.data?.error ||
@@ -137,6 +156,31 @@ export default function AddStudent() {
             createdby: "admin"
         });
     };
+
+    useEffect(() => {
+        if (!id) return;
+
+        userApi.getbyid(id)
+            .then(res => {
+                const u = res?.data || res;
+                setFormData({
+                    name: u.name || "",
+                    class: u.class || "",
+                    address: u.address || "",
+                    mobileNumber: u.mobilenumber || "",
+                    username: u.username || "",
+                    password: "",
+                    confirmPassword: "",
+                    level: u.level || "",
+                    dob: u.dob ? u.dob.split('T')[0] : "",
+                    subscription_end_date: u.subscription_end_date ? u.subscription_end_date.split('T')[0] : "",
+                    usertype: u.usertype || "student",
+                });
+            })
+            .catch(() => {
+                setModal({ open: true, type: 'error', title: 'Error', message: 'Failed to load student data' });
+            });
+    }, [id]);
 
     return (
         <>
@@ -232,8 +276,8 @@ export default function AddStudent() {
                             <Button type="button" variant="secondary" onClick={handleCancel} icon={X}>
                                 Cancel
                             </Button>
-                            <Button type="submit" variant="primary" icon={Save} disabled={loading}>
-                                {loading ? "Saving..." : "Save Student"}
+                            <Button type="submit" variant="primary" icon={Save} disabled={createLoading || updateLoading}>
+                                {(createLoading || updateLoading) ? (id ? "Updating..." : "Saving...") : (id ? "Update Student" : "Save Student")}
                             </Button>
                         </div>
                     </form>

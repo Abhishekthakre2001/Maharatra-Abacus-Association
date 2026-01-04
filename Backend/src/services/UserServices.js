@@ -11,6 +11,8 @@ const UserService = {
 
   getUserById: (id) => UserModel.findById(id),
 
+  getUserByadminId: (id) => UserModel.findByadminId(id),
+
   updateUser: (id, data) => UserModel.update(id, data),
 
   deleteUser: (id) => UserModel.remove(id),

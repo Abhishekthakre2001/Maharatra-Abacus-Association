@@ -7,7 +7,7 @@ import AddStudentPage from "../Pages/AddStudentPage";
 import ResultPage from "../Pages/ResultPage";
 import StudentResultDetailPage from "../Pages/StudentResultDetailPage";
 import QuestionPage from "../Pages/QuestionPage";
-
+import AddQuestionPage from "../Pages/Addquestion";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 
@@ -49,6 +49,23 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <AddStudentPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/add-student/:id"
+        element={
+          <ProtectedRoute>
+            <AddStudentPage />
+          </ProtectedRoute>
+        }
+      />
+
+       <Route
+        path="/add-question"
+        element={
+          <ProtectedRoute>
+            <AddQuestionPage />
           </ProtectedRoute>
         }
       />
