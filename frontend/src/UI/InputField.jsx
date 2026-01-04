@@ -88,7 +88,7 @@ const InputField = ({
           type={getInputType()}
           value={value}
           onChange={onChange}
-          onWheel={(e)=> e.target.blur()}
+          onWheel={(e) => e.target.blur()}
           // onChange={(e) => {
           //   const newValue = props.capitalize ? toTitleCase(e.target.value) : e.target.value;
           //   onChange({ target: { value: newValue } });
