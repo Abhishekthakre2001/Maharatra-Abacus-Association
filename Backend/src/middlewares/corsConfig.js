@@ -1,10 +1,24 @@
 const cors = require("cors");
 
-// CORS configuration
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173" // Vite
+];
+
 const corsOptions = {
-  origin: "*", // 👈 allow all origins (or restrict to ["http://localhost:3000"])
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: function (origin, callback) {
+    // allow requests with no origin (Postman, mobile apps)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // ✅ REQUIRED
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-module.exports = cors(corsOptions); // ✅ export middleware function
+module.exports = cors(corsOptions);

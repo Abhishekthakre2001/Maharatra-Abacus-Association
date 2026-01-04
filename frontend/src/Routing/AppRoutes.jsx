@@ -8,21 +8,78 @@ import ResultPage from "../Pages/ResultPage";
 import StudentResultDetailPage from "../Pages/StudentResultDetailPage";
 import QuestionPage from "../Pages/QuestionPage";
 
+import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
+
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
 
-      {/* <Route element={<ProtectedRoute />}> */}
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/students-list" element={<StudentPage />} />
-      <Route path="/add-student" element={<AddStudentPage />} />
-      <Route path="/results" element={<ResultPage />} />
-      <Route path="/results/:id" element={<StudentResultDetailPage />} />
-      <Route path="/questions" element={<QuestionPage />} />
-      {/* </Route> */}
+      {/* 🔓 Public Route */}
+      <Route
+        path="/"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
 
-      {/* <Route path="*" element={<NotFound />} /> */}
+      {/* 🔒 Protected Routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/students-list"
+        element={
+          <ProtectedRoute>
+            <StudentPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/add-student"
+        element={
+          <ProtectedRoute>
+            <AddStudentPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/results"
+        element={
+          <ProtectedRoute>
+            <ResultPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/results/:id"
+        element={
+          <ProtectedRoute>
+            <StudentResultDetailPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/questions"
+        element={
+          <ProtectedRoute>
+            <QuestionPage />
+          </ProtectedRoute>
+        }
+      />
+
     </Routes>
   );
 };

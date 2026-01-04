@@ -60,7 +60,16 @@ const UserModel = {
   remove: async (id) => {
     const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
     return result;
-  }
+  },
+
+  findByUsername: async (username) => {
+  const [rows] = await pool.query(
+    "SELECT * FROM users WHERE username = ?",
+    [username]
+  );
+  return rows[0];
+},
+
 };
 
 module.exports = UserModel;

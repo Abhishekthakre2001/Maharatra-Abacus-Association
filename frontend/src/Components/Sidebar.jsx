@@ -28,6 +28,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const logout = () => {
+  localStorage.clear();
+  document.cookie = "token=; Max-Age=0; path=/";
+  navigate("/");
+};
+
+
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { id: "student-list", label: "Student List", icon: Proportions, path: "/students-list" },
@@ -153,7 +160,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         </div>
 
         {/* Logout */}
-        <div className="p-4">
+        <div className="p-4" onClick={()=>logout()}>
           <button
             className={`
               w-full flex items-center gap-3 px-4 py-3 rounded-xl

@@ -13,7 +13,17 @@ const UserService = {
 
   updateUser: (id, data) => UserModel.update(id, data),
 
-  deleteUser: (id) => UserModel.remove(id)
+  deleteUser: (id) => UserModel.remove(id),
+
+  loginUser: async (username, password) => {
+    const user = await UserModel.findByUsername(username);
+    if (!user) return null;
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return null;
+
+    return user;
+  }
 };
 
 module.exports = UserService;
