@@ -10,6 +10,7 @@ import QuestionPage from "../Pages/QuestionPage";
 import AddQuestionPage from "../Pages/Addquestion";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
+import Masters from "../Pages/Masters";
 
 const AppRoutes = () => {
   return (
@@ -31,6 +32,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+       <Route
+        path="/masters"
+        element={
+          <ProtectedRoute>
+            <Masters />
           </ProtectedRoute>
         }
       />

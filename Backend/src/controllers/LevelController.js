@@ -15,6 +15,11 @@ exports.getById = async (req, res) => {
   res.json(row);
 };
 
+exports.getAllByAdmin = async (req, res) => {
+  const [rows] = await LevelModel.findAllByAdmin(req.query.adminid);
+  res.json(rows);
+};
+
 exports.update = async (req, res) => {
   await LevelModel.update(req.params.id, req.body);
   res.json({ success: true });
