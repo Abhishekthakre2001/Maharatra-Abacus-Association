@@ -12,6 +12,9 @@ module.exports = {
   findById: (id) =>
     pool.query("SELECT * FROM levels WHERE id = ?", [id]),
 
+    findAllByAdmin: (adminid) =>
+    pool.query("SELECT * FROM levels WHERE createdby = ?", [adminid]),
+
   update: (id, data) =>
     pool.query(
       "UPDATE levels SET level = ? WHERE id = ?",

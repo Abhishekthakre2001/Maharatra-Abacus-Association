@@ -10,6 +10,11 @@ exports.getAll = async (req, res) => {
   res.json(rows);
 };
 
+exports.getbyadminid = async (req, res) => {
+  const [rows] = await SetModel.findbyadminid(req.params.id);
+  res.json(rows);
+};
+
 exports.getById = async (req, res) => {
   const [[row]] = await SetModel.findById(req.params.id);
   res.json(row);

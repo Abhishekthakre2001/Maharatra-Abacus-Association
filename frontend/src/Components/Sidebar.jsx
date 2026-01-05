@@ -42,6 +42,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     { id: "result", label: "Result", icon: List, path: "/results" },
     { id: "questions", label: "Questions", icon: QrCode, path: "/questions" },
     { id: "exam-schedule", label: "Exam Schedule", icon: CaptionsOff, path: "/exam-schedule" },
+    { id: "masters", label: "Masters", icon: Settings, path: "/masters" },
     // { id: "settings", label: "Settings", icon: Settings, path: "/settings" },
   ];
 
