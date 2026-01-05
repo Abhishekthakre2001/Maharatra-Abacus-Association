@@ -1,12 +1,26 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
 import Button from "../UI/Button";
-import { Trash } from "lucide-react";
+import InputField from "../UI/InputField";
+import Modal from "../UI/Modal";
+import { Trash, Plus } from "lucide-react";
 
 export default function CsvQuestionManager() {
   const [questions, setQuestions] = useState([]);
   const [dragActive, setDragActive] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [level, setLevel] = useState("");
+  const [set, setSet] = useState("");
+  const [time, setTime] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newQuestion, setNewQuestion] = useState({
+    Question: "",
+    "Option 1": "",
+    "Option 2": "",
+    "Option 3": "",
+    "Option 4": "",
+    "Correct Option": ""
+  });
 
   // Handle CSV file
   const parseCSV = (file) => {
@@ -66,10 +80,72 @@ export default function CsvQuestionManager() {
     );
   });
 
+  // Handle manual question addition
+  const handleAddQuestion = () => {
+    if (newQuestion.Question && newQuestion["Correct Option"]) {
+      const newQ = {
+        id: questions.length + 1,
+        ...newQuestion
+      };
+      setQuestions([...questions, newQ]);
+      setNewQuestion({
+        Question: "",
+        "Option 1": "",
+        "Option 2": "",
+        "Option 3": "",
+        "Option 4": "",
+        "Correct Option": ""
+      });
+      setIsModalOpen(false);
+    }
+  };
+
   console.log("questions",questions)
 
   return (
     <div className="max-w-7xl mx-auto p-6">
+      {/* Input Fields Section */}
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <div>
+            <InputField
+              label="Level"
+              type="number"
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              placeholder="Enter level"
+            />
+          </div>
+          <div>
+            <InputField
+              label="Set"
+              type="number"
+              value={set}
+              onChange={(e) => setSet(e.target.value)}
+              placeholder="Enter set"
+            />
+          </div>
+          <div>
+            <InputField
+              label="Time (minutes)"
+              type="number"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              placeholder="Enter time"
+            />
+          </div>
+          <div>
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              variant="primary"
+              icon={Plus}
+              className="w-full mb-6"
+            >
+              Add Question
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Upload Box */}
       <div
@@ -237,6 +313,74 @@ export default function CsvQuestionManager() {
           </div>
         </div>
       )}
+
+      {/* Add Question Modal */}
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Add New Question"
+        width="max-w-3xl"
+      >
+        <div className="space-y-4">
+          <InputField
+            label="Question"
+            value={newQuestion.Question}
+            onChange={(e) => setNewQuestion({ ...newQuestion, Question: e.target.value })}
+            placeholder="Enter your question"
+            required
+          />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InputField
+              label="Option 1"
+              value={newQuestion["Option 1"]}
+              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 1": e.target.value })}
+              placeholder="Enter option 1"
+            />
+            <InputField
+              label="Option 2"
+              value={newQuestion["Option 2"]}
+              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 2": e.target.value })}
+              placeholder="Enter option 2"
+            />
+            <InputField
+              label="Option 3"
+              value={newQuestion["Option 3"]}
+              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 3": e.target.value })}
+              placeholder="Enter option 3"
+            />
+            <InputField
+              label="Option 4"
+              value={newQuestion["Option 4"]}
+              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 4": e.target.value })}
+              placeholder="Enter option 4"
+            />
+          </div>
+
+          <InputField
+            label="Correct Option"
+            value={newQuestion["Correct Option"]}
+            onChange={(e) => setNewQuestion({ ...newQuestion, "Correct Option": e.target.value })}
+            placeholder="Enter correct option (1, 2, 3, or 4)"
+            required
+          />
+
+          <div className="flex justify-end gap-3 mt-6">
+            <Button
+              onClick={() => setIsModalOpen(false)}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddQuestion}
+              variant="primary"
+            >
+              Add Question
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

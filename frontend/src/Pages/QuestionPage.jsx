@@ -5,6 +5,7 @@ import { ArrowLeft, Plus } from 'lucide-react';
 import DataTable from '../UI/DataTable';
 import UpdateQuestionModal from '../Components/UpdateQuestionModal';
 import DeleteConfirmModal from '../UI/DeleteConfirmModal';
+import AppBar from '../UI/AppBar';
 
 export default function QuestionPage() {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -123,12 +124,11 @@ export default function QuestionPage() {
             <main className={`transition-all duration-500 ${isCollapsed ? "md:ml-20" : "md:ml-64"} px-2 md:px-8 py-6 mb-12`}>
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-blue-600 to-[#110F12] bg-opacity-70 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,0,0,0.45)] rounded-2xl p-8 text-white shadow-xl mb-6">
-                        <div>
-                            <h1 className="text-2xl lg:text-3xl font-bold mb-2">Question Management</h1>
-                            <p className="text-white text-sm md:text-lg">Manage exam questions and answers</p>
-                        </div>
-                    </div>
+                    <AppBar
+                        title="Student Management"
+                        subtitle="Manage and view all students"
+                    />
+
 
                     {/* Questions DataTable */}
                     <DataTable

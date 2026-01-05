@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import DataTable from '../UI/DataTable';
 import DeleteConfirmModal from "../UI/DeleteConfirmModal";
+import AppBar from '../UI/AppBar';
+import colors from '../utils/Color';
 import { useFetchData } from "../hooks/useFetchData";
 import userApi from "../api/userApi";
 import { useDelete } from "../hooks/useDelete";
@@ -78,11 +80,27 @@ export default function StudentList() {
                 value ? new Date(value).toLocaleDateString("en-GB") : ""
         },
         {
+            key: "subscription_end_date",
+            label: "Subscription End Date",
+            sortable: true,
+            isDate: true,
+
+            render: (value) =>
+                value ? new Date(value).toLocaleDateString("en-GB") : ""
+        },
+
+        {
             key: "level",
             label: "Level",
             sortable: true,
             render: (value) => (
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
+                <span 
+                    className="px-2 py-1 rounded-full text-xs"
+                    style={{
+                        backgroundColor: colors.background.blue100,
+                        color: colors.text.blue700
+                    }}
+                >
                     {value}
                 </span>
             )
@@ -92,7 +110,7 @@ export default function StudentList() {
             label: "Username",
             sortable: true,
             render: (value) => (
-                <span className="font-medium text-gray-600">{value}</span>
+                <span className="font-medium" style={{ color: colors.text.gray600 }}>{value}</span>
             )
         }
     ];
@@ -112,51 +130,10 @@ export default function StudentList() {
 
 
             <div className="max-w-7xl mx-auto">
-                <div className="bg-gradient-to-r from-blue-600 to-[#110F12]
-      bg-opacity-70
-      backdrop-blur-xl
-      shadow-[0px_20px_40px_rgba(0,0,0,0.45)] rounded-2xl p-8 text-white shadow-xl">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl lg:text-3xl font-bold mb-2">Student Management</h1>
-                            <p className="hidden md:block text-white text-sm md:text-lg">Manage and view all students</p>
-                            <div className='flex gap-4 my-4 md:my-0'>
-                                {/* User Icon */}
-                                <div className="md:hidden w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-lg font-bold shadow-md">
-                                    {"AT"}
-                                </div>
-                                {/* Welcome Text */}
-                                <div className="text-left md:hidden">
-                                    <p className="text-sm text-blue-200">Welcome Back,</p>
-                                    <p className="text-lg font-semibold text-white">
-                                        User Name
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* logo */}
-                        {/* RIGHT - User Info */}
-                        <div className="hidden lg:flex items-center gap-4 px-5 py-3 rounded-xl ">
-                            {/* Welcome Text */}
-                            <div className="text-right">
-                                <p className="text-sm text-blue-200">Welcome Back,</p>
-                                <p className="text-lg font-semibold text-white">
-                                    User Name
-                                </p>
-                            </div>
-                            {/* User Icon */}
-                            <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-lg font-bold shadow-md">
-                                AT
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Add Student Button - Responsive */}
-                {/* <div className="flex justify-center md:justify-end mt-6">
-                    <Button icon={Users} variant="primary" onClick={() => window.location.href = "/add-student"}>Add Student</Button>
-                </div> */}
+                <AppBar
+                    title="Student Management"
+                    subtitle="Manage and view all students"
+                />
             </div>
 
             {/* Student Table */}

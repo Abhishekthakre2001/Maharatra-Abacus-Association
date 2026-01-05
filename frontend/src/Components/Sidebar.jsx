@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/logo (4).png";
+import colors from "../utils/Color";
 
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
@@ -57,9 +58,12 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   // ✅ MOBILE: Bottom Navigation
   if (isMobile) {
     return (
-      <div className="fixed bottom-0 left-0 w-full bg-gradient-to-b from-blue-600 to-[#110F12]
-      bg-opacity-70 backdrop-blur-xl
-      shadow-[0px_20px_40px_rgba(0,0,0,0.45)] overflow-x-auto py-3 z-50 rounded-t-2xl">
+      <div 
+        className="fixed bottom-0 left-0 w-full bg-opacity-70 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,0,0,0.45)] overflow-x-auto py-3 z-50 rounded-t-2xl"
+        style={{
+          backgroundImage: `linear-gradient(to bottom, ${colors.primary.blue600}, ${colors.text.dark})`
+        }}
+      >
 
         <div className="flex justify-between items-center px-4 gap-4 min-w-max">
           {menuItems.map((item) => {
@@ -68,8 +72,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               <button
                 key={item.id}
                 onClick={() => handleClick(item.path)}
-                className={`flex flex-col items-center text-xs min-w-[60px] ${isActive(item.path) ? "text-[#FF7F36]" : "text-gray-300"
-                  }`}
+                className="flex flex-col items-center text-xs min-w-[60px]"
+                style={{
+                  color: isActive(item.path) ? colors.accent.orange : colors.text.gray300
+                }}
               >
                 <Icon size={20} />
                 <span className="mt-1 text-[10px] whitespace-nowrap">{item.label}</span>
@@ -78,7 +84,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
           })}
 
           {/* Logout */}
-          <button className="flex flex-col items-center text-xs text-red-400 min-w-[60px]">
+          <button 
+            className="flex flex-col items-center text-xs min-w-[60px]"
+            style={{ color: colors.danger.red400 }}
+          >
             <LogOut size={20} />
             <span className="mt-1 text-[10px]">Logout</span>
           </button>
@@ -97,11 +106,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         ${isCollapsed ? "w-20" : "w-64"}
         transition-all duration-500
         rounded-3xl
-        bg-gradient-to-b from-blue-600 to-[#110F12]
         bg-opacity-70 backdrop-blur-xl
         shadow-[0px_20px_40px_rgba(0,0,0,0.45)]
         flex flex-col justify-between z-50
       `}
+        style={{
+          backgroundImage: `linear-gradient(to bottom, ${colors.primary.blue600}, ${colors.text.dark})`
+        }}
       >
         {/* Header */}
         <div className="flex justify-between items-center p-5">
@@ -115,7 +126,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                 <span className="text-white font-semibold text-lg tracking-wide leading-none">
                   Ideal Panel
                 </span>
-                <span className="text-xs text-gray-300 mt-1 tracking-wide">
+                <span className="text-xs mt-1 tracking-wide" style={{ color: colors.text.gray300 }}>
                   Inventory Suite
                 </span>
               </div>
@@ -124,7 +135,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="text-white  p-1 bg-[#FF7F36] rounded-full transition"
+            className="text-white p-1 rounded-full transition"
+            style={{ backgroundColor: colors.accent.orange }}
           >
             <ChevronLeft
               size={20}
@@ -146,11 +158,15 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                   w-full flex items-center gap-3 px-4 py-3 rounded-xl
                   transition-all duration-300
                   ${isActive(item.path)
-                    ? "bg-[#FF7F36] text-white shadow-lg"
-                    : "text-gray-300 hover:bg-white/10"
+                    ? "text-white shadow-lg"
+                    : "hover:bg-white/10"
                   }
                   ${isCollapsed && "justify-center"}
                 `}
+                style={{
+                  backgroundColor: isActive(item.path) ? colors.accent.orange : 'transparent',
+                  color: isActive(item.path) ? colors.text.white : colors.text.gray300
+                }}
               >
                 <Icon size={20} />
                 {!isCollapsed && <span>{item.label}</span>}
@@ -164,9 +180,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
           <button
             className={`
               w-full flex items-center gap-3 px-4 py-3 rounded-xl
-              bg-[#FF7F36] text-white shadow-lg transition
+              text-white shadow-lg transition
               ${isCollapsed && "justify-center"}
             `}
+            style={{ backgroundColor: colors.accent.orange }}
           >
             <LogOut size={20} />
             {!isCollapsed && <span>Logout</span>}
