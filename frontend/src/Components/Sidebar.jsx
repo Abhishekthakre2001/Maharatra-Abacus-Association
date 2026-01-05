@@ -29,18 +29,18 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   }, []);
 
   const logout = () => {
-  localStorage.clear();
-  document.cookie = "token=; Max-Age=0; path=/";
-  navigate("/");
-};
+    localStorage.clear();
+    document.cookie = "token=; Max-Age=0; path=/";
+    navigate("/");
+  };
 
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-    { id: "student-list", label: "Student List", icon: Proportions, path: "/students-list" },
-    { id: "add-student", label: "Add Student", icon: Users, path: "/add-student" },
-    { id: "result", label: "Result", icon: List, path: "/results" },
+    { id: "student-list", label: "Students", icon: Proportions, path: "/students-list" },
+    // { id: "add-student", label: "Add Student", icon: Users, path: "/add-student" },
     { id: "questions", label: "Questions", icon: QrCode, path: "/questions" },
+    { id: "result", label: "Result", icon: List, path: "/results" },
     { id: "exam-schedule", label: "Exam Schedule", icon: CaptionsOff, path: "/exam-schedule" },
     // { id: "settings", label: "Settings", icon: Settings, path: "/settings" },
   ];
@@ -59,7 +59,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       <div className="fixed bottom-0 left-0 w-full bg-gradient-to-b from-blue-600 to-[#110F12]
       bg-opacity-70 backdrop-blur-xl
       shadow-[0px_20px_40px_rgba(0,0,0,0.45)] overflow-x-auto py-3 z-50 rounded-t-2xl">
-        
+
         <div className="flex justify-between items-center px-4 gap-4 min-w-max">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -67,9 +67,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               <button
                 key={item.id}
                 onClick={() => handleClick(item.path)}
-                className={`flex flex-col items-center text-xs min-w-[60px] ${
-                  isActive(item.path) ? "text-[#FF7F36]" : "text-gray-300"
-                }`}
+                className={`flex flex-col items-center text-xs min-w-[60px] ${isActive(item.path) ? "text-[#FF7F36]" : "text-gray-300"
+                  }`}
               >
                 <Icon size={20} />
                 <span className="mt-1 text-[10px] whitespace-nowrap">{item.label}</span>
@@ -160,7 +159,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         </div>
 
         {/* Logout */}
-        <div className="p-4" onClick={()=>logout()}>
+        <div className="p-4" onClick={() => logout()}>
           <button
             className={`
               w-full flex items-center gap-3 px-4 py-3 rounded-xl

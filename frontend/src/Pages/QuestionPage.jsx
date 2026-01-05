@@ -1,4 +1,4 @@
-import React , { useState } from 'react'
+import React, { useState } from 'react'
 import Sidebar from "../Components/Sidebar";
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus } from 'lucide-react';
@@ -89,7 +89,7 @@ export default function QuestionPage() {
         setLoading(true);
         // Simulate API call
         setTimeout(() => {
-            setQuestions(questions.map(q => 
+            setQuestions(questions.map(q =>
                 q.id === updatedQuestion.id ? updatedQuestion : q
             ));
             setLoading(false);
@@ -133,6 +133,7 @@ export default function QuestionPage() {
                     {/* Questions DataTable */}
                     <DataTable
                         title="Questions Bank"
+
                         data={questions}
                         columns={[
                             {
@@ -202,21 +203,20 @@ export default function QuestionPage() {
                                 key: 'level',
                                 label: 'Level',
                                 render: (value) => (
-                                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                                        value === 'Advanced' ? 'bg-purple-100 text-purple-700' :
+                                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${value === 'Advanced' ? 'bg-purple-100 text-purple-700' :
                                         value === 'Intermediate' ? 'bg-blue-100 text-blue-700' :
-                                        'bg-green-100 text-green-700'
-                                    }`}>
+                                            'bg-green-100 text-green-700'
+                                        }`}>
                                         {value}
                                     </span>
                                 )
                             },
-                           
+
                         ]}
                         showActions={true}
                         onEdit={handleUpdate}
                         onDelete={handleDelete}
-                        onCreate={navigate('/add-question')}
+                        onCreate={() => navigate('/add-question')}
                         searchable={true}
                         pagination={true}
                     />
