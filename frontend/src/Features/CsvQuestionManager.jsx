@@ -4,6 +4,10 @@ import Button from "../UI/Button";
 import InputField from "../UI/InputField";
 import Modal from "../UI/Modal";
 import { Trash, Plus } from "lucide-react";
+import questionApi from "../api/questionApi";
+import setsApi from "../api/SetsApi";
+import { useEffect } from "react";
+import levelApi from "../api/LevelApi";
 
 export default function CsvQuestionManager() {
   const [questions, setQuestions] = useState([]);
@@ -13,6 +17,8 @@ export default function CsvQuestionManager() {
   const [set, setSet] = useState("");
   const [time, setTime] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [newQuestion, setNewQuestion] = useState({
     Question: "",
     "Option 1": "",
@@ -21,6 +27,10 @@ export default function CsvQuestionManager() {
     "Option 4": "",
     "Correct Option": ""
   });
+  const [availableSets, setAvailableSets] = useState([]);
+  const [modalSetId, setModalSetId] = useState("");
+  const [availableLevels, setAvailableLevels] = useState([]);
+  const [modalLevelId, setModalLevelId] = useState("");
 
   // Handle CSV file
   const parseCSV = (file) => {
@@ -81,22 +91,124 @@ export default function CsvQuestionManager() {
   });
 
   // Handle manual question addition
-  const handleAddQuestion = () => {
+  const handleAddQuestion = async () => {
     if (newQuestion.Question && newQuestion["Correct Option"]) {
-      const newQ = {
-        id: questions.length + 1,
-        ...newQuestion
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const payload = {
+        question: newQuestion.Question,
+        option1: newQuestion["Option 1"] || "",
+        option2: newQuestion["Option 2"] || "",
+        option3: newQuestion["Option 3"] || "",
+        option4: newQuestion["Option 4"] || "",
+        correctoption: Number(newQuestion["Correct Option"]),
+        level: Number(modalLevelId) || Number(level) || null,
+        set_id: Number(modalSetId) || Number(set) || null,
+        createdby: user.id || 3
       };
-      setQuestions([...questions, newQ]);
-      setNewQuestion({
-        Question: "",
-        "Option 1": "",
-        "Option 2": "",
-        "Option 3": "",
-        "Option 4": "",
-        "Correct Option": ""
+
+      try {
+        const res = await questionApi.create(payload);
+        const newQ = {
+          id: res.data && res.data.id ? res.data.id : questions.length + 1,
+          Question: newQuestion.Question,
+          "Option 1": newQuestion["Option 1"],
+          "Option 2": newQuestion["Option 2"],
+          "Option 3": newQuestion["Option 3"],
+          "Option 4": newQuestion["Option 4"],
+          "Correct Option": newQuestion["Correct Option"]
+        };
+        setQuestions([...questions, newQ]);
+        setNewQuestion({
+          Question: "",
+          "Option 1": "",
+          "Option 2": "",
+          "Option 3": "",
+          "Option 4": "",
+          "Correct Option": ""
+        });
+        setIsModalOpen(false);
+      } catch (err) {
+        console.error(err);
+        alert("Failed to save question.");
+      }
+    }
+  };
+
+  useEffect(() => {
+    // load sets for modal selector
+    let mounted = true;
+    setsApi.getAll()
+      .then(res => {
+        if (!mounted) return;
+        const payload = res && res.data !== undefined ? res.data : res;
+        setAvailableSets(Array.isArray(payload) ? payload : []);
+      })
+      .catch(err => console.error('Failed to load sets', err));
+    // load levels for modal selector
+    levelApi.getAll()
+      .then(res => {
+        if (!mounted) return;
+        const payload = res && res.data !== undefined ? res.data : res;
+        setAvailableLevels(Array.isArray(payload) ? payload : []);
+      })
+      .catch(err => console.error('Failed to load levels', err));
+    return () => { mounted = false; };
+  }, []);
+
+  // Submit all data: log payload and validate required fields
+  const handleSubmit = async () => {
+    const payload = {
+      level: Number(level),
+      set: Number(set),
+      time: Number(time),
+    };
+
+    console.log("Submitting payload:", { ...payload, questions });
+
+    // Validation
+    if (!questions || questions.length < 1) {
+      alert("Please upload or add at least one question before submitting.");
+      return;
+    }
+
+    if (!level || !set || !time) {
+      alert("Please fill Level, Set and Time before submitting.");
+      return;
+    }
+
+    // Prepare questions for backend
+    const mapped = questions.map((q) => ({
+      question: q.Question ?? q.question ?? "",
+      option1: q["Option 1"] ?? q.option1 ?? "",
+      option2: q["Option 2"] ?? q.option2 ?? "",
+      option3: q["Option 3"] ?? q.option3 ?? "",
+      option4: q["Option 4"] ?? q.option4 ?? "",
+      correctoption: Number(q["Correct Option"] ?? q.correctoption ?? 0)
+    }));
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const body = { ...payload, questions: mapped, createdby: user.id || 3 };
+      const response = await questionApi.bulkSave(body, (progressEvent) => {
+        if (progressEvent.total) {
+          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percent);
+        }
       });
-      setIsModalOpen(false);
+
+      console.log("Bulk save response:", response.data);
+      alert("Questions saved successfully.");
+      // Optionally clear questions after save
+      setQuestions([]);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save questions.");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -135,48 +247,68 @@ export default function CsvQuestionManager() {
             />
           </div>
           <div>
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              variant="primary"
-              icon={Plus}
-              className="w-full mb-6"
-            >
-              Add Question
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Button
+                onClick={() => { setModalSetId(set); setModalLevelId(level); setIsModalOpen(true); }}
+                variant="primary"
+                icon={Plus}
+                className="w-full"
+              >
+                Add Question
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                variant="outline"
+                className="w-full"
+              >
+                Submit
+              </Button>
+            </div>
           </div>
+            {isUploading && (
+              <div className="p-4">
+                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-blue-600 h-2"
+                    style={{ width: `${uploadProgress}%`, transition: 'width 200ms' }}
+                  />
+                </div>
+                <div className="text-sm text-gray-600 text-right mt-1">{uploadProgress}%</div>
+              </div>
+            )}
         </div>
       </div>
 
-      {/* Upload Box */}
-      <div
-        className={`border-2 border-dashed rounded-xl p-10 text-center mb-6
+      {/* Upload Box (hidden once CSV/questions are loaded) */}
+      {questions.length === 0 && (
+        <div
+          className={`border-2 border-dashed rounded-xl p-10 text-center mb-6
           ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragActive(true);
-        }}
-        onDragLeave={() => setDragActive(false)}
-        onDrop={handleDrop}
-      >
-        <p className="text-lg font-semibold mb-2">
-          Drag & Drop CSV File Here
-        </p>
-        <p className="text-gray-500 mb-4">Preview, Update & Delete Questions</p>
-
-        <input
-          type="file"
-          accept=".csv"
-          onChange={handleFileChange}
-          className="hidden"
-          id="csvUpload"
-        />
-        <label
-          htmlFor="csvUpload"
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={handleDrop}
         >
-          Browse CSV
-        </label>
-      </div>
+          <p className="text-lg font-semibold mb-2">Drag & Drop CSV File Here</p>
+          <p className="text-gray-500 mb-4">Preview, Update & Delete Questions</p>
+
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleFileChange}
+            className="hidden"
+            id="csvUpload"
+          />
+          <label
+            htmlFor="csvUpload"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
+          >
+            Browse CSV
+          </label>
+        </div>
+      )}
 
       {/* Preview Table */}
       {questions.length > 0 && (
@@ -364,6 +496,36 @@ export default function CsvQuestionManager() {
             placeholder="Enter correct option (1, 2, 3, or 4)"
             required
           />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Set</label>
+              <select
+                value={modalSetId}
+                onChange={(e) => setModalSetId(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">-- Select set (or leave to use top Set) --</option>
+                {availableSets.map((s) => (
+                  <option key={s.id} value={s.id}>{s.set_name || s.name || `Set ${s.id}`}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
+              <select
+                value={modalLevelId}
+                onChange={(e) => setModalLevelId(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">-- Select level (or leave to use top Level) --</option>
+                {availableLevels.map((lv) => (
+                  <option key={lv.id} value={lv.id}>{lv.level || lv.name || `Level ${lv.id}`}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           <div className="flex justify-end gap-3 mt-6">
             <Button

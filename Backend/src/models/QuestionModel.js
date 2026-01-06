@@ -65,6 +65,30 @@ const QuestionModel = {
     );
     return result;
   }
+  ,
+  bulkCreate: async (questions, level, set_id, createdby) => {
+    // questions: array of objects with keys: question, option1..option4, correctoption (number or string)
+    const values = questions.map((q) => [
+      q.question || q.Question || "",
+      q.option1 || q["Option 1"] || "",
+      q.option2 || q["Option 2"] || "",
+      q.option3 || q["Option 3"] || "",
+      q.option4 || q["Option 4"] || "",
+      Number(q.correctoption ?? q["Correct Option"] ?? 0) || 0,
+      level,
+      set_id,
+      createdby
+    ]);
+
+    const sql = `
+      INSERT INTO questions
+      (question, option1, option2, option3, option4, correctoption, level, set_id, createdby)
+      VALUES ?
+    `;
+
+    const [result] = await pool.query(sql, [values]);
+    return result;
+  }
 };
 
 module.exports = QuestionModel;

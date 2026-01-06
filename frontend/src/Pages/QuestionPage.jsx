@@ -6,6 +6,9 @@ import DataTable from '../UI/DataTable';
 import UpdateQuestionModal from '../Components/UpdateQuestionModal';
 import DeleteConfirmModal from '../UI/DeleteConfirmModal';
 import AppBar from '../UI/AppBar';
+import { useFetchData } from '../hooks/useFetchData';
+import questionApi from '../api/questionApi';
+import { useEffect } from 'react';
 
 export default function QuestionPage() {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -17,64 +20,12 @@ export default function QuestionPage() {
     const [selectedQuestion, setSelectedQuestion] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // Dummy questions data
-    const [questions, setQuestions] = useState([
-        {
-            id: 1,
-            question: 'What is 15 + 27?',
-            option1: '40',
-            option2: '42',
-            option3: '45',
-            option4: '38',
-            correctAnswer: 'option2',
-            level: 'Basic',
-            category: 'Addition'
-        },
-        {
-            id: 2,
-            question: 'Calculate: 128 - 56',
-            option1: '72',
-            option2: '68',
-            option3: '74',
-            option4: '70',
-            correctAnswer: 'option1',
-            level: 'Intermediate',
-            category: 'Subtraction'
-        },
-        {
-            id: 3,
-            question: 'What is 12 × 8?',
-            option1: '84',
-            option2: '92',
-            option3: '96',
-            option4: '88',
-            correctAnswer: 'option3',
-            level: 'Basic',
-            category: 'Multiplication'
-        },
-        {
-            id: 4,
-            question: 'Solve: 144 ÷ 12',
-            option1: '10',
-            option2: '11',
-            option3: '12',
-            option4: '14',
-            correctAnswer: 'option3',
-            level: 'Intermediate',
-            category: 'Division'
-        },
-        {
-            id: 5,
-            question: 'What is the square of 15?',
-            option1: '225',
-            option2: '215',
-            option3: '235',
-            option4: '205',
-            correctAnswer: 'option1',
-            level: 'Advanced',
-            category: 'Algebra'
-        }
-    ]);
+    const { data: fetchedQuestions, reload } = useFetchData(questionApi.getAll);
+    const [questions, setQuestions] = useState([]);
+
+    useEffect(() => {
+        setQuestions(fetchedQuestions || []);
+    }, [fetchedQuestions]);
 
     const handleUpdate = (row) => {
         setSelectedQuestion(row);
@@ -86,30 +37,40 @@ export default function QuestionPage() {
         setShowDeleteModal(true);
     };
 
-    const handleUpdateSubmit = (updatedQuestion) => {
+    const handleUpdateSubmit = async (updatedQuestion) => {
         setLoading(true);
-        // Simulate API call
-        setTimeout(() => {
-            setQuestions(questions.map(q =>
-                q.id === updatedQuestion.id ? updatedQuestion : q
-            ));
-            setLoading(false);
+        try {
+            const id = updatedQuestion.id;
+            // Send update to API (strip id)
+            const payload = { ...updatedQuestion };
+            delete payload.id;
+            await questionApi.update(id, payload);
+            await reload();
             setShowUpdateModal(false);
             setSelectedQuestion(null);
             console.log('Updated question:', updatedQuestion);
-        }, 1000);
+        } catch (err) {
+            console.error('Update failed', err);
+            alert('Failed to update question');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleDeleteConfirm = () => {
+    const handleDeleteConfirm = async () => {
         setLoading(true);
-        // Simulate API call
-        setTimeout(() => {
-            setQuestions(questions.filter(q => q.id !== selectedQuestion.id));
-            setLoading(false);
+        try {
+            await questionApi.remove(selectedQuestion.id);
+            await reload();
             setShowDeleteModal(false);
             setSelectedQuestion(null);
             console.log('Deleted question:', selectedQuestion);
-        }, 1000);
+        } catch (err) {
+            console.error('Delete failed', err);
+            alert('Failed to delete question');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCreate = () => {
@@ -150,7 +111,7 @@ export default function QuestionPage() {
                                 key: 'option1',
                                 label: 'Option A',
                                 render: (value, row) => (
-                                    <span className={`${row.correctAnswer === 'option1' ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                                    <span className={`${Number(row.correctoption) === 1 ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
                                         {value}
                                     </span>
                                 )
@@ -159,7 +120,7 @@ export default function QuestionPage() {
                                 key: 'option2',
                                 label: 'Option B',
                                 render: (value, row) => (
-                                    <span className={`${row.correctAnswer === 'option2' ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                                    <span className={`${Number(row.correctoption) === 2 ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
                                         {value}
                                     </span>
                                 )
@@ -168,7 +129,7 @@ export default function QuestionPage() {
                                 key: 'option3',
                                 label: 'Option C',
                                 render: (value, row) => (
-                                    <span className={`${row.correctAnswer === 'option3' ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                                    <span className={`${Number(row.correctoption) === 3 ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
                                         {value}
                                     </span>
                                 )
@@ -177,24 +138,20 @@ export default function QuestionPage() {
                                 key: 'option4',
                                 label: 'Option D',
                                 render: (value, row) => (
-                                    <span className={`${row.correctAnswer === 'option4' ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                                    <span className={`${Number(row.correctoption) === 4 ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
                                         {value}
                                     </span>
                                 )
                             },
                             {
-                                key: 'correctAnswer',
+                                key: 'correctoption',
                                 label: 'Correct Answer',
                                 render: (value, row) => {
-                                    const optionMap = {
-                                        'option1': 'A',
-                                        'option2': 'B',
-                                        'option3': 'C',
-                                        'option4': 'D'
-                                    };
+                                    const map = {1: 'A', 2: 'B', 3: 'C', 4: 'D'};
+                                    const v = Number(row.correctoption || value) || 0;
                                     return (
                                         <span className="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700">
-                                            Option {optionMap[value]}
+                                            Option {map[v] || '-'}
                                         </span>
                                     );
                                 }

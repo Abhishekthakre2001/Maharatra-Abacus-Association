@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/QuestionController");
+// Bulk upload endpoint (CSV/JSON array of questions)
+router.post("/bulk", controller.bulkCreateQuestions);
 
 router.post("/", controller.createQuestion);
 router.get("/", controller.getQuestions);
