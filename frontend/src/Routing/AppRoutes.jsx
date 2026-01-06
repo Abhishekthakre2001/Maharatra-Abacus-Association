@@ -11,6 +11,7 @@ import AddQuestionPage from "../Pages/Addquestion";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import Masters from "../Pages/Masters";
+import Examschedule from "../Pages/Examschedule";
 
 const AppRoutes = () => {
   return (
@@ -41,6 +42,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Masters />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/exam-schedule"
+        element={
+          <ProtectedRoute>
+            <Examschedule />
           </ProtectedRoute>
         }
       />
