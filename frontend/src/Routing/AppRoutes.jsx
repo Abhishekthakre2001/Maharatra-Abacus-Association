@@ -13,6 +13,13 @@ import PublicRoute from "./PublicRoute";
 import Masters from "../Pages/Masters";
 import Examschedule from "../Pages/Examschedule";
 
+// student dashboard routes from here below
+import StudentDashboardPage from "../Pages/Student/StudentDashboardPage";
+import ExamRule from "../Pages/Student/ExamRule";
+import ExamPage from "../Pages/Student/ExamPage";
+import StudentResultPage from "../Pages/Student/ResultPage";
+
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -37,7 +44,7 @@ const AppRoutes = () => {
         }
       />
 
-       <Route
+      <Route
         path="/masters"
         element={
           <ProtectedRoute>
@@ -81,7 +88,7 @@ const AppRoutes = () => {
         }
       />
 
-       <Route
+      <Route
         path="/add-question"
         element={
           <ProtectedRoute>
@@ -113,6 +120,43 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <QuestionPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/*  student dashboard route added here */}
+      <Route
+        path="/student-dashboard"
+        element={
+          <ProtectedRoute>
+            <StudentDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/exam-rule"
+        element={
+          <ProtectedRoute>
+            <ExamRule />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/exam-page"
+        element={
+          <ProtectedRoute>
+            <ExamPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/student-result"
+        element={
+          <ProtectedRoute>
+            <StudentResultPage />
           </ProtectedRoute>
         }
       />
