@@ -218,24 +218,32 @@ export default function CsvQuestionManager() {
     <div className="max-w-7xl mx-auto p-6">
       {/* Input Fields Section */}
       <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <InputField
-              label="Level"
-              type="number"
+            <label className="block text-sm font-medium text-gray-700 mb-2">Level</label>
+            <select
               value={level}
               onChange={(e) => setLevel(e.target.value)}
-              placeholder="Enter level"
-            />
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">-- Select Level --</option>
+              {availableLevels.map((lv) => (
+                <option key={lv.id} value={lv.id}>{lv.level || lv.name || `Level ${lv.id}`}</option>
+              ))}
+            </select>
           </div>
           <div>
-            <InputField
-              label="Set"
-              type="number"
+            <label className="block text-sm font-medium text-gray-700 mb-2">Set</label>
+            <select
               value={set}
               onChange={(e) => setSet(e.target.value)}
-              placeholder="Enter set"
-            />
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">-- Select Set --</option>
+              {availableSets.map((s) => (
+                <option key={s.id} value={s.id}>{s.set_name || s.name || `Set ${s.id}`}</option>
+              ))}
+            </select>
           </div>
           <div>
             <InputField
@@ -246,37 +254,39 @@ export default function CsvQuestionManager() {
               placeholder="Enter time"
             />
           </div>
-          <div>
-            <div className="flex flex-col gap-2">
+          
+        </div>
+        <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2 invisible">Actions</label>
+            <div className="flex gap-2">
               <Button
                 onClick={() => { setModalSetId(set); setModalLevelId(level); setIsModalOpen(true); }}
                 variant="primary"
                 icon={Plus}
-                className="w-full"
+                className="flex-1"
               >
                 Add Question
               </Button>
               <Button
                 onClick={handleSubmit}
                 variant="outline"
-                className="w-full"
+                className="flex-1"
               >
                 Submit
               </Button>
             </div>
           </div>
-            {isUploading && (
-              <div className="p-4">
-                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                  <div
-                    className="bg-blue-600 h-2"
-                    style={{ width: `${uploadProgress}%`, transition: 'width 200ms' }}
-                  />
-                </div>
-                <div className="text-sm text-gray-600 text-right mt-1">{uploadProgress}%</div>
-              </div>
-            )}
-        </div>
+        {isUploading && (
+          <div className="mt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+              <div
+                className="bg-blue-600 h-2"
+                style={{ width: `${uploadProgress}%`, transition: 'width 200ms' }}
+              />
+            </div>
+            <div className="text-sm text-gray-600 text-right mt-1">{uploadProgress}%</div>
+          </div>
+        )}
       </div>
 
       {/* Upload Box (hidden once CSV/questions are loaded) */}
@@ -366,32 +376,32 @@ export default function CsvQuestionManager() {
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50">
                     #
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[300px]">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[300px] bg-gray-50">
                     Question
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px]">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
                     Option 1
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px]">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
                     Option 2
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px]">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
                     Option 3
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px]">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
                     Option 4
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50">
                     Answer
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50">
                     Actions
                   </th>
                 </tr>

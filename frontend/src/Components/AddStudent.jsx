@@ -8,6 +8,7 @@ import { useUpdate } from "../hooks/useUpdate";
 import { useParams, useNavigate } from "react-router-dom";
 import MessageModal from "../utils/MessageModal";
 import { validateStudent } from "../utils/studentValidator";
+import AppBar from "../UI/AppBar";
 
 
 export default function AddStudent() {
@@ -193,24 +194,12 @@ export default function AddStudent() {
             />
 
             {/* ⬇️ EVERYTHING BELOW IS YOUR ORIGINAL DESIGN (UNCHANGED) ⬇️ */}
-            <div className="max-w-7xl mx-auto">
-                <div className="bg-gradient-to-r from-blue-600 to-[#110F12]
-        bg-opacity-70 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,0,0,0.45)]
-        rounded-2xl p-8 text-white shadow-xl">
+            <div className="h-full overflow-hidden flex flex-col p-4">
 
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl lg:text-3xl font-bold mb-2">
-                                Student Management
-                            </h1>
-                            <p className="hidden md:block text-white text-sm md:text-lg">
-                                Manage and view all students
-                            </p>
-                        </div>
-                    </div>
+                <div className="flex-shrink-0">
+                    <AppBar title="Student Management" subtitle="Manage and view all students" />
                 </div>
-
-                <div className="bg-white rounded-2xl shadow-lg border border-slate-200 my-6 overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-lg border border-slate-200 my-6 flex-1 overflow-y-auto">
                     <div className="p-4 md:p-6 border-b border-slate-200">
                         <h2 className="text-xl md:text-2xl font-bold text-center">
                             Add Student Info

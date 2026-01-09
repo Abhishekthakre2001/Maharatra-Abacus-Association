@@ -48,6 +48,14 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   ];
 
   const isActive = (path) => {
+    // Special case: /add-student should highlight the students tab
+    if (path === "/students-list" && (location.pathname === "/add-student" || location.pathname.startsWith("/add-student/"))) {
+      return true;
+    }
+    // Special case: /add-question should highlight the questions tab
+    if (path === "/questions" && (location.pathname === "/add-question" || location.pathname.startsWith("/add-question/"))) {
+      return true;
+    }
     return location.pathname === path;
   };
 
