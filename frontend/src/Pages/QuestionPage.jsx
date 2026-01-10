@@ -35,6 +35,7 @@ export default function QuestionPage() {
     };
 
     const handleDelete = (row) => {
+        console.log("row", row)
         setSelectedQuestion(row);
         setShowDeleteModal(true);
     };
@@ -60,9 +61,10 @@ export default function QuestionPage() {
     };
 
     const handleDeleteConfirm = async () => {
+        console.log("selectedQuestion", selectedQuestion)
         setLoading(true);
         try {
-            await questionApi.remove(selectedQuestion.id);
+            await questionApi.removeSet(selectedQuestion.level, selectedQuestion.set);
             await reload();
             setShowDeleteModal(false);
             setSelectedQuestion(null);

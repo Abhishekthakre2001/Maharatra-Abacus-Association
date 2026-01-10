@@ -9,5 +9,6 @@ router.get("/admin/:id", controller.getQuestionsByAdmin);
 router.get("/:id", controller.getQuestionById);
 router.put("/:id", controller.updateQuestion);
 router.delete("/:id", controller.deleteQuestion);
+router.delete("/deleteset/level/:level/set/:set", controller.deleteSet);
 
 module.exports = router;

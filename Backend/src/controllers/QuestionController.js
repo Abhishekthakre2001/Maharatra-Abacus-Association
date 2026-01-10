@@ -88,3 +88,9 @@ exports.deleteQuestion = async (req, res) => {
   await QuestionService.deleteQuestion(req.params.id);
   res.json({ success: true });
 };
+
+exports.deleteSet = async (req, res) => {
+  await QuestionService.deleteSet(req.params.level, req.params.set);
+  res.json({ success: true });
+};
+

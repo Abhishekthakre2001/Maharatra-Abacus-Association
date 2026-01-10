@@ -74,8 +74,15 @@ const QuestionModel = {
       "DELETE FROM questions WHERE id = ?", [id]
     );
     return result;
-  }
-  ,
+  },
+  
+  removeSet: async (level, set_id) => {
+    const [result] = await pool.query(
+      "DELETE FROM questions WHERE level = ? AND set_id = ?", [level, set_id]
+    );
+    return result;
+  },
+
   bulkCreate: async (questions, level, set_id, createdby, time) => {
     // questions: array of objects with keys: question, option1..option4, correctoption (number or string)
     const values = questions.map((q) => [

@@ -7,6 +7,7 @@ const questionApi = {
   bulkSave: (data, onUploadProgress) => axiosInstance.post('/questions/bulk', data, { onUploadProgress }),
   update: (id, data) => axiosInstance.put(`/questions/${id}`, data),
   remove: (id) => axiosInstance.delete(`/questions/${id}`),
+  removeSet: (level, set_id) => axiosInstance.delete(`/questions/deleteset/level/${level}/set/${set_id}`),
 };
 
 export default questionApi;
