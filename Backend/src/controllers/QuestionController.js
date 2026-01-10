@@ -84,6 +84,12 @@ exports.updateQuestion = async (req, res) => {
   res.json({ success: true });
 };
 
+exports.updateSet = async (req, res) => {
+  console.log("controler", req.body);
+  await QuestionService.updateSet(req.body);
+  res.json({ success: true });
+};
+
 exports.deleteQuestion = async (req, res) => {
   await QuestionService.deleteQuestion(req.params.id);
   res.json({ success: true });

@@ -9,8 +9,13 @@ import AppBar from '../UI/AppBar';
 import { useFetchData } from '../hooks/useFetchData';
 import questionApi from '../api/questionApi';
 import { useEffect } from 'react';
+import Modal from '../UI/modal';
+import InputField from '../UI/InputField';
 
 export default function QuestionPage() {
+    const [open, setOpen] = useState(false);
+    const [time, setTime] = useState("");
+
     const [isCollapsed, setIsCollapsed] = useState(false);
     const navigate = useNavigate();
     const [adminId, setAdminId] = useState(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).id : null);
@@ -30,8 +35,13 @@ export default function QuestionPage() {
     }, [fetchedQuestions]);
 
     const handleUpdate = (row) => {
+
+        console.log("row", row);
+        setTime(row?.total_time)
         setSelectedQuestion(row);
-        setShowUpdateModal(true);
+        // setShowUpdateModal(true);
+        setOpen(true);
+
     };
 
     const handleDelete = (row) => {
@@ -41,15 +51,23 @@ export default function QuestionPage() {
     };
 
     const handleUpdateSubmit = async (updatedQuestion) => {
+        console.log("selectedQuestion", selectedQuestion)
         setLoading(true);
         try {
             const id = updatedQuestion.id;
             // Send update to API (strip id)
-            const payload = { ...updatedQuestion };
+            // const payload = { ...updatedQuestion };
+            const payload = {
+                level: selectedQuestion.level,
+                set: selectedQuestion.set,
+                total_time: time
+            }
             delete payload.id;
-            await questionApi.update(id, payload);
+            // await questionApi.update(id, payload);
+            await questionApi.updateSet(payload);
             await reload();
             setShowUpdateModal(false);
+            setOpen(false);
             setSelectedQuestion(null);
             console.log('Updated question:', updatedQuestion);
         } catch (err) {
@@ -216,6 +234,17 @@ export default function QuestionPage() {
 
     ]
 
+    const handleTimeChange = (e) => {
+        let v = e.target.value.replace(/[^0-9]/g, '');
+
+        if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
+        if (v.length >= 6) v = v.slice(0, 5) + ':' + v.slice(5, 7);
+
+        setTime(v);
+    };
+
+    console.log("time", time)
+
     return (
         <>
             <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
@@ -269,6 +298,45 @@ export default function QuestionPage() {
                 message={`Are you sure you want to delete the question: "${selectedQuestion?.question}"? This action cannot be undone.`}
                 loading={loading}
             />
+
+            {/* update set model */}
+            <Modal
+                open={open}
+                onClose={() => setOpen(false)}
+                title="Update set Time"
+                width="max-w-md"
+            >
+                {/* Input 1 */}
+                <div className="mb-4">
+                    <InputField
+                        label="Time (HH:MM:SS)"
+                        type="text"
+                        value={time}
+                        onChange={handleTimeChange}
+                        placeholder="HH:MM:SS"
+                        inputMode="numeric"
+                    />
+                </div>
+
+
+
+                {/* Actions */}
+                <div className="flex justify-end gap-3 mt-6">
+                    <button
+                        onClick={() => setOpen(false)}
+                        className="px-4 py-2 border rounded-lg"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        disabled={loading}
+                        onClick={handleUpdateSubmit}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                    >
+                        {loading ? "Saving..." : "Save"}
+                    </button>
+                </div>
+            </Modal>
         </>
     )
 }

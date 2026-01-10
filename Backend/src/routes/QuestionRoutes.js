@@ -5,6 +5,7 @@ const controller = require("../controllers/QuestionController");
 router.post("/bulk", controller.bulkCreateQuestions);
 router.post("/", controller.createQuestion);
 router.get("/", controller.getQuestions);
+router.put("/updateset", controller.updateSet);
 router.get("/admin/:id", controller.getQuestionsByAdmin);
 router.get("/:id", controller.getQuestionById);
 router.put("/:id", controller.updateQuestion);

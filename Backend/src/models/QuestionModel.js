@@ -69,13 +69,31 @@ const QuestionModel = {
     return result;
   },
 
+  updateSet: async (data) => {
+    console.log("data", data);
+
+    const sql = `
+    UPDATE questions
+    SET set_time = ?
+    WHERE level = ? AND set_id = ?
+  `;
+
+    const [result] = await pool.query(sql, [
+      data.total_time, // "10:00:00"
+      data.level,      // 1
+      data.set         // "B"
+    ]);
+
+    return result;
+  },
+
   remove: async (id) => {
     const [result] = await pool.query(
       "DELETE FROM questions WHERE id = ?", [id]
     );
     return result;
   },
-  
+
   removeSet: async (level, set_id) => {
     const [result] = await pool.query(
       "DELETE FROM questions WHERE level = ? AND set_id = ?", [level, set_id]
