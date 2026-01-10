@@ -24,6 +24,8 @@ export default function QuestionPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [QuestionsView, setQuestionsView] = useState(false);
+    const [Paperset, SetPaperset] = useState("")
     const user = JSON.parse(localStorage.getItem("user"));
     // const { data: fetchedQuestions, reload } = useFetchData(questionApi.getbyadmin(adminId));
     const { data: fetchedQuestions, reload } = useFetchData(() => questionApi.getbyadmin(adminId));
@@ -39,8 +41,12 @@ export default function QuestionPage() {
         console.log("row", row);
         setTime(row?.total_time)
         setSelectedQuestion(row);
-        // setShowUpdateModal(true);
-        setOpen(true);
+        if (QuestionsView) {
+            setShowUpdateModal(true);
+        } else {
+            setOpen(true);
+        }
+
 
     };
 
@@ -49,6 +55,14 @@ export default function QuestionPage() {
         setSelectedQuestion(row);
         setShowDeleteModal(true);
     };
+
+    const handleview = (row) => {
+        console.log("row", row.questions);
+        SetPaperset(row.paper_set);
+        setQuestions(row.questions);
+        setQuestionsView(true);
+    }
+    console.log("Question View", QuestionsView)
 
     const handleUpdateSubmit = async (updatedQuestion) => {
         console.log("selectedQuestion", selectedQuestion)
@@ -82,8 +96,14 @@ export default function QuestionPage() {
         console.log("selectedQuestion", selectedQuestion)
         setLoading(true);
         try {
-            await questionApi.removeSet(selectedQuestion.level, selectedQuestion.set);
+            if (QuestionsView) {
+                await questionApi.remove(selectedQuestion.id);
+            } else {
+                await questionApi.removeSet(selectedQuestion.level, selectedQuestion.set);
+            }
+
             await reload();
+            setQuestionsView(false);
             setShowDeleteModal(false);
             setSelectedQuestion(null);
             console.log('Deleted question:', selectedQuestion);
@@ -221,13 +241,13 @@ export default function QuestionPage() {
         },
         {
             key: 'level',
-            label: 'Level',
+            label: 'Paper Set',
             render: (value) => (
                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${value === 'Advanced' ? 'bg-purple-100 text-purple-700' :
                     value === 'Intermediate' ? 'bg-blue-100 text-blue-700' :
                         'bg-green-100 text-green-700'
                     }`}>
-                    {value}
+                    {Paperset}
                 </span>
             )
         },
@@ -261,10 +281,11 @@ export default function QuestionPage() {
                         <DataTable
                             title="Questions Bank"
                             data={questions}
-                            columns={setcolumns}
+                            columns={QuestionsView ? questionscolumn : setcolumns}
                             showActions={true}
                             onEdit={handleUpdate}
                             onDelete={handleDelete}
+                            onView={QuestionsView ? false : handleview}
                             onCreate={() => navigate('/add-question')}
                             searchable={true}
                             pagination={true}

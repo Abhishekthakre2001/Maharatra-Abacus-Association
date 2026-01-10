@@ -103,8 +103,8 @@ export default function CsvQuestionManager() {
         option4: newQuestion["Option 4"] || "",
         correctoption: Number(newQuestion["Correct Option"]),
         level: Number(modalLevelId) || Number(level) || null,
-        set_id: Number(modalSetId) || Number(set) || null,
-        createdby: user.id || 3
+        set_id: String(modalSetId) || String(set) || null,
+        createdby: user.id 
       };
 
       try {
@@ -273,7 +273,7 @@ export default function CsvQuestionManager() {
               variant="outline"
               className="flex-1"
             >
-              Save Imported Questions
+              Save Questions
             </Button>
           </div>
 
@@ -540,7 +540,7 @@ export default function CsvQuestionManager() {
               >
                 <option value="">-- Select set (or leave to use top Set) --</option>
                 {availableSets.map((s) => (
-                  <option key={s.id} value={s.id}>{s.set_name || s.name || `Set ${s.id}`}</option>
+                  <option key={s.id} value={s.set_name}>{s.set_name || s.name || `Set ${s.id}`}</option>
                 ))}
               </select>
             </div>
@@ -554,7 +554,7 @@ export default function CsvQuestionManager() {
               >
                 <option value="">-- Select level (or leave to use top Level) --</option>
                 {availableLevels.map((lv) => (
-                  <option key={lv.id} value={lv.id}>{lv.level || lv.name || `Level ${lv.id}`}</option>
+                  <option key={lv.id} value={lv.level}>{lv.level || lv.name || `Level ${lv.id}`}</option>
                 ))}
               </select>
             </div>

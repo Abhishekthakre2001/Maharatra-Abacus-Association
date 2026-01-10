@@ -1,25 +1,83 @@
 const pool = require("../config/db");
 
 const QuestionModel = {
-  create: async (data) => {
-    const sql = `
-      INSERT INTO questions
-      (question, option1, option2, option3, option4, correctoption, level, set_id, createdby)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    const [result] = await pool.query(sql, [
-      data.question,
-      data.option1,
-      data.option2,
-      data.option3,
-      data.option4,
-      data.correctoption,
-      data.level,
-      data.set_id,
-      data.createdby
-    ]);
-    return result;
-  },
+  // create: async (data) => {
+  //   const sql = `
+  //     INSERT INTO questions
+  //     (question, option1, option2, option3, option4, correctoption, level, set_id, createdby)
+  //     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  //   `;
+  //   const [result] = await pool.query(sql, [
+  //     data.question,
+  //     data.option1,
+  //     data.option2,
+  //     data.option3,
+  //     data.option4,
+  //     data.correctoption,
+  //     data.level,
+  //     data.set_id,
+  //     data.createdby
+  //   ]);
+  //   return result;
+  // },
+create: async (data) => {
+  console.log("data",data)
+  // 1️⃣ Get set_time from sets table
+  const getSetTimeSql = `
+    SELECT set_time
+    FROM questions
+    WHERE level = ? AND set_id = ?
+    LIMIT 1
+  `;
+
+  const [setRows] = await pool.query(getSetTimeSql, [
+    data.level,
+    data.set_id
+  ]);
+
+  if (setRows.length === 0) {
+    throw new Error("set_time not found for given level and set_id");
+  }
+
+  const set_time = setRows[0].set_time; // varchar(8)
+
+  console.log("set_time ",set_time )
+
+  // 2️⃣ Insert question with set_time
+  const insertSql = `
+    INSERT INTO questions
+    (
+      question,
+      option1,
+      option2,
+      option3,
+      option4,
+      correctoption,
+      level,
+      set_id,
+      set_time,
+      createdby
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const [result] = await pool.query(insertSql, [
+    data.question,
+    data.option1,
+    data.option2,
+    data.option3,
+    data.option4,
+    data.correctoption,
+    data.level,
+    data.set_id,
+    set_time,
+    data.createdby
+  ]);
+
+  return result;
+},
+
+
 
   findAll: async () => {
     const [rows] = await pool.query(`
