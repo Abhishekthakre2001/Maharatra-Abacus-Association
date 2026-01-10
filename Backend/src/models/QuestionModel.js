@@ -31,6 +31,16 @@ const QuestionModel = {
     return rows;
   },
 
+
+  findByAdmin: async (adminId) => {
+    const [rows] = await pool.query(
+      ` SELECT * FROM questions WHERE createdby = ? `,
+      [adminId]
+    );
+
+    return rows;
+  },
+
   findById: async (id) => {
     const [rows] = await pool.query(
       "SELECT * FROM questions WHERE id = ?", [id]
@@ -66,7 +76,7 @@ const QuestionModel = {
     return result;
   }
   ,
-  bulkCreate: async (questions, level, set_id, createdby) => {
+  bulkCreate: async (questions, level, set_id, createdby, time) => {
     // questions: array of objects with keys: question, option1..option4, correctoption (number or string)
     const values = questions.map((q) => [
       q.question || q.Question || "",
@@ -77,12 +87,13 @@ const QuestionModel = {
       Number(q.correctoption ?? q["Correct Option"] ?? 0) || 0,
       level,
       set_id,
+      time,
       createdby
     ]);
 
     const sql = `
       INSERT INTO questions
-      (question, option1, option2, option3, option4, correctoption, level, set_id, createdby)
+      (question, option1, option2, option3, option4, correctoption, level, set_id, set_time, createdby)
       VALUES ?
     `;
 

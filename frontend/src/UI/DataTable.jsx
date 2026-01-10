@@ -134,7 +134,7 @@ const DataTable = ({
         {/* Header */}
         <div className="p-6 border-b border-slate-200 flex flex-col lg:flex-row justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
+            <h2 className="text-2xl font-bold text-slate-800 text-nowrap">{title}</h2>
             {/* <p className="text-slate-600 mt-1">
               Showing {paginatedData.length} of {sortedData.length} entries
             </p> */}
@@ -159,7 +159,7 @@ const DataTable = ({
               {onCreate && (
                 <button
                   onClick={onCreate}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                  className="text-nowrap flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
                 >
                   <Plus size={16} />
                   Add New
@@ -168,7 +168,7 @@ const DataTable = ({
 
               <button
                 onClick={onExport ?? handleExportCSV}
-                className="flex items-center gap-2 bg-[#FF7F36] hover:bg-[#e86f2c] text-white px-4 py-2 rounded-lg"
+                className="text-nowrap flex items-center gap-2 bg-[#FF7F36] hover:bg-[#e86f2c] text-white px-4 py-2 rounded-lg"
               >
                 <Download size={16} />
                 Export CSV
@@ -184,7 +184,7 @@ const DataTable = ({
                   setSortConfig({ key: null, direction: "asc" });
                   setCurrentPage(1);
                 }}
-                className="flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+                className="text-nowrap flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
               >
                 <X size={16} />
                 Clear Filters
@@ -202,7 +202,7 @@ const DataTable = ({
               <tr className="bg-slate-50 border-b border-slate-200">
                 {columns.map(column => (
                   <th key={column.key} className="px-6 py-4 text-left font-semibold text-slate-700">
-                    <div className="flex items-center gap-2">
+                    <div className="text-nowrap flex items-center gap-2">
                       <span onClick={() => handleSort(column.key)} className="cursor-pointer">
                         {column.label}
                       </span>

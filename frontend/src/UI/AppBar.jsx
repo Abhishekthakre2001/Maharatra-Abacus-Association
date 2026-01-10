@@ -11,7 +11,7 @@ const AppBar = ({
 }) => {
   return (
     <div
-      className={`sticky top-0 z-50 bg-gradient-to-r from-blue-600 bg-opacity-70 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,0,0,0.45)] rounded-2xl p-8 text-white shadow-xl ${className}`}
+      className={` z-50 bg-gradient-to-r from-blue-600 bg-opacity-70 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,0,0,0.45)] rounded-2xl p-8 text-white shadow-xl ${className}`}
       style={{
         backgroundImage: `linear-gradient(to right, ${colors.primary.blue600}, ${colors.text.dark})`
       }}

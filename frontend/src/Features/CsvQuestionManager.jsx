@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import levelApi from "../api/LevelApi";
 
 export default function CsvQuestionManager() {
+  const [adminId, setAdminId] = useState(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).id : null);
   const [questions, setQuestions] = useState([]);
   const [dragActive, setDragActive] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -137,7 +138,7 @@ export default function CsvQuestionManager() {
   useEffect(() => {
     // load sets for modal selector
     let mounted = true;
-    setsApi.getAll()
+    setsApi.getbyadminid(adminId)
       .then(res => {
         if (!mounted) return;
         const payload = res && res.data !== undefined ? res.data : res;
@@ -145,7 +146,7 @@ export default function CsvQuestionManager() {
       })
       .catch(err => console.error('Failed to load sets', err));
     // load levels for modal selector
-    levelApi.getAll()
+    levelApi.getbyadminid(adminId)
       .then(res => {
         if (!mounted) return;
         const payload = res && res.data !== undefined ? res.data : res;
@@ -155,12 +156,22 @@ export default function CsvQuestionManager() {
     return () => { mounted = false; };
   }, []);
 
+  const handleTimeChange = (e) => {
+    let v = e.target.value.replace(/[^0-9]/g, '');
+
+    if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
+    if (v.length >= 6) v = v.slice(0, 5) + ':' + v.slice(5, 7);
+
+    setTime(v);
+  };
+
+
   // Submit all data: log payload and validate required fields
   const handleSubmit = async () => {
     const payload = {
       level: Number(level),
-      set: Number(set),
-      time: Number(time),
+      set: set,
+      time: time,
     };
 
     console.log("Submitting payload:", { ...payload, questions });
@@ -212,10 +223,10 @@ export default function CsvQuestionManager() {
     }
   };
 
-  console.log("questions",questions)
+  console.log("questions", questions)
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-6 sticky top-0 ">
       {/* Input Fields Section */}
       <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -228,7 +239,7 @@ export default function CsvQuestionManager() {
             >
               <option value="">-- Select Level --</option>
               {availableLevels.map((lv) => (
-                <option key={lv.id} value={lv.id}>{lv.level || lv.name || `Level ${lv.id}`}</option>
+                <option key={lv.id} value={lv.level}>{lv.level || lv.name || `Level ${lv.id}`}</option>
               ))}
             </select>
           </div>
@@ -241,41 +252,53 @@ export default function CsvQuestionManager() {
             >
               <option value="">-- Select Set --</option>
               {availableSets.map((s) => (
-                <option key={s.id} value={s.id}>{s.set_name || s.name || `Set ${s.id}`}</option>
+                <option key={s.id} value={s.set_name}>{s.set_name || s.name || `Set ${s.id}`}</option>
               ))}
             </select>
           </div>
           <div>
             <InputField
-              label="Time (minutes)"
-              type="number"
+              label="Time (HH:MM:SS)"
+              type="text"
               value={time}
-              onChange={(e) => setTime(e.target.value)}
-              placeholder="Enter time"
+              onChange={handleTimeChange}
+              placeholder="HH:MM:SS"
+              inputMode="numeric"
+              pattern="^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
             />
           </div>
-          
+          <div className="mt-6 min-w-full">
+            <Button
+              onClick={handleSubmit}
+              variant="outline"
+              className="flex-1"
+            >
+              Save Imported Questions
+            </Button>
+          </div>
+
+
+
         </div>
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 invisible">Actions</label>
-            <div className="flex gap-2">
-              <Button
-                onClick={() => { setModalSetId(set); setModalLevelId(level); setIsModalOpen(true); }}
-                variant="primary"
-                icon={Plus}
-                className="flex-1"
-              >
-                Add Question
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                variant="outline"
-                className="flex-1"
-              >
-                Submit
-              </Button>
-            </div>
-          </div>
+          <label className="block text-sm font-medium text-gray-700 mb-2 invisible">Actions</label>
+          {
+            questions.length === 0 && (
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => { setModalSetId(set); setModalLevelId(level); setIsModalOpen(true); }}
+                  variant="primary"
+                  icon={Plus}
+                  className="text-nowrap flex-1"
+                >
+                  Add Question Manually in Set
+                </Button>
+              </div>
+            )
+
+          }
+
+        </div>
         {isUploading && (
           <div className="mt-4">
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
@@ -322,7 +345,7 @@ export default function CsvQuestionManager() {
 
       {/* Preview Table */}
       {questions.length > 0 && (
-        <div className="bg-white rounded-xl shadow-lg">
+        <div className="sticky top-0 bg-white rounded-xl shadow-lg">
           {/* Search Bar and Count Header */}
           <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -339,7 +362,7 @@ export default function CsvQuestionManager() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="relative w-full sm:w-80">
                 <input
                   type="text"
@@ -432,7 +455,7 @@ export default function CsvQuestionManager() {
                           size="sm"
                           icon={Trash}
                         >
-                         
+
                         </Button>
                       </td>
                     </tr>
@@ -471,7 +494,7 @@ export default function CsvQuestionManager() {
             placeholder="Enter your question"
             required
           />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InputField
               label="Option 1"
