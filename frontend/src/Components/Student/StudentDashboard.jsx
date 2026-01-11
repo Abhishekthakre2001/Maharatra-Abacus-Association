@@ -63,6 +63,13 @@ export default function StudentDashboard() {
   console.log("showSets", showSets)
   console.log("levelwise_set", levelwise_set)
 
+  const liveExam = () =>{
+     localStorage.setItem("paperset", liveExamData.paper_set);
+    localStorage.setItem("paperlevel",liveExamData.exam_level);
+    // console.log("liveExamData",liveExamData.exam_level)
+    navigate("/exam-rule");
+  }
+
   return (
     <>
       <div className="max-w-full m-2">
@@ -161,7 +168,7 @@ export default function StudentDashboard() {
                 <Button
                   variant="primary"
                   size="lg"
-                  onClick={() => navigate(`/live-exam/${liveExamData.id}`)}
+                  onClick={() => liveExam()}
                 >
                   Live Exam
                 </Button>
