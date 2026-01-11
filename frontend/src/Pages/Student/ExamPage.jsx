@@ -219,9 +219,9 @@ export default function ExamPage() {
                 onClose={() => setModal({ ...modal, open: false })}
             />
 
-            <div className="m-2 mb-0 flex-shrink-0">
+            {/* <div className="m-2 mb-0 flex-shrink-0">
                 <StudentAppBar title={`Level ${currentQ.level} - Set ${currentQ.set_id}`} />
-            </div>
+            </div> */}
 
             <div className="flex-1 overflow-y-auto m-2">
 
@@ -240,26 +240,7 @@ export default function ExamPage() {
                     </div>
                 </div>
 
-                {/* Timeline */}
-                <div className="bg-white rounded-lg shadow-md p-3 mb-3">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Question Progress</h3>
-                    <div className="flex flex-wrap gap-2">
-                        {questions.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => handleQuestionClick(index)}
-                                className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all ${currentQuestion === index
-                                    ? 'bg-blue-600 text-white scale-110'
-                                    : answers[index] !== undefined
-                                        ? 'bg-green-100 text-green-700'
-                                        : 'bg-gray-100 text-gray-600'
-                                    }`}
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                
 
                 {/* Question */}
                 <div className="bg-white rounded-lg shadow-lg p-4">
@@ -308,6 +289,27 @@ export default function ExamPage() {
                                 Submit Exam
                             </Button>
                         )}
+                    </div>
+                </div>
+
+                {/* Timeline */}
+                <div className="bg-white rounded-lg shadow-md p-3 mb-3">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Question Progress</h3>
+                    <div className="flex flex-wrap gap-2">
+                        {questions.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => handleQuestionClick(index)}
+                                className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all ${currentQuestion === index
+                                    ? 'bg-blue-600 text-white scale-110'
+                                    : answers[index] !== undefined
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-gray-100 text-gray-600'
+                                    }`}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>
