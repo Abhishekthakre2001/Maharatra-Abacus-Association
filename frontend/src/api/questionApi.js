@@ -11,6 +11,10 @@ const questionApi = {
   removeSet: (level, set_id) => axiosInstance.delete(`/questions/deleteset/level/${level}/set/${set_id}`),
 
   getset: (level, set_id) => axiosInstance.get(`/questions/level-wise-sets?level=${level}&createdby=${set_id}`),
+
+  getpapersetformock: (level, createdby, set) => axiosInstance.get(`/questions/paperset?level=${level}&set=${set}&createdby=${createdby}`),
+
+  
 };
 
 export default questionApi;

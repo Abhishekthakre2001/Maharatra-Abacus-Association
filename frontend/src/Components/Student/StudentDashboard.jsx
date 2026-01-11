@@ -53,8 +53,9 @@ export default function StudentDashboard() {
 
   const firstExam = upcomeingexam?.[0];
 
-  const handleSetSelect = (set) => {
+  const handleSetSelect = (level, set) => {
     localStorage.setItem("paperset", set);
+    localStorage.setItem("paperlevel",level);
     navigate("/exam-rule");
   };
 
@@ -182,7 +183,7 @@ export default function StudentDashboard() {
                 <button
                   key={`${item.level}-${item.set_id}`}
                   type="button"
-                  onClick={() => handleSetSelect(`${item.level}${item.set_id}`)}
+                  onClick={() => handleSetSelect(item.level, item.set_id)}
                   className="border border-blue-600 text-blue-600 rounded-lg py-3 font-semibold
                  hover:bg-blue-600 hover:text-white transition"
                 >
