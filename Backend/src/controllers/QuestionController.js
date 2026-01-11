@@ -7,7 +7,7 @@ exports.createQuestion = async (req, res) => {
 
 // Bulk create questions from CSV/array
 exports.bulkCreateQuestions = async (req, res) => {
-  const { questions, level, set, time } = req.body;
+  const { questions, level, set, time, ismockset } = req.body;
 
   if (!questions || !Array.isArray(questions) || questions.length < 1) {
     return res.status(400).json({ success: false, message: "Questions array is required" });
@@ -24,7 +24,7 @@ exports.bulkCreateQuestions = async (req, res) => {
   // use createdby from client if provided, otherwise default to 3
   const createdby = req.body.createdby;
 
-  const result = await QuestionService.bulkCreateQuestions(questions, level, set, createdby, time);
+  const result = await QuestionService.bulkCreateQuestions(questions, level, set, createdby, time, ismockset);
   res.status(201).json({ success: true, insertedRows: result.affectedRows });
 };
 
@@ -41,6 +41,7 @@ exports.getQuestionsByAdmin = async (req, res) => {
       grouped[key] = {
         set: q.set_id,
         level: q.level,
+        ismock :q.ismockset,
         paper_set: `${q.level}-${q.set_id}`,
         total_question: 0,
         total_time: q.set_time,

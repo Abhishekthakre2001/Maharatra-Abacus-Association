@@ -41,6 +41,8 @@ exports.loginUser = async (req, res) => {
 
     const user = await UserService.loginUser(username, password);
 
+    console.log("user", user)
+
     if (!user) {
       return res.status(401).json({ success: false, message: "Invalid username or password" });
     }
@@ -50,6 +52,23 @@ exports.loginUser = async (req, res) => {
         success: false,
         message: "User account is inactive or locked"
       });
+    }
+
+
+    // ⏳ Subscription expiry check
+    if (user.subscription_end_date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // normalize today
+
+      const expiryDate = new Date(user.subscription_end_date);
+      expiryDate.setHours(0, 0, 0, 0); // normalize expiry
+
+      if (expiryDate < today) {
+        return res.status(403).json({
+          success: false,
+          message: "Subscription expired. Please contact admin."
+        });
+      }
     }
 
     const token = jwt.sign(

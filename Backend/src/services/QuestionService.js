@@ -9,7 +9,7 @@ const QuestionService = {
   updateSet: (data) => QuestionModel.updateSet(data),
   deleteQuestion: (id) => QuestionModel.remove(id),
   deleteSet: (level, set_id) => QuestionModel.removeSet(level, set_id),
-  bulkCreateQuestions: (questions, level, set_id, createdby,time) => QuestionModel.bulkCreate(questions, level, set_id, createdby, time)
+  bulkCreateQuestions: (questions, level, set_id, createdby,time, ismockset) => QuestionModel.bulkCreate(questions, level, set_id, createdby, time, ismockset)
 };
 
 module.exports = QuestionService;

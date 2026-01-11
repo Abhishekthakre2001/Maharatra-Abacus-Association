@@ -15,7 +15,7 @@ import InputField from '../UI/InputField';
 export default function QuestionPage() {
     const [open, setOpen] = useState(false);
     const [time, setTime] = useState("");
-
+ const [isMockSet, setIsMockSet] = useState(0); // default No
     const [isCollapsed, setIsCollapsed] = useState(false);
     const navigate = useNavigate();
     const [adminId, setAdminId] = useState(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).id : null);
@@ -39,7 +39,8 @@ export default function QuestionPage() {
     const handleUpdate = (row) => {
 
         console.log("row", row);
-        setTime(row?.total_time)
+        setTime(row?.total_time);
+        setIsMockSet(row?.ismock)
         setSelectedQuestion(row);
         if (QuestionsView) {
             setShowUpdateModal(true);
@@ -74,7 +75,8 @@ export default function QuestionPage() {
             const payload = {
                 level: selectedQuestion.level,
                 set: selectedQuestion.set,
-                total_time: time
+                total_time: time,
+                isMockSet : isMockSet
             }
             delete payload.id;
             // await questionApi.update(id, payload);
@@ -136,6 +138,18 @@ export default function QuestionPage() {
                         'bg-green-100 text-green-700'
                     }`}>
                     {value}
+                </span>
+            )
+        },
+        {
+            key: 'ismock',
+            label: 'Is Mock Test',
+            render: (value) => (
+                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${value === 'Advanced' ? 'bg-purple-100 text-purple-700' :
+                    value === 'Intermediate' ? 'bg-blue-100 text-blue-700' :
+                        'bg-green-100 text-green-700'
+                    }`}>
+                    {value === 1 ? "Yes" : "No"}
                 </span>
             )
         },
@@ -338,6 +352,25 @@ export default function QuestionPage() {
                         inputMode="numeric"
                     />
                 </div>
+
+                {/* Input 1 */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Mock Set
+                    </label>
+
+                    <select
+                        value={isMockSet}
+                        onChange={(e) => setIsMockSet(Number(e.target.value))}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+               focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                        <option value="">-- Select --</option>
+                        <option value={1}>Yes</option>
+                        <option value={0}>No</option>
+                    </select>
+                </div>
+
 
 
 

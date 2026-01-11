@@ -132,12 +132,13 @@ create: async (data) => {
 
     const sql = `
     UPDATE questions
-    SET set_time = ?
+    SET set_time = ?, isMockSet = ?
     WHERE level = ? AND set_id = ?
   `;
 
     const [result] = await pool.query(sql, [
       data.total_time, // "10:00:00"
+      data.isMockSet,
       data.level,      // 1
       data.set         // "B"
     ]);
@@ -159,7 +160,7 @@ create: async (data) => {
     return result;
   },
 
-  bulkCreate: async (questions, level, set_id, createdby, time) => {
+  bulkCreate: async (questions, level, set_id, createdby, time, ismockset) => {
     // questions: array of objects with keys: question, option1..option4, correctoption (number or string)
     const values = questions.map((q) => [
       q.question || q.Question || "",
@@ -171,12 +172,13 @@ create: async (data) => {
       level,
       set_id,
       time,
-      createdby
+      createdby,
+      ismockset
     ]);
 
     const sql = `
       INSERT INTO questions
-      (question, option1, option2, option3, option4, correctoption, level, set_id, set_time, createdby)
+      (question, option1, option2, option3, option4, correctoption, level, set_id, set_time, createdby, ismockset)
       VALUES ?
     `;
 

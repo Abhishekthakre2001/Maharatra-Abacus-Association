@@ -30,6 +30,7 @@ export default function CsvQuestionManager() {
   });
   const [availableSets, setAvailableSets] = useState([]);
   const [modalSetId, setModalSetId] = useState("");
+  const [isMockSet, setIsMockSet] = useState(0); // default No
   const [availableLevels, setAvailableLevels] = useState([]);
   const [modalLevelId, setModalLevelId] = useState("");
 
@@ -104,7 +105,8 @@ export default function CsvQuestionManager() {
         correctoption: Number(newQuestion["Correct Option"]),
         level: Number(modalLevelId) || Number(level) || null,
         set_id: String(modalSetId) || String(set) || null,
-        createdby: user.id 
+        ismockset: isMockSet,
+        createdby: user.id
       };
 
       try {
@@ -172,6 +174,7 @@ export default function CsvQuestionManager() {
       level: Number(level),
       set: set,
       time: time,
+      ismockset: isMockSet,
     };
 
     console.log("Submitting payload:", { ...payload, questions });
@@ -223,7 +226,7 @@ export default function CsvQuestionManager() {
     }
   };
 
-  console.log("questions", questions)
+  console.log("isMockSet", isMockSet)
 
   return (
     <div className="max-w-7xl mx-auto p-6 sticky top-0 ">
@@ -267,6 +270,25 @@ export default function CsvQuestionManager() {
               pattern="^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Mock Set
+            </label>
+
+            <select
+              value={isMockSet}
+              onChange={(e) => setIsMockSet(Number(e.target.value))}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+               focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">-- Select --</option>
+              <option value={1}>Yes</option>
+              <option value={0}>No</option>
+            </select>
+          </div>
+
+
           <div className="mt-6 min-w-full">
             <Button
               onClick={handleSubmit}

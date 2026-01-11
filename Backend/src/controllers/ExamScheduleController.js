@@ -1,13 +1,28 @@
 const ExamScheduleModel = require("../models/ExamScheduleModel");
 
 exports.create = async (req, res) => {
-   console.log("data",req.body);
+  console.log("data", req.body);
+
   try {
     const [result] = await ExamScheduleModel.create(req.body);
-    res.status(201).json({ id: result.insertId });
+    res.status(201).json({
+      id: result.insertId,
+      message: "Exam scheduled successfully"
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to create exam schedule" });
+
+    // 🎯 Custom business validation error
+    if (err.code === "SET_NOT_AVAILABLE") {
+      return res.status(400).json({
+        message: err.message // "Set not available for this level"
+      });
+    }
+
+    // ❌ Generic server error
+    res.status(500).json({
+      message: "Failed to create exam schedule"
+    });
   }
 };
 

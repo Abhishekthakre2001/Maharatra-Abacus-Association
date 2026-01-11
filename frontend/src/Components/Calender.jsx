@@ -32,7 +32,11 @@ export default function Calender() {
 
     const today = new Date();
     const [currentMonth, setCurrentMonth] = useState(today);
-    const [selectedDate, setSelectedDate] = useState(null);
+    const formatToday = (date) =>
+        date.toISOString().split("T")[0];
+
+    const [selectedDate, setSelectedDate] = useState(formatToday(today));
+
     const [openModal, setOpenModal] = useState(false);
 
     const [examData, setExamData] = useState({

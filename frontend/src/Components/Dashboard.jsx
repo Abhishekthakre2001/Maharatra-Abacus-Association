@@ -5,6 +5,19 @@ import {
 import DashboardCard from "../UI/Dashboardcard.jsx";
 import DataTable from '../UI/DataTable.jsx';
 import AppBar from '../UI/AppBar.jsx';
+import { useFetchData } from '../hooks/useFetchData.js';
+import summaryapi from "../api/summary.js";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid
+} from "recharts";
+
+
 
 
 export default function Dashboard() {
@@ -12,38 +25,20 @@ export default function Dashboard() {
   const products = [];
   const loading = false;
 
-  const columns = [
-    {
-      key: 'id',
-      label: 'Sr. No.',
-      render: (value, row, index, serial) => serial + 1
-    },
-    {
-      key: 'qr_code_number',
-      label: 'QR Code Number',
-      sortable: true,
-      render: (value) => <span className="font-medium">{value}</span>
-    },
-    {
-      key: 'net_weight',
-      label: 'Net Weight',
-      sortable: true,
-      render: (value) => <span>{value} kg</span>
-    },
-    {
-      key: 'created_by',
-      label: 'Added By',
-      sortable: true,
-      render: (value) => <span>{value}</span>
-    },
-    {
-      key: 'created_at',
-      label: 'Added On',
-      sortable: true,
-      render: (value) =>
-        value ? new Date(value).toLocaleDateString("en-GB") : ""
-    }
-  ];
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const { data: summary, reload } = useFetchData(() => summaryapi.getsummary(user.id));
+  const summaryData = Array.isArray(summary) ? summary[0] : summary;
+
+  console.log("summary", summary)
+
+  const chartData = (summaryData?.questions?.set_wise || []).map(item => ({
+    name: `L${item.level}-${item.set_id}`,
+    questions: item.question_count
+  }));
+
+
+
 
   return (
     <>
@@ -58,29 +53,70 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-10">
           <DashboardCard
             title="Total Students"
-            value={0}
-            icon={Package}
+            value={summaryData?.students?.total_students || 0}
+            icon={Users}
           />
 
           <DashboardCard
             title="Total Questions"
-            value={0}
+            value={summaryData?.questions?.total_questions || 0}
             icon={ShoppingCart}
           />
 
           <DashboardCard
             title="Total Levels"
-            value={0}
-            icon={Users}
+            value={summaryData?.levels?.total_levels || 0}
+            icon={Package}
           />
 
           <DashboardCard
-            title="Upcoming Tests"
-            value={0}
+            title="Upcoming Exams"
+            value={summaryData?.exams?.upcoming_exams || 0}
             icon={BarChart3}
           />
+
         </div>
+
       </div>
+
+
+      <div className="bg-white rounded-2xl shadow p-6 my-10">
+        <h3 className="text-lg font-semibold mb-1">
+          Set-wise Question Trend
+        </h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Questions distribution across Level & Sets
+        </p>
+
+        {chartData.length === 0 ? (
+          <p className="text-gray-500">No data available</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={320}>
+            <LineChart data={chartData}>
+              <defs>
+                <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopOpacity={0.4} />
+                  <stop offset="100%" stopOpacity={0.05} />
+                </linearGradient>
+              </defs>
+
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+
+              <Line
+                type="monotone"
+                dataKey="questions"
+                strokeWidth={3}
+                dot={{ r: 5 }}
+                activeDot={{ r: 7 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
 
 
 
