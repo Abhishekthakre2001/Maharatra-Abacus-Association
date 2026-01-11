@@ -5,6 +5,9 @@ import { ChevronLeft, ChevronRight, Clock, User, Award, BookOpen } from 'lucide-
 import { useNavigate } from 'react-router-dom';
 import { useFetchData } from '../../hooks/useFetchData';
 import questionApi from '../../api/questionApi';
+import ResultApi from '../../api/result';
+import { useCreate } from '../../hooks/useCreate';
+import MessageModal from "../../utils/MessageModal";
 
 /* ---------- Helpers ---------- */
 
@@ -27,6 +30,12 @@ const formatTime = (seconds) => {
 /* ---------- Component ---------- */
 
 export default function ExamPage() {
+    const [modal, setModal] = useState({
+        open: false,
+        type: "",
+        title: "",
+        message: ""
+    });
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answers, setAnswers] = useState({});
     const [questions, setQuestions] = useState([]);
@@ -102,8 +111,37 @@ export default function ExamPage() {
     };
 
     /* ---------- Submit Exam ---------- */
+    const { create, loading: createLoading } = useCreate(
+        ResultApi.create,
+        (response, payload) => {
+            // ✅ show success modal
+            setModal({
+                open: true,
+                type: "success",
+                title: "Success",
+                message: "Exam Submitted successfully",
+            });
 
-    const handleSubmitExam = () => {
+            // ⏳ navigate after 3 seconds
+            setTimeout(() => {
+                navigate('/student-result', {
+                    state: payload, // optional
+                });
+            }, 3000);
+        },
+        (error) => {
+            setModal({
+                open: true,
+                type: "error",
+                title: "Error",
+                message: error?.message || "Something went wrong",
+            });
+        }
+    );
+
+
+
+    const handleSubmitExam = async () => {
         const total_question = questions.length;
 
         const answeredIndexes = Object.keys(answers).map(Number);
@@ -124,21 +162,32 @@ export default function ExamPage() {
 
         const now = new Date();
 
+        const mysqlDate = now.toISOString().split('T')[0];
+        const mysqlDateTime = now.toISOString().slice(0, 19).replace('T', ' ');
+
+
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+
         const resultPayload = {
+            user_id: user.id,
             total_question,
             total_answer,
             total_correct,
             total_unsolve,
-            date: now.toLocaleDateString(),
-            time: now.toLocaleTimeString(),
+            date: mysqlDate,
+            time: mysqlDateTime,
             totaltime: formatTime(totalExamTime),
             time_taken: formatTime(totalExamTime - timeRemaining),
+            createdby: user.createdby, // ✅ usually user.id, not createdby
         };
 
         console.log("📊 EXAM RESULT:", resultPayload);
 
-        navigate('/student-result', { state: resultPayload });
+        // ✅ THIS WILL CALL API
+        create(resultPayload);
+
     };
+
 
     /* ---------- UI ---------- */
 
@@ -162,6 +211,13 @@ export default function ExamPage() {
 
     return (
         <div className="max-w-full h-screen overflow-hidden flex flex-col">
+            <MessageModal
+                open={modal.open}
+                type={modal.type}
+                title={modal.title}
+                message={modal.message}
+                onClose={() => setModal({ ...modal, open: false })}
+            />
 
             <div className="m-2 mb-0 flex-shrink-0">
                 <StudentAppBar title={`Level ${currentQ.level} - Set ${currentQ.set_id}`} />
