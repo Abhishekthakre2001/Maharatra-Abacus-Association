@@ -36,6 +36,30 @@ exports.getAll = async (req, res) => {
   }
 };
 
+// controllers/examScheduleController.js
+exports.getlevelwise = async (req, res) => {
+  try {
+    const { level, createdby } = req.query;
+
+    if (!level || !createdby) {
+      return res.status(400).json({
+        message: "level and createdby are required",
+      });
+    }
+
+    const [rows] = await ExamScheduleModel.findLevelWise({
+      level: Number(level),
+      createdby: Number(createdby),
+    });
+
+    res.json(rows);
+  } catch (err) {
+    console.error("❌ getlevelwise error:", err);
+    res.status(500).json({ message: "Failed to fetch exam schedules" });
+  }
+};
+
+
 exports.getById = async (req, res) => {
   try {
     const [[row]] = await ExamScheduleModel.findById(req.params.id);

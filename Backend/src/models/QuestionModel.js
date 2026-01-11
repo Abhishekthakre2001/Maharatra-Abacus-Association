@@ -20,31 +20,31 @@ const QuestionModel = {
   //   ]);
   //   return result;
   // },
-create: async (data) => {
-  console.log("data",data)
-  // 1️⃣ Get set_time from sets table
-  const getSetTimeSql = `
+  create: async (data) => {
+    console.log("data", data)
+    // 1️⃣ Get set_time from sets table
+    const getSetTimeSql = `
     SELECT set_time
     FROM questions
     WHERE level = ? AND set_id = ?
     LIMIT 1
   `;
 
-  const [setRows] = await pool.query(getSetTimeSql, [
-    data.level,
-    data.set_id
-  ]);
+    const [setRows] = await pool.query(getSetTimeSql, [
+      data.level,
+      data.set_id
+    ]);
 
-  if (setRows.length === 0) {
-    throw new Error("set_time not found for given level and set_id");
-  }
+    if (setRows.length === 0) {
+      throw new Error("set_time not found for given level and set_id");
+    }
 
-  const set_time = setRows[0].set_time; // varchar(8)
+    const set_time = setRows[0].set_time; // varchar(8)
 
-  console.log("set_time ",set_time )
+    console.log("set_time ", set_time)
 
-  // 2️⃣ Insert question with set_time
-  const insertSql = `
+    // 2️⃣ Insert question with set_time
+    const insertSql = `
     INSERT INTO questions
     (
       question,
@@ -61,21 +61,21 @@ create: async (data) => {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  const [result] = await pool.query(insertSql, [
-    data.question,
-    data.option1,
-    data.option2,
-    data.option3,
-    data.option4,
-    data.correctoption,
-    data.level,
-    data.set_id,
-    set_time,
-    data.createdby
-  ]);
+    const [result] = await pool.query(insertSql, [
+      data.question,
+      data.option1,
+      data.option2,
+      data.option3,
+      data.option4,
+      data.correctoption,
+      data.level,
+      data.set_id,
+      set_time,
+      data.createdby
+    ]);
 
-  return result;
-},
+    return result;
+  },
 
 
 
@@ -184,7 +184,22 @@ create: async (data) => {
 
     const [result] = await pool.query(sql, [values]);
     return result;
-  }
+  },
+
+  // models/QuestionModel.js
+ getSetsByLevelAndCreator: ({ level, createdby }) =>
+  pool.query(
+    `
+    SELECT DISTINCT 
+      level,
+      TRIM(UPPER(set_id)) AS set_id
+    FROM questions
+    WHERE createdby = ?
+      AND level = ?
+    ORDER BY set_id
+    `,
+    [createdby, level]
+  ),
 };
 
 module.exports = QuestionModel;

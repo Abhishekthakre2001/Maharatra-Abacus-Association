@@ -1,4 +1,5 @@
 const QuestionService = require("../services/QuestionService");
+const QuestionModel = require("../models/QuestionModel");
 
 exports.createQuestion = async (req, res) => {
   const result = await QuestionService.createQuestion(req.body);
@@ -41,7 +42,7 @@ exports.getQuestionsByAdmin = async (req, res) => {
       grouped[key] = {
         set: q.set_id,
         level: q.level,
-        ismock :q.ismockset,
+        ismock: q.ismockset,
         paper_set: `${q.level}-${q.set_id}`,
         total_question: 0,
         total_time: q.set_time,
@@ -100,4 +101,25 @@ exports.deleteSet = async (req, res) => {
   await QuestionService.deleteSet(req.params.level, req.params.set);
   res.json({ success: true });
 };
+
+exports.getLevelWiseSets = async (req, res) => {
+  console.log("req aya", req.query);
+
+  const level = parseInt(req.query.level, 10);
+  const createdby = parseInt(req.query.createdby, 10);
+
+  const [rows] = await QuestionService.getSetsByLevelAndCreator({
+    level,
+    createdby,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: rows,
+    formatted: rows.map(r => `${r.level}${r.set_id}`)
+  });
+};
+
+
+
 

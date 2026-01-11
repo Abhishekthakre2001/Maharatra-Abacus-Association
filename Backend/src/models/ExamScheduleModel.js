@@ -15,37 +15,37 @@ module.exports = {
     ),
 
   create: async (data) => {
-  // 1️⃣ Check questions exist
-  const [rows] = await pool.query(
-    `SELECT COUNT(*) AS total
+    // 1️⃣ Check questions exist
+    const [rows] = await pool.query(
+      `SELECT COUNT(*) AS total
      FROM questions
      WHERE level = ?
        AND set_id = ?`,
-    [data.exam_level, data.paper_set]
-  );
+      [data.exam_level, data.paper_set]
+    );
 
-  if (rows[0].total === 0) {
-    const err = new Error("Set not available for this level");
-    err.code = "SET_NOT_AVAILABLE";
-    throw err;
-  }
+    if (rows[0].total === 0) {
+      const err = new Error("Set not available for this level");
+      err.code = "SET_NOT_AVAILABLE";
+      throw err;
+    }
 
-  // 2️⃣ Insert exam schedule
-  return pool.query(
-    `INSERT INTO exam_schedule
+    // 2️⃣ Insert exam schedule
+    return pool.query(
+      `INSERT INTO exam_schedule
      (exam_level, exam_title, paper_set, date, start_time, end_time, createdby)
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [
-      data.exam_level,
-      data.exam_title,
-      data.paper_set,
-      data.date,
-      data.start_time,
-      data.end_time,
-      data.createdby
-    ]
-  );
-},
+      [
+        data.exam_level,
+        data.exam_title,
+        data.paper_set,
+        data.date,
+        data.start_time,
+        data.end_time,
+        data.createdby
+      ]
+    );
+  },
 
 
   findAll: () =>
@@ -55,6 +55,21 @@ module.exports = {
       JOIN levels l ON l.id = es.exam_level
       ORDER BY es.date, es.start_time
     `),
+
+  // models/ExamScheduleModel.js
+  findLevelWise: ({ level, createdby }) =>
+    pool.query(
+      `
+   SELECT *
+FROM exam_schedule
+WHERE exam_level = ?
+  AND createdby = ?
+ORDER BY date, start_time;
+
+    `,
+      [level, createdby]
+    ),
+
 
   findByDate: (date) =>
     pool.query(

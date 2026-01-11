@@ -9,6 +9,8 @@ const questionApi = {
   updateSet: (data) => axiosInstance.put(`/questions/updateset`, data),
   remove: (id) => axiosInstance.delete(`/questions/${id}`),
   removeSet: (level, set_id) => axiosInstance.delete(`/questions/deleteset/level/${level}/set/${set_id}`),
+
+  getset: (level, set_id) => axiosInstance.get(`/questions/level-wise-sets?level=${level}&createdby=${set_id}`),
 };
 
 export default questionApi;

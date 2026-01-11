@@ -36,7 +36,15 @@ const Login = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      navigate("/dashboard");
+      console.log("res", res.data.user.usertype)
+
+      if (res.data.user.usertype === "student") {
+        navigate("/student-dashboard")
+      } else {
+        navigate("/dashboard");
+      }
+
+
 
     } catch (err) {
       setModal({

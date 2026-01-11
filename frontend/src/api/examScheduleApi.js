@@ -9,6 +9,9 @@ const examScheduleApi = {
     axiosInstance.put(`/exam-schedule/${id}`, payload),
   delete: (id) =>
     axiosInstance.delete(`/exam-schedule/${id}`),
+
+  // student exam schdule
+  getstudnetupcomeingexam : (level, adminid) => axiosInstance.get(`/exam-schedule/studentexam?level=${level}&createdby=${adminid}`)
 };
 
 export default examScheduleApi;

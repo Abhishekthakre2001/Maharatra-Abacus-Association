@@ -2,6 +2,8 @@ const router = require("express").Router();
 const controller = require("../controllers/ExamScheduleController");
 
 router.get("/", controller.getAll);
+// routes/examScheduleRoutes.js
+router.get("/studentexam", controller.getlevelwise);
 router.post("/", controller.create);
 router.get("/:id", controller.getById);
 router.put("/:id", controller.update);
