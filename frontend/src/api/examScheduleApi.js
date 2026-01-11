@@ -1,0 +1,14 @@
+import axiosInstance from "./axiosInstance";
+
+const examScheduleApi = {
+  getAll: () => axiosInstance.get("/exam-schedule"),
+  getByadmin: (id) =>
+    axiosInstance.get(`/exam-schedule/all/${id}`),
+  create: (payload) => axiosInstance.post("/exam-schedule", payload),
+  update: (id, payload) =>
+    axiosInstance.put(`/exam-schedule/${id}`, payload),
+  delete: (id) =>
+    axiosInstance.delete(`/exam-schedule/${id}`),
+};
+
+export default examScheduleApi;
