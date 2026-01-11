@@ -4,6 +4,7 @@ const QuestionService = {
   createQuestion: (data) => QuestionModel.create(data),
   getQuestions: () => QuestionModel.findAll(),
  getSetsByLevelAndCreator: ({ level, createdby }) => QuestionModel.getSetsByLevelAndCreator({ level, createdby }),
+  getpaperSet: ({ level, createdby, set }) => QuestionModel.getPaperset({ level, createdby, set }),
   getQuestionsByAdmin: (adminId) => QuestionModel.findByAdmin(adminId),
   getQuestionById: (id) => QuestionModel.findById(id),
   updateQuestion: (id, data) => QuestionModel.update(id, data),

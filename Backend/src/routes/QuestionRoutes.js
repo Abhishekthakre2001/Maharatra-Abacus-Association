@@ -3,6 +3,9 @@ const router = express.Router();
 const controller = require("../controllers/QuestionController");
 // routes/questionRoutes.js
 router.get("/level-wise-sets", controller.getLevelWiseSets);
+
+// routes/questionRoutes.js
+router.get("/paperset", controller.getpaperset);
 // Bulk upload endpoint (CSV/JSON array of questions)
 router.post("/bulk", controller.bulkCreateQuestions);
 router.post("/", controller.createQuestion);

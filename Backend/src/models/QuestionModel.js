@@ -200,6 +200,18 @@ const QuestionModel = {
     `,
     [createdby, level]
   ),
+
+   getPaperset: ({ level, createdby, set }) =>
+  pool.query(
+    `
+    SELECT 
+     *
+    FROM questions
+    WHERE createdby = ?
+      AND level = ? AND set_id = ?
+    `,
+    [createdby, level, set]
+  ),
 };
 
 module.exports = QuestionModel;

@@ -121,5 +121,24 @@ exports.getLevelWiseSets = async (req, res) => {
 };
 
 
+exports.getpaperset = async (req, res) => {
+  console.log("req aya", req.query);
+
+  const level = parseInt(req.query.level, 10);
+  const createdby = parseInt(req.query.createdby, 10);
+  const set = String(req.query.set)
+
+  const [rows] = await QuestionService.getpaperSet({
+    level,
+    createdby,
+    set
+  });
+
+  res.status(200).json({
+    success: true,
+    data: rows
+  });
+};
+
 
 
