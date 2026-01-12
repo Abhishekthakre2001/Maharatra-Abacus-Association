@@ -117,8 +117,13 @@ export default function Sets() {
                         <input
                             type="text"
                             value={value}
-                            onChange={(e) => setValue(e.target.value)}
+                            maxLength={1}
+                            onChange={(e) => {
+                                const v = e.target.value.toUpperCase().replace(/[^A-Z]/g, "");
+                                setValue(v);
+                            }}
                             className="w-full border border-slate-300 rounded px-3 py-2"
+                            placeholder="A, B, C, ..."
                         />
                         {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
                     </div>

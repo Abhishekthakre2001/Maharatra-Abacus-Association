@@ -9,7 +9,7 @@ import AppBar from '../UI/AppBar';
 import { useFetchData } from '../hooks/useFetchData';
 import questionApi from '../api/questionApi';
 import { useEffect } from 'react';
-import Modal from '../UI/modal';
+import Modal from '../UI/Modal';
 import InputField from '../UI/InputField';
 
 export default function QuestionPage() {
@@ -291,6 +291,18 @@ export default function QuestionPage() {
                     />
 
                     <div className="mt-8">
+                        {/* Back Button for QuestionsView */}
+                        {QuestionsView && (
+                            <button
+                                className="mb-4 flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-700 font-medium transition"
+                                onClick={() => {
+                                    setQuestionsView(false);
+                                    reload();
+                                }}
+                            >
+                                <ArrowLeft size={18} /> Back
+                            </button>
+                        )}
                         {/* Questions DataTable */}
                         <DataTable
                             title="Questions Bank"

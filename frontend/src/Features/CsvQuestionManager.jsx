@@ -3,6 +3,7 @@ import Papa from "papaparse";
 import Button from "../UI/Button";
 import InputField from "../UI/InputField";
 import Modal from "../UI/Modal";
+import MessageModal from "../utils/MessageModal";
 import { Trash, Plus } from "lucide-react";
 import questionApi from "../api/questionApi";
 import setsApi from "../api/SetsApi";
@@ -10,6 +11,7 @@ import { useEffect } from "react";
 import levelApi from "../api/LevelApi";
 
 export default function CsvQuestionManager() {
+  const [modal, setModal] = useState({ open: false, type: "success", title: "", message: "" });
   const [adminId, setAdminId] = useState(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).id : null);
   const [questions, setQuestions] = useState([]);
   const [dragActive, setDragActive] = useState(false);
@@ -132,7 +134,7 @@ export default function CsvQuestionManager() {
         setIsModalOpen(false);
       } catch (err) {
         console.error(err);
-        alert("Failed to save question.");
+        setModal({ open: true, type: "error", title: "Error", message: "Failed to save question." });
       }
     }
   };
@@ -181,12 +183,12 @@ export default function CsvQuestionManager() {
 
     // Validation
     if (!questions || questions.length < 1) {
-      alert("Please upload or add at least one question before submitting.");
+      setModal({ open: true, type: "error", title: "Error", message: "Please upload or add at least one question before submitting." });
       return;
     }
 
     if (!level || !set || !time) {
-      alert("Please fill Level, Set and Time before submitting.");
+      setModal({ open: true, type: "error", title: "Error", message: "Please fill Level, Set and Time before submitting." });
       return;
     }
 
@@ -214,12 +216,12 @@ export default function CsvQuestionManager() {
       });
 
       console.log("Bulk save response:", response.data);
-      alert("Questions saved successfully.");
+      setModal({ open: true, type: "success", title: "Success", message: "Questions saved successfully." });
       // Optionally clear questions after save
       setQuestions([]);
     } catch (err) {
       console.error(err);
-      alert("Failed to save questions.");
+      setModal({ open: true, type: "error", title: "Error", message: "Failed to save questions." });
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
@@ -229,7 +231,15 @@ export default function CsvQuestionManager() {
   console.log("isMockSet", isMockSet)
 
   return (
-    <div className="max-w-7xl mx-auto p-6 sticky top-0 ">
+    <>
+      <MessageModal
+        open={modal.open}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onClose={() => setModal((prev) => ({ ...prev, open: false }))}
+      />
+      <div className="max-w-7xl mx-auto p-6 sticky top-0 ">
       {/* Input Fields Section */}
       <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -599,5 +609,6 @@ export default function CsvQuestionManager() {
         </div>
       </Modal>
     </div>
+    </>
   );
 }

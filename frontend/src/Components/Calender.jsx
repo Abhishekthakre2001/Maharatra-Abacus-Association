@@ -9,6 +9,7 @@ import examScheduleApi from "../api/examScheduleApi";
 import { useFetchData } from "../hooks/useFetchData";
 import { useUpdate } from "../hooks/useUpdate";
 import { useDelete } from "../hooks/useDelete";
+import DeleteConfirmModal from "../UI/DeleteConfirmModal";
 
 
 export default function Calender() {
@@ -38,6 +39,7 @@ export default function Calender() {
     const [selectedDate, setSelectedDate] = useState(formatToday(today));
 
     const [openModal, setOpenModal] = useState(false);
+    const [deleteModal, setDeleteModal] = useState({ open: false, id: null, loading: false });
 
     const [examData, setExamData] = useState({
         exam_title: "",
@@ -97,15 +99,15 @@ export default function Calender() {
     );
 
     const handleDelete = (id) => {
-        if (!window.confirm("Are you sure you want to delete this exam?")) return;
-        remove(id);
+        setDeleteModal({ open: true, id, loading: false });
     };
 
 
-    const { remove, loading: deleteLoading } = useDelete(
+    const { remove } = useDelete(
         examScheduleApi.delete,
         () => {
             reload(); // refresh list after delete
+            setDeleteModal({ open: false, id: null, loading: false });
         }
     );
 
@@ -113,6 +115,17 @@ export default function Calender() {
 
     return (
         <>
+            <DeleteConfirmModal
+                open={deleteModal.open}
+                loading={deleteModal.loading}
+                onClose={() => setDeleteModal({ open: false, id: null, loading: false })}
+                onConfirm={async () => {
+                    setDeleteModal(dm => ({ ...dm, loading: true }));
+                    await remove(deleteModal.id);
+                }}
+                title="Delete Confirmation"
+                message="Are you sure you want to delete this exam? This action cannot be undone."
+            />
             <AppBar
                 title="Student Management"
                 subtitle="Exam Schedule Calendar"
@@ -224,33 +237,31 @@ export default function Calender() {
                                     {filteredSchedules.map(exam => (
                                         <div
                                             key={exam.id}
-                                            className="p-3 rounded-xl border bg-gray-50 flex justify-between items-start"
+                                            className="p-4 rounded-2xl border bg-gradient-to-r from-blue-50 to-blue-100 shadow flex justify-between items-center hover:shadow-lg transition group"
                                         >
-                                            <div>
-                                                <div className="font-semibold">
-                                                    {exam.exam_title}
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                                                    <span className="font-bold text-lg text-blue-700 group-hover:text-blue-900">{exam.exam_title}</span>
                                                 </div>
-
                                                 <div className="text-sm text-gray-600">
-                                                    Level {exam.exam_level} | Set {exam.paper_set}
+                                                    <span className="font-medium text-blue-600">Level {exam.exam_level}</span> &nbsp;|&nbsp; <span className="font-medium text-purple-600">Set {exam.paper_set}</span>
                                                 </div>
-
-                                                <div className="text-sm">
-                                                    {exam.start_time} - {exam.end_time}
+                                                <div className="text-xs text-gray-500">
+                                                    <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded">{exam.start_time}</span>
+                                                    &nbsp;to&nbsp;
+                                                    <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded">{exam.end_time}</span>
                                                 </div>
                                             </div>
-
                                             {/* DELETE BUTTON */}
                                             <button
                                                 onClick={() => handleDelete(exam.id)}
-                                                disabled={deleteLoading}
-                                                className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-100 transition"
+                                                className="text-red-500 hover:text-white hover:bg-red-500 p-2 rounded-full transition flex items-center justify-center"
                                                 title="Delete Exam"
                                             >
-                                                <Trash2 size={18} />
+                                                <Trash2 size={20} />
                                             </button>
                                         </div>
-
                                     ))}
                                 </div>
                             )}

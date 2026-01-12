@@ -47,7 +47,9 @@ export default function AddStudent() {
             title: "Success",
             message: "Student added successfully"
         });
-        handleCancel();
+        setTimeout(() => {
+            handleCancel();
+        }, 1200);
     });
 
     const { update, loading: updateLoading } = useUpdate(userApi.update, () => {
@@ -57,7 +59,9 @@ export default function AddStudent() {
             title: "Success",
             message: "Student updated successfully"
         });
-        navigate('/students-list');
+        setTimeout(() => {
+            navigate('/students-list');
+        }, 1200);
     });
 
     const handleChange = (field) => (e) => {
@@ -73,18 +77,36 @@ export default function AddStudent() {
         }));
     };
 
+    // ...existing code...
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // 🔐 Password match
-        if (formData.password !== formData.confirmPassword) {
-            setErrors({
-                confirmPassword: "Password and Confirm Password must be same"
-            });
-            return;
+        // Only require password fields if creating
+        if (!id) {
+            if (formData.password !== formData.confirmPassword) {
+                setErrors({
+                    confirmPassword: "Password and Confirm Password must be same"
+                });
+                return;
+            }
+        } else {
+            // If updating, but one password field is filled, require both and match
+            if ((formData.password || formData.confirmPassword) && formData.password !== formData.confirmPassword) {
+                setErrors({
+                    confirmPassword: "Password and Confirm Password must be same"
+                });
+                return;
+            }
         }
 
-        const validationErrors = validateStudent(formData);
+        // Validate required fields (skip password for update)
+        let validationErrors = validateStudent(formData);
+        if (id) {
+            // Remove password/confirmPassword errors for update
+            delete validationErrors.password;
+            delete validationErrors.confirmPassword;
+        }
 
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
@@ -95,19 +117,22 @@ export default function AddStudent() {
 
         const user = JSON.parse(localStorage.getItem("user"));
 
+        // Only send password if filled during update
         const payload = {
             name: formData.name,
             class: formData.class,
             address: formData.address,
             mobilenumber: formData.mobileNumber,
             username: formData.username,
-            password: formData.password,
             level: formData.level,
             dob: formData.dob,
             subscription_end_date: formData.subscription_end_date,
             usertype: formData.usertype,
             createdby: user.id
         };
+        if (!id || formData.password) {
+            payload.password = formData.password;
+        }
 
         try {
             if (id) {
@@ -141,6 +166,7 @@ export default function AddStudent() {
 
 
     const handleCancel = () => {
+        navigate("/students-list");
         setFormData({
             name: "",
             class: "",
@@ -156,6 +182,7 @@ export default function AddStudent() {
             status: 1,
             createdby: "admin"
         });
+        setErrors({});
     };
 
     useEffect(() => {
@@ -194,7 +221,7 @@ export default function AddStudent() {
             />
 
             {/* ⬇️ EVERYTHING BELOW IS YOUR ORIGINAL DESIGN (UNCHANGED) ⬇️ */}
-            <div className="h-full overflow-hidden flex flex-col p-4">
+                        <div className="h-full flex flex-col p-4" style={{ overflow: 'hidden' }}>
 
                 <div className="flex-shrink-0">
                     <AppBar title="Student Management" subtitle="Manage and view all students" />
@@ -202,7 +229,7 @@ export default function AddStudent() {
                 <div className="bg-white rounded-2xl shadow-lg border border-slate-200 my-6 flex-1 overflow-y-auto">
                     <div className="p-4 md:p-6 border-b border-slate-200">
                         <h2 className="text-xl md:text-2xl font-bold text-center">
-                            Add Student Info
+                            {id ? "Update Student Info" : "Add Student Info"}
                         </h2>
                         <p className="text-sm text-slate-500 mt-1 text-center">
                             Fill in the details below to add a new student.
@@ -210,57 +237,18 @@ export default function AddStudent() {
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-4 md:p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-3 space-x-4 space-y-1">
-
-                            <Input label="Student Name" value={formData.name} onChange={handleChange("name")} required error={errors.name}
-                                showError={!!errors.name} />
-                            <Input label="Class" value={formData.class} onChange={handleChange("class")} required error={errors.class}
-                                showError={!!errors.class} />
-                            <Input label="Address" value={formData.address} onChange={handleChange("address")} required error={errors.address}
-                                showError={!!errors.address} />
-
-                            <Input
-                                label="Mobile Number"
-                                type="number"
-                                value={formData.mobileNumber}
-                                onChange={handleChange("mobileNumber")}
-                                required
-                                error={errors.mobileNumber}
-                                showError={!!errors.mobileNumber}
-                            />
-
-                            <Input
-                                label="Date of Birth"
-                                type="date"
-                                value={formData.dob}
-                                onChange={handleChange("dob")}
-                                required
-                                error={errors.dob}
-                                showError={!!errors.dob}
-                            />
-
-                            <Input
-                                label="Subscription End Date"
-                                type="date"
-                                value={formData.subscription_end_date}
-                                onChange={handleChange("subscription_end_date")}
-                                required
-                                error={errors.subscription_end_date}
-                                showError={!!errors.subscription_end_date}
-                            />
-
-                            <Input label="Level" value={formData.level} onChange={handleChange("level")} required error={errors.level}
-                                showError={!!errors.level} />
-                            <Input label="Username" value={formData.username} onChange={handleChange("username")} required error={errors.username}
-                                showError={!!errors.username} />
-
-                            <Input type="password" label="Password" value={formData.password} onChange={handleChange("password")} required error={errors.password}
-                                showError={!!errors.password} />
-                            <Input type="password" label="Confirm Password" value={formData.confirmPassword} onChange={handleChange("confirmPassword")} required error={errors.confirmPassword}
-                                showError={!!errors.confirmPassword} />
-
+                        <div className="grid grid-cols-1 md:grid-cols-4 space-x-4 space-y-1">
+                            <Input label="Student Name" value={formData.name} onChange={handleChange("name")} required error={errors.name} showError={!!errors.name} />
+                            <Input label="Class" value={formData.class} onChange={handleChange("class")} required error={errors.class} showError={!!errors.class} />
+                            <Input label="Address" value={formData.address} onChange={handleChange("address")} required error={errors.address} showError={!!errors.address} />
+                            <Input label="Mobile Number" type="number" value={formData.mobileNumber} onChange={handleChange("mobileNumber")} required error={errors.mobileNumber} showError={!!errors.mobileNumber} />
+                            <Input label="Date of Birth" type="date" value={formData.dob} onChange={handleChange("dob")} required error={errors.dob} showError={!!errors.dob} />
+                            <Input label="Subscription End Date" type="date" value={formData.subscription_end_date} onChange={handleChange("subscription_end_date")} required error={errors.subscription_end_date} showError={!!errors.subscription_end_date} />
+                            <Input label="Level" value={formData.level} onChange={handleChange("level")} required error={errors.level} showError={!!errors.level} />
+                            <Input label="Username" value={formData.username} onChange={handleChange("username")} required error={errors.username} showError={!!errors.username} />
+                            <Input type="password" label="Password" value={formData.password} onChange={handleChange("password")} required={!id} error={errors.password} showError={!!errors.password} />
+                            <Input type="password" label="Confirm Password" value={formData.confirmPassword} onChange={handleChange("confirmPassword")} required={!id} error={errors.confirmPassword} showError={!!errors.confirmPassword} />
                         </div>
-
                         <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-6 md:mt-8">
                             <Button type="button" variant="secondary" onClick={handleCancel} icon={X}>
                                 Cancel
@@ -269,6 +257,8 @@ export default function AddStudent() {
                                 {(createLoading || updateLoading) ? (id ? "Updating..." : "Saving...") : (id ? "Update Student" : "Save Student")}
                             </Button>
                         </div>
+
+
                     </form>
                 </div>
             </div>
