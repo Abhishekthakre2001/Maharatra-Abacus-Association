@@ -227,44 +227,67 @@ export default function Calender() {
                                 Schedule Exam
                             </Button>
 
-                            {/* SCHEDULE LIST */}
-                            {filteredSchedules.length === 0 ? (
-                                <p className="text-gray-500">
-                                    No exams scheduled for this date
-                                </p>
-                            ) : (
-                                <div className="space-y-3">
-                                    {filteredSchedules.map(exam => (
-                                        <div
-                                            key={exam.id}
-                                            className="p-4 rounded-2xl border bg-gradient-to-r from-blue-50 to-blue-100 shadow flex justify-between items-center hover:shadow-lg transition group"
-                                        >
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
-                                                    <span className="font-bold text-lg text-blue-700 group-hover:text-blue-900">{exam.exam_title}</span>
-                                                </div>
-                                                <div className="text-sm text-gray-600">
-                                                    <span className="font-medium text-blue-600">Level {exam.exam_level}</span> &nbsp;|&nbsp; <span className="font-medium text-purple-600">Set {exam.paper_set}</span>
-                                                </div>
-                                                <div className="text-xs text-gray-500">
-                                                    <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded">{exam.start_time}</span>
-                                                    &nbsp;to&nbsp;
-                                                    <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded">{exam.end_time}</span>
-                                                </div>
-                                            </div>
-                                            {/* DELETE BUTTON */}
-                                            <button
-                                                onClick={() => handleDelete(exam.id)}
-                                                className="text-red-500 hover:text-white hover:bg-red-500 p-2 rounded-full transition flex items-center justify-center"
-                                                title="Delete Exam"
-                                            >
-                                                <Trash2 size={20} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                       {/* SCHEDULE LIST */}
+{filteredSchedules.length === 0 ? (
+  <p className="text-gray-500 text-center py-6">
+    No exams scheduled for this date
+  </p>
+) : (
+  <div className="space-y-4">
+    {filteredSchedules.map((exam) => (
+      <div
+        key={exam.id}
+        className="relative p-5 rounded-2xl border border-blue-100
+                   bg-white/70 backdrop-blur-lg shadow-md
+                   hover:shadow-xl hover:scale-[1.01]
+                   transition-all duration-300 group"
+      >
+        {/* LEFT ACCENT BAR */}
+        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-blue-500 to-purple-500 rounded-l-2xl"></div>
+
+        <div className="flex justify-between items-center">
+          {/* LEFT CONTENT */}
+          <div className="pl-3 flex flex-col gap-2">
+            {/* TITLE */}
+            <h3 className="text-lg font-bold text-blue-800 flex items-center gap-2 uppercase">
+              <span className="w-2 h-2 bg-blue-500 rounded-full "></span>
+              {exam.exam_title}
+            </h3>
+
+            {/* LEVEL & SET */}
+            <div className="flex items-center gap-2 text-sm">
+              <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+                Paper Set : {exam.exam_level} {exam.paper_set}
+              </span>
+              <span className="px-2 py-1 rounded bg-gray-100 font-medium">
+                {exam.start_time}
+              </span>
+              <span className="text-gray-400">→</span>
+              <span className="px-2 py-1 rounded bg-gray-100 font-medium">
+                {exam.end_time}
+              </span>
+            </div>
+
+          
+          </div>
+
+          {/* DELETE BUTTON */}
+          <button
+            onClick={() => handleDelete(exam.id)}
+            title="Delete Exam"
+            className="
+                       bg-red-100 text-red-600
+                       hover:bg-red-500 hover:text-white
+                       p-2 rounded-full
+                       transition-all duration-300"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
                         </>
                     )}
