@@ -226,27 +226,32 @@ export default function ExamPage() {
             <div className="flex-1 overflow-y-auto m-2">
 
                 {/* Exam Info */}
-                <div className="bg-white rounded-lg shadow-md p-3 mb-3">
+                {/* <div className="bg-white rounded-lg shadow-md p-3 mb-3">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                         <Info icon={User} label="Student" value={user?.name || 'Student'} />
                         <Info icon={Award} label="Total Marks" value={questions.length} />
                         <Info icon={BookOpen} label="Questions" value={questions.length} />
-                        <Info
+                       
+                    </div>
+                </div> */}
+
+                
+
+                {/* Question */}
+                <div className="bg-white rounded-lg shadow-lg p-4">
+
+                    <div className="flex justify-between">
+                         <h2 className="font-bold mb-3">
+                        Question {currentQuestion + 1} of {questions.length}
+                    </h2>
+                         <Info
                             icon={Clock}
                             label="Time Remaining"
                             value={formatTime(timeRemaining)}
                             danger={timeRemaining < 300}
                         />
                     </div>
-                </div>
-
-                
-
-                {/* Question */}
-                <div className="bg-white rounded-lg shadow-lg p-4">
-                    <h2 className="font-bold mb-3">
-                        Question {currentQuestion + 1} of {questions.length}
-                    </h2>
+                   
 
                     <p className="mb-4">{currentQ.question}</p>
 

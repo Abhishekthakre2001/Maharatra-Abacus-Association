@@ -78,7 +78,7 @@ export default function StudentDashboard() {
           subtitle="Overview of student activities and performance"
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 my-10">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 my-10">
           <DashboardCard
             title="Total Exams"
             value={0}
@@ -90,7 +90,7 @@ export default function StudentDashboard() {
             value={0}
             icon={Percent}
           />
-        </div>
+        </div> */}
 
         {/* Upcoming Exams Section */}
         <div className="my-10">
