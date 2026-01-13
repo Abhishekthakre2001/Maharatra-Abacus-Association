@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Papa from "papaparse";
 import Button from "../UI/Button";
 import InputField from "../UI/InputField";
+import SelectField from "../UI/SelectField";
 import Modal from "../UI/Modal";
 import MessageModal from "../utils/MessageModal";
 import { Trash, Plus } from "lucide-react";
@@ -204,6 +205,9 @@ export default function CsvQuestionManager() {
 
     setIsUploading(true);
     setUploadProgress(0);
+    setLevel("");
+    setSet("");
+    setTime("");
 
     try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -219,6 +223,7 @@ export default function CsvQuestionManager() {
       setModal({ open: true, type: "success", title: "Success", message: "Questions saved successfully." });
       // Optionally clear questions after save
       setQuestions([]);
+      
     } catch (err) {
       console.error(err);
       setModal({ open: true, type: "error", title: "Error", message: "Failed to save questions." });
@@ -239,376 +244,360 @@ export default function CsvQuestionManager() {
         message={modal.message}
         onClose={() => setModal((prev) => ({ ...prev, open: false }))}
       />
-      <div className="max-w-7xl mx-auto p-6 sticky top-0 ">
-      {/* Input Fields Section */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Level</label>
-            <select
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 sticky top-0 ">
+        {/* Input Fields Section */}
+        <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <SelectField
+              label="Level"
               value={level}
               onChange={(e) => setLevel(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">-- Select Level --</option>
-              {availableLevels.map((lv) => (
-                <option key={lv.id} value={lv.level}>{lv.level || lv.name || `Level ${lv.id}`}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Set</label>
-            <select
+              options={availableLevels.map(lv => ({
+                value: lv.level,
+                label: lv.level || lv.name || `Level ${lv.id}`
+              }))}
+              placeholder="-- Select Level --"
+            />
+            <SelectField
+              label="Set"
               value={set}
               onChange={(e) => setSet(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">-- Select Set --</option>
-              {availableSets.map((s) => (
-                <option key={s.id} value={s.set_name}>{s.set_name || s.name || `Set ${s.id}`}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <InputField
-              label="Time (HH:MM:SS)"
-              type="text"
-              value={time}
-              onChange={handleTimeChange}
-              placeholder="HH:MM:SS"
-              inputMode="numeric"
-              pattern="^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
+              options={availableSets.map(s => ({
+                value: s.set_name,
+                label: s.set_name || s.name || `Set ${s.id}`
+              }))}
+              placeholder="-- Select Set --"
             />
-          </div>
+            <div>
+              <InputField
+                label="Time (HH:MM:SS)"
+                type="text"
+                value={time}
+                onChange={handleTimeChange}
+                placeholder="HH:MM:SS"
+                inputMode="numeric"
+                pattern="^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Mock Set
-            </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Mock Set
+              </label>
 
-            <select
-              value={isMockSet}
-              onChange={(e) => setIsMockSet(Number(e.target.value))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+              <select
+                value={isMockSet}
+                onChange={(e) => setIsMockSet(Number(e.target.value))}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
                focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">-- Select --</option>
-              <option value={1}>Yes</option>
-              <option value={0}>No</option>
-            </select>
+              >
+                <option value="">-- Select --</option>
+                <option value={1}>Yes</option>
+                <option value={0}>No</option>
+              </select>
+            </div>
+
           </div>
 
-
-          <div className="mt-6 min-w-full">
+          <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-4 mt-6">
             <Button
               onClick={handleSubmit}
               variant="outline"
-              className="flex-1"
+              className="w-full sm:w-auto"
             >
               Save Questions
             </Button>
+
+            {questions.length === 0 && (
+              <Button
+                onClick={() => { setModalSetId(set); setModalLevelId(level); setIsModalOpen(true); }}
+                variant="primary"
+                icon={Plus}
+                className="w-full sm:w-auto whitespace-nowrap"
+              >
+                Add Question Manually in Set
+              </Button>
+            )}
           </div>
 
-
-
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2 invisible">Actions</label>
-          {
-            questions.length === 0 && (
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => { setModalSetId(set); setModalLevelId(level); setIsModalOpen(true); }}
-                  variant="primary"
-                  icon={Plus}
-                  className="text-nowrap flex-1"
-                >
-                  Add Question Manually in Set
-                </Button>
+          {isUploading && (
+            <div className="mt-4">
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-blue-600 h-2"
+                  style={{ width: `${uploadProgress}%`, transition: 'width 200ms' }}
+                />
               </div>
-            )
-
-          }
-
-        </div>
-        {isUploading && (
-          <div className="mt-4">
-            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-              <div
-                className="bg-blue-600 h-2"
-                style={{ width: `${uploadProgress}%`, transition: 'width 200ms' }}
-              />
+              <div className="text-sm text-gray-600 text-right mt-1">{uploadProgress}%</div>
             </div>
-            <div className="text-sm text-gray-600 text-right mt-1">{uploadProgress}%</div>
+          )}
+        </div>
+
+        {/* Upload Box (hidden once CSV/questions are loaded) */}
+        {questions.length === 0 && (
+          <div
+            className={`border-2 border-dashed rounded-xl p-6 sm:p-10 text-center mb-6
+          ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragActive(true);
+            }}
+            onDragLeave={() => setDragActive(false)}
+            onDrop={handleDrop}
+          >
+            <p className="text-lg font-semibold mb-2">Drag & Drop CSV File Here</p>
+            <p className="text-gray-500 mb-4">Preview, Update & Delete Questions</p>
+
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              className="hidden"
+              id="csvUpload"
+            />
+            <label
+              htmlFor="csvUpload"
+              className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors"
+            >
+              Browse CSV
+            </label>
           </div>
         )}
-      </div>
 
-      {/* Upload Box (hidden once CSV/questions are loaded) */}
-      {questions.length === 0 && (
-        <div
-          className={`border-2 border-dashed rounded-xl p-10 text-center mb-6
-          ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragActive(true);
-          }}
-          onDragLeave={() => setDragActive(false)}
-          onDrop={handleDrop}
-        >
-          <p className="text-lg font-semibold mb-2">Drag & Drop CSV File Here</p>
-          <p className="text-gray-500 mb-4">Preview, Update & Delete Questions</p>
-
-          <input
-            type="file"
-            accept=".csv"
-            onChange={handleFileChange}
-            className="hidden"
-            id="csvUpload"
-          />
-          <label
-            htmlFor="csvUpload"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
-          >
-            Browse CSV
-          </label>
-        </div>
-      )}
-
-      {/* Preview Table */}
-      {questions.length > 0 && (
-        <div className="sticky top-0 bg-white rounded-xl shadow-lg">
-          {/* Search Bar and Count Header */}
-          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg shadow-md">
-                  {questions.length}
+        {/* Preview Table */}
+        {questions.length > 0 && (
+          <div className="sticky top-0 bg-white rounded-xl shadow-lg">
+            {/* Search Bar and Count Header */}
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg shadow-md">
+                    {questions.length}
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800">Questions Loaded</h2>
+                    <p className="text-sm text-gray-600">
+                      {filteredQuestions.length === questions.length
+                        ? `Total ${questions.length} questions`
+                        : `Showing ${filteredQuestions.length} of ${questions.length} questions`}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-gray-800">Questions Loaded</h2>
-                  <p className="text-sm text-gray-600">
-                    {filteredQuestions.length === questions.length
-                      ? `Total ${questions.length} questions`
-                      : `Showing ${filteredQuestions.length} of ${questions.length} questions`}
-                  </p>
-                </div>
-              </div>
 
-              <div className="relative w-full sm:w-80">
-                <input
-                  type="text"
-                  placeholder="Search questions, options..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
-                />
-                <svg
-                  className="absolute left-3 top-3 w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                <div className="relative w-full sm:w-80">
+                  <input
+                    type="text"
+                    placeholder="Search questions, options..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
                   />
-                </svg>
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm("")}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  <svg
+                    className="absolute left-3 top-3 w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm("")}
+                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Table */}
-          <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50">
-                    #
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[300px] bg-gray-50">
-                    Question
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
-                    Option 1
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
-                    Option 2
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
-                    Option 3
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
-                    Option 4
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50">
-                    Answer
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredQuestions.length > 0 ? (
-                  filteredQuestions.map((q, index) => (
-                    <tr key={q.id} className="hover:bg-blue-50 transition-colors duration-150">
-                      <td className="px-4 py-3 text-sm font-medium text-gray-700">
-                        {index + 1}
-                      </td>
-                      {["Question", "Option 1", "Option 2", "Option 3", "Option 4", "Correct Option"].map((field) => (
-                        <td key={field} className="px-4 py-3">
-                          <input
-                            value={q[field] || ""}
-                            onChange={(e) =>
-                              handleChange(q.id, field, e.target.value)
-                            }
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            placeholder={`Enter ${field.toLowerCase()}`}
-                          />
+            {/* Table */}
+            <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50">
+                      #
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[300px] bg-gray-50">
+                      Question
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
+                      Option 1
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
+                      Option 2
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
+                      Option 3
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider min-w-[150px] bg-gray-50">
+                      Option 4
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50">
+                      Answer
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredQuestions.length > 0 ? (
+                    filteredQuestions.map((q, index) => (
+                      <tr key={q.id} className="hover:bg-blue-50 transition-colors duration-150">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-700">
+                          {index + 1}
                         </td>
-                      ))}
-                      <td className="px-4 py-3 text-center">
-                        <Button
-                          onClick={() => handleDelete(q.id)}
-                          variant="danger"
-                          size="sm"
-                          icon={Trash}
-                        >
+                        {["Question", "Option 1", "Option 2", "Option 3", "Option 4", "Correct Option"].map((field) => (
+                          <td key={field} className="px-4 py-3">
+                            <input
+                              value={q[field] || ""}
+                              onChange={(e) =>
+                                handleChange(q.id, field, e.target.value)
+                              }
+                              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                              placeholder={`Enter ${field.toLowerCase()}`}
+                            />
+                          </td>
+                        ))}
+                        <td className="px-4 py-3 text-center">
+                          <Button
+                            onClick={() => handleDelete(q.id)}
+                            variant="danger"
+                            size="sm"
+                            icon={Trash}
+                          >
 
-                        </Button>
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="8" className="px-4 py-12 text-center">
+                        <div className="flex flex-col items-center justify-center text-gray-500">
+                          <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <p className="text-lg font-medium">No questions found</p>
+                          <p className="text-sm">Try adjusting your search term</p>
+                        </div>
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="8" className="px-4 py-12 text-center">
-                      <div className="flex flex-col items-center justify-center text-gray-500">
-                        <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p className="text-lg font-medium">No questions found</p>
-                        <p className="text-sm">Try adjusting your search term</p>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Add Question Modal */}
-      <Modal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Add New Question"
-        width="max-w-3xl"
-      >
-        <div className="space-y-4">
-          <InputField
-            label="Question"
-            value={newQuestion.Question}
-            onChange={(e) => setNewQuestion({ ...newQuestion, Question: e.target.value })}
-            placeholder="Enter your question"
-            required
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InputField
-              label="Option 1"
-              value={newQuestion["Option 1"]}
-              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 1": e.target.value })}
-              placeholder="Enter option 1"
-            />
-            <InputField
-              label="Option 2"
-              value={newQuestion["Option 2"]}
-              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 2": e.target.value })}
-              placeholder="Enter option 2"
-            />
-            <InputField
-              label="Option 3"
-              value={newQuestion["Option 3"]}
-              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 3": e.target.value })}
-              placeholder="Enter option 3"
-            />
-            <InputField
-              label="Option 4"
-              value={newQuestion["Option 4"]}
-              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 4": e.target.value })}
-              placeholder="Enter option 4"
-            />
-          </div>
-
-          <InputField
-            label="Correct Option"
-            value={newQuestion["Correct Option"]}
-            onChange={(e) => setNewQuestion({ ...newQuestion, "Correct Option": e.target.value })}
-            placeholder="Enter correct option (1, 2, 3, or 4)"
-            required
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Set</label>
-              <select
-                value={modalSetId}
-                onChange={(e) => setModalSetId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">-- Select set (or leave to use top Set) --</option>
-                {availableSets.map((s) => (
-                  <option key={s.id} value={s.set_name}>{s.set_name || s.name || `Set ${s.id}`}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
-              <select
-                value={modalLevelId}
-                onChange={(e) => setModalLevelId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">-- Select level (or leave to use top Level) --</option>
-                {availableLevels.map((lv) => (
-                  <option key={lv.id} value={lv.level}>{lv.level || lv.name || `Level ${lv.id}`}</option>
-                ))}
-              </select>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
+        )}
 
-          <div className="flex justify-end gap-3 mt-6">
-            <Button
-              onClick={() => setIsModalOpen(false)}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleAddQuestion}
-              variant="primary"
-            >
-              Add Question
-            </Button>
+        {/* Add Question Modal */}
+        <Modal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="Add New Question"
+          width="max-w-3xl"
+        >
+          <div className="space-y-4">
+            <InputField
+              label="Question"
+              value={newQuestion.Question}
+              onChange={(e) => setNewQuestion({ ...newQuestion, Question: e.target.value })}
+              placeholder="Enter your question"
+              required
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InputField
+                label="Option 1"
+                value={newQuestion["Option 1"]}
+                onChange={(e) => setNewQuestion({ ...newQuestion, "Option 1": e.target.value })}
+                placeholder="Enter option 1"
+              />
+              <InputField
+                label="Option 2"
+                value={newQuestion["Option 2"]}
+                onChange={(e) => setNewQuestion({ ...newQuestion, "Option 2": e.target.value })}
+                placeholder="Enter option 2"
+              />
+              <InputField
+                label="Option 3"
+                value={newQuestion["Option 3"]}
+                onChange={(e) => setNewQuestion({ ...newQuestion, "Option 3": e.target.value })}
+                placeholder="Enter option 3"
+              />
+              <InputField
+                label="Option 4"
+                value={newQuestion["Option 4"]}
+                onChange={(e) => setNewQuestion({ ...newQuestion, "Option 4": e.target.value })}
+                placeholder="Enter option 4"
+              />
+            </div>
+
+            <InputField
+              label="Correct Option"
+              value={newQuestion["Correct Option"]}
+              onChange={(e) => setNewQuestion({ ...newQuestion, "Correct Option": e.target.value })}
+              placeholder="Enter correct option (1, 2, 3, or 4)"
+              required
+            />
+
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Set</label>
+                <select
+                  value={modalSetId}
+                  onChange={(e) => setModalSetId(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">-- Select set (or leave to use top Set) --</option>
+                  {availableSets.map((s) => (
+                    <option key={s.id} value={s.set_name}>{s.set_name || s.name || `Set ${s.id}`}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
+                <select
+                  value={modalLevelId}
+                  onChange={(e) => setModalLevelId(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">-- Select level (or leave to use top Level) --</option>
+                  {availableLevels.map((lv) => (
+                    <option key={lv.id} value={lv.level}>{lv.level || lv.name || `Level ${lv.id}`}</option>
+                  ))}
+                </select>
+              </div>
+            </div> */}
+
+            <div className="flex justify-end gap-3 my-8">
+              <Button
+                onClick={() => setIsModalOpen(false)}
+                variant="outline"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddQuestion}
+                variant="primary"
+              >
+                Add Question
+              </Button>
+            </div>
           </div>
-        </div>
-      </Modal>
-    </div>
+        </Modal>
+      </div>
     </>
   );
 }

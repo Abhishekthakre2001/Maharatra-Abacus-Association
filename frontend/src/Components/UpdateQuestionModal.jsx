@@ -124,7 +124,7 @@ const UpdateQuestionModal = ({ open, onClose, onUpdate, question, loading = fals
                             ]}
                             required
                         />
-                        <InputField
+                        {/* <InputField
                             label="Level"
                             value={formData.level}
                             onChange={handleChange('level')}
@@ -137,7 +137,7 @@ const UpdateQuestionModal = ({ open, onClose, onUpdate, question, loading = fals
                             onChange={handleChange('category')}
                             placeholder="e.g., Addition"
                             required
-                        />
+                        /> */}
                     </div>
                     </div>
 

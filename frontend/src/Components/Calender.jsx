@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "../UI/AppBar";
 import Button from "../UI/Button";
 import InputField from "../UI/InputField";
+import SelectField from "../UI/SelectField";
 import Modal from "../UI/Modal";
 import { Calendar1, MoveLeft, MoveRight, Trash2 } from 'lucide-react';
 import { useCreate } from "../hooks/useCreate";
@@ -10,26 +11,15 @@ import { useFetchData } from "../hooks/useFetchData";
 import { useUpdate } from "../hooks/useUpdate";
 import { useDelete } from "../hooks/useDelete";
 import DeleteConfirmModal from "../UI/DeleteConfirmModal";
+import MessageModal from "../utils/MessageModal";
+import levelApi from "../api/LevelApi";
+import setsApi from "../api/SetsApi";
 
 
 export default function Calender() {
 
-    const levels = [
-        { id: 1, level: 1 },
-        { id: 2, level: 2 },
-        { id: 3, level: 3 },
-        { id: 4, level: 4 },
-        { id: 5, level: 5 }
-    ];
-
-    const paperSets = [
-        { id: "A", name: "Set A" },
-        { id: "B", name: "Set B" },
-        { id: "C", name: "Set C" },
-        { id: "D", name: "Set D" }
-    ];
-
-
+    const [levels, setLevels] = useState([]);
+    const [sets, setSets] = useState([]);
 
     const today = new Date();
     const [currentMonth, setCurrentMonth] = useState(today);
@@ -40,6 +30,7 @@ export default function Calender() {
 
     const [openModal, setOpenModal] = useState(false);
     const [deleteModal, setDeleteModal] = useState({ open: false, id: null, loading: false });
+    const [messageModal, setMessageModal] = useState({ open: false, type: "success", title: "", message: "" });
 
     const [examData, setExamData] = useState({
         exam_title: "",
@@ -73,6 +64,12 @@ export default function Calender() {
     const { create } = useCreate(examScheduleApi.create, () => {
         reload(); // reload schedules
         setOpenModal(false);
+        setMessageModal({
+            open: true,
+            type: "success",
+            title: "Success",
+            message: "Exam scheduled successfully!"
+        });
     });
 
     const handleSave = () => {
@@ -88,6 +85,25 @@ export default function Calender() {
 
     const { data: schedules, reload } = useFetchData(() => examScheduleApi.getByadmin(user.id));
 
+    useEffect(() => {
+        const adminid = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).id : null;
+        
+        // Fetch levels
+        levelApi.getbyadminid(adminid)
+            .then(res => {
+                const payload = res && res.data !== undefined ? res.data : res;
+                setLevels(Array.isArray(payload) ? payload : []);
+            })
+            .catch(err => console.error('Failed to load levels', err));
+        
+        // Fetch sets
+        setsApi.getbyadminid(adminid)
+            .then(res => {
+                const payload = res && res.data !== undefined ? res.data : res;
+                setSets(Array.isArray(payload) ? payload : []);
+            })
+            .catch(err => console.error('Failed to load sets', err));
+    }, []);
 
     const formatDate = (dateStr) => {
         const d = new Date(dateStr);
@@ -115,6 +131,13 @@ export default function Calender() {
 
     return (
         <>
+            <MessageModal
+                open={messageModal.open}
+                type={messageModal.type}
+                title={messageModal.title}
+                message={messageModal.message}
+                onClose={() => setMessageModal({ ...messageModal, open: false })}
+            />
             <DeleteConfirmModal
                 open={deleteModal.open}
                 loading={deleteModal.loading}
@@ -131,11 +154,11 @@ export default function Calender() {
                 subtitle="Exam Schedule Calendar"
             />
 
-            <div className="p-6 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="px-4 sm:px-6 py-4 sm:py-6 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
 
                 {/* CALENDAR */}
-                <div className="bg-white rounded-2xl shadow p-6">
-                    <div className="flex justify-between items-center mb-4">
+                <div className="bg-white rounded-lg sm:rounded-2xl shadow p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4">
                         <Button
                             onClick={() => setCurrentMonth(new Date(year, month - 1))}
                             variant="secondary"
@@ -144,7 +167,7 @@ export default function Calender() {
                             <MoveLeft />
                         </Button>
 
-                        <h2 className="text-lg font-semibold">
+                        <h2 className="text-base sm:text-lg font-semibold">
                             {currentMonth.toLocaleString("default", {
                                 month: "long",
                             })}{" "}
@@ -161,7 +184,7 @@ export default function Calender() {
                     </div>
 
                     {/* WEEK DAYS */}
-                    <div className="grid grid-cols-7 text-center text-sm font-medium text-gray-500 mb-2">
+                    <div className="grid grid-cols-7 text-center text-xs sm:text-sm font-medium text-gray-500 mb-2">
                         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                             (day) => (
                                 <div key={day}>{day}</div>
@@ -170,7 +193,7 @@ export default function Calender() {
                     </div>
 
                     {/* DATES */}
-                    <div className="grid grid-cols-7 gap-2">
+                    <div className="grid grid-cols-7 gap-1 sm:gap-2">
                         {days.map((day, i) => {
                             const fullDate =
                                 day &&
@@ -183,15 +206,9 @@ export default function Calender() {
                                 <div
                                     key={i}
                                     onClick={() => day && setSelectedDate(fullDate)}
-                                    className={`
-                                        h-12 flex items-center justify-center rounded-xl cursor-pointer
-                                        ${!day ? "bg-transparent cursor-default" : ""}
-                                        ${selectedDate === fullDate
-                                            ? "bg-blue-600 text-white"
-                                            : "bg-gray-100 hover:bg-blue-100"}
-                                    `}
+                                    className={`h-10 sm:h-12 flex items-center justify-center rounded-xl cursor-pointer ${!day ? "bg-transparent cursor-default" : ""} ${selectedDate === fullDate ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-blue-100"}`}
                                 >
-                                    {day}
+                                    <span className="text-xs sm:text-sm">{day}</span>
                                 </div>
                             );
                         })}
@@ -200,8 +217,8 @@ export default function Calender() {
 
                 {/* RIGHT PANEL */}
                 {/* RIGHT PANEL */}
-                <div className="bg-white rounded-2xl shadow p-6">
-                    <h3 className="text-lg font-semibold mb-3">
+                <div className="bg-white rounded-lg sm:rounded-2xl shadow p-4 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold mb-3">
                         Exam Schedule
                     </h3>
 
@@ -211,7 +228,7 @@ export default function Calender() {
                         </p>
                     ) : (
                         <>
-                            <p className="text-gray-600 mb-4 flex gap-2 items-center">
+                            <p className="text-gray-600 mb-4 flex gap-2 items-center text-sm">
                                 <Calendar1 />
                                 Selected Date:
                                 <span className="font-medium">
@@ -221,7 +238,7 @@ export default function Calender() {
 
                             {/* ✅ ALWAYS SHOW BUTTON */}
                             <Button
-                                className="mb-4"
+                                className="mb-4 w-full sm:w-auto"
                                 onClick={() => setOpenModal(true)}
                             >
                                 Schedule Exam
@@ -233,34 +250,39 @@ export default function Calender() {
                                     No exams scheduled for this date
                                 </p>
                             ) : (
+                                
                                 <div className="space-y-3">
                                     {filteredSchedules.map(exam => (
                                         <div
                                             key={exam.id}
-                                            className="p-4 rounded-2xl border bg-gradient-to-r from-blue-50 to-blue-100 shadow flex justify-between items-center hover:shadow-lg transition group"
+                                            className="p-3 sm:p-4 rounded-lg sm:rounded-2xl border bg-gradient-to-r from-blue-50 to-blue-100 shadow flex flex-col sm:flex-row justify-between items-start sm:items-center hover:shadow-lg transition group"
                                         >
                                             <div className="flex flex-col gap-1">
                                                 <div className="flex items-center gap-2">
                                                     <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
-                                                    <span className="font-bold text-lg text-blue-700 group-hover:text-blue-900">{exam.exam_title}</span>
+                                                    <span className="font-bold text-base sm:text-lg text-blue-700 group-hover:text-blue-900">{exam.exam_title}</span>
                                                 </div>
-                                                <div className="text-sm text-gray-600">
-                                                    <span className="font-medium text-blue-600">Level {exam.exam_level}</span> &nbsp;|&nbsp; <span className="font-medium text-purple-600">Set {exam.paper_set}</span>
+                                                <div className="text-xs sm:text-sm text-gray-600">
+                                                    <span className="font-medium text-blue-600">Level {exam.exam_level}</span>
+                                                    <span className="hidden sm:inline"> &nbsp;|&nbsp; </span>
+                                                    <span className="font-medium text-purple-600">Set {exam.paper_set}</span>
                                                 </div>
-                                                <div className="text-xs text-gray-500">
-                                                    <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded">{exam.start_time}</span>
-                                                    &nbsp;to&nbsp;
-                                                    <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded">{exam.end_time}</span>
+                                                <div className="text-xxs sm:text-xs text-gray-500 mt-2 sm:mt-0">
+                                                    <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded text-xs">{exam.start_time}</span>
+                                                    <span className="hidden sm:inline"> &nbsp;to&nbsp; </span>
+                                                    <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded text-xs">{exam.end_time}</span>
                                                 </div>
                                             </div>
                                             {/* DELETE BUTTON */}
-                                            <button
-                                                onClick={() => handleDelete(exam.id)}
-                                                className="text-red-500 hover:text-white hover:bg-red-500 p-2 rounded-full transition flex items-center justify-center"
-                                                title="Delete Exam"
-                                            >
-                                                <Trash2 size={20} />
-                                            </button>
+                                            <div className="mt-3 sm:mt-0">
+                                                <button
+                                                    onClick={() => handleDelete(exam.id)}
+                                                    className="text-red-500 hover:text-white hover:bg-red-500 p-2 rounded-full transition flex items-center justify-center"
+                                                    title="Delete Exam"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -283,34 +305,42 @@ export default function Calender() {
                         }
                     />
 
-                    <select
-                        className="w-full border rounded-lg p-2"
-                        value={examData.exam_level}
-                        onChange={(e) =>
-                            setExamData({ ...examData, exam_level: e.target.value })
-                        }
-                    >
-                        <option value="">Select Level</option>
-                        {levels.map(l => (
-                            <option key={l.id} value={l.id}>
-                                Level {l.level}
-                            </option>
-                        ))}
-                    </select>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Level<span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <SelectField
+                            label=""
+                            value={examData.exam_level}
+                            onChange={(e) =>
+                                setExamData({ ...examData, exam_level: e.target.value })
+                            }
+                            options={levels.map(l => ({
+                                value: l.level,
+                                label: l.level || l.name || `Level ${l.id}`
+                            }))}
+                            placeholder="-- Select Level --"
+                        />
+                    </div>
 
 
-                    <select
-                        className="w-full border rounded-lg p-2"
-                        value={examData.paper_set}
-                        onChange={(e) =>
-                            setExamData({ ...examData, paper_set: e.target.value })
-                        }
-                    >
-                        <option value="">Select Set</option>
-                        {["A", "B", "C", "D"].map(set => (
-                            <option key={set} value={set}>{set}</option>
-                        ))}
-                    </select>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Set<span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <SelectField
+                            label=""
+                            value={examData.paper_set}
+                            onChange={(e) =>
+                                setExamData({ ...examData, paper_set: e.target.value })
+                            }
+                            options={sets.map(s => ({
+                                value: s.set_name,
+                                label: s.set_name || s.name || `Set ${s.id}`
+                            }))}
+                            placeholder="-- Select Set --"
+                        />
+                    </div>
 
                     <InputField
                         label="Start Time"

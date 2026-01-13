@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Input from "../UI/InputField";
+import SelectField from "../UI/SelectField";
 import Button from "../UI/Button";
 import { Save, X } from "lucide-react";
 import userApi from "../api/userApi";
+import levelApi from "../api/LevelApi";
 import { useCreate } from "../hooks/useCreate";
 import { useUpdate } from "../hooks/useUpdate";
 import { useParams, useNavigate } from "react-router-dom";
@@ -36,6 +38,8 @@ export default function AddStudent() {
         title: "",
         message: ""
     });
+
+    const [levels, setLevels] = useState([]);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -210,6 +214,18 @@ export default function AddStudent() {
             });
     }, [id]);
 
+    useEffect(() => {
+        const adminid = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).id : null;
+        levelApi.getbyadminid(adminid)
+            .then(res => {
+                const payload = res && res.data !== undefined ? res.data : res;
+                setLevels(Array.isArray(payload) ? payload : []);
+            })
+            .catch(() => {
+                // ignore
+            });
+    }, []);
+
     return (
         <>
             <MessageModal
@@ -244,7 +260,19 @@ export default function AddStudent() {
                             <Input label="Mobile Number" type="number" value={formData.mobileNumber} onChange={handleChange("mobileNumber")} required error={errors.mobileNumber} showError={!!errors.mobileNumber} />
                             <Input label="Date of Birth" type="date" value={formData.dob} onChange={handleChange("dob")} required error={errors.dob} showError={!!errors.dob} />
                             <Input label="Subscription End Date" type="date" value={formData.subscription_end_date} onChange={handleChange("subscription_end_date")} required error={errors.subscription_end_date} showError={!!errors.subscription_end_date} />
-                            <Input label="Level" value={formData.level} onChange={handleChange("level")} required error={errors.level} showError={!!errors.level} />
+                            <SelectField
+                                label="Level"
+                                value={formData.level}
+                                onChange={handleChange("level")}
+                                options={levels.map(lv => ({
+                                    value: lv.level,
+                                    label: lv.level || lv.name || `Level ${lv.id}`
+                                }))}
+                                placeholder="-- Select Level --"
+                                required
+                                error={errors.level}
+                                showError={!!errors.level}
+                            />
                             <Input label="Username" value={formData.username} onChange={handleChange("username")} required error={errors.username} showError={!!errors.username} />
                             <Input type="password" label="Password" value={formData.password} onChange={handleChange("password")} required={!id} error={errors.password} showError={!!errors.password} />
                             <Input type="password" label="Confirm Password" value={formData.confirmPassword} onChange={handleChange("confirmPassword")} required={!id} error={errors.confirmPassword} showError={!!errors.confirmPassword} />
