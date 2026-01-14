@@ -62,7 +62,12 @@ export default function Level() {
       await reload();
       closeModal();
     } catch (err) {
-      setError(err?.response?.data?.message || 'Save failed');
+      const errorMsg = err?.response?.data?.error || err?.response?.data?.message || 'Save failed';
+      if (errorMsg.includes('already exists')) {
+        setError('This level already exists. Please use a different name.');
+      } else {
+        setError(errorMsg);
+      }
     } finally {
       setSaving(false);
     }
@@ -118,8 +123,12 @@ export default function Level() {
             <input
               type="text"
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={(e) => {
+                const numericValue = e.target.value.replace(/[^0-9]/g, '');
+                setValue(numericValue);
+              }}
               className="w-full border border-slate-300 rounded px-3 py-2"
+              placeholder="Enter numeric level (e.g., 1, 2, 3)"
             />
             {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
           </div>

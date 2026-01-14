@@ -7,6 +7,12 @@ module.exports = {
       [data.level, data.createdby]
     ),
 
+  findByLevelAndUser: (level, createdby) =>
+    pool.query(
+      "SELECT * FROM levels WHERE level = ? AND createdby = ?",
+      [level, createdby]
+    ),
+
   findAll: () => pool.query("SELECT * FROM levels"),
 
   findById: (id) =>

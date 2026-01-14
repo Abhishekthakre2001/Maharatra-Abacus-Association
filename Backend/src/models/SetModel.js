@@ -7,6 +7,12 @@ module.exports = {
       [data.set_name, data.createdby]
     ),
 
+  findBySetNameAndUser: (set_name, createdby) =>
+    pool.query(
+      "SELECT * FROM sets WHERE set_name = ? AND createdby = ?",
+      [set_name, createdby]
+    ),
+
   findAll: () =>
     pool.query(
       "SELECT * FROM sets"

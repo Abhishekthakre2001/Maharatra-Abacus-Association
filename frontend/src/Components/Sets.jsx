@@ -61,7 +61,12 @@ export default function Sets() {
             await reload();
             closeModal();
         } catch (err) {
-            setError(err?.response?.data?.message || 'Save failed');
+            const errorMsg = err?.response?.data?.error || err?.response?.data?.message || 'Save failed';
+            if (errorMsg.includes('already exists')) {
+                setError('This set already exists. Please use a different name.');
+            } else {
+                setError(errorMsg);
+            }
         } finally {
             setSaving(false);
         }

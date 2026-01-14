@@ -9,6 +9,7 @@ import ResultApi from '../../api/result';
 import { useCreate } from '../../hooks/useCreate';
 import MessageModal from "../../utils/MessageModal";
 
+
 /* ---------- Helpers ---------- */
 
 const timeToSeconds = (timeStr) => {
@@ -211,6 +212,12 @@ export default function ExamPage() {
 
     return (
         <div className="max-w-full h-screen overflow-hidden flex flex-col">
+        <div className="m-2 mb-0 flex-shrink-0">
+          <StudentAppBar
+            title="Exam Rules & Regulations"
+            subtitle="Please read the following rules carefully before starting your exam"
+          />
+        </div>
             <MessageModal
                 open={modal.open}
                 type={modal.type}

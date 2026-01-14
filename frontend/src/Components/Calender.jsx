@@ -72,8 +72,15 @@ export default function Calender() {
         });
     });
 
+    const storedUser = localStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : {};
+
     const handleSave = () => {
-        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user?.id) {
+            setMessageModal({ open: true, type: 'error', title: 'Not signed in', message: 'Please sign in to schedule an exam.' });
+            return;
+        }
+
         create({
             ...examData,
             date: selectedDate,
@@ -81,9 +88,10 @@ export default function Calender() {
         });
     };
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    const { data: schedules, reload } = useFetchData(() => examScheduleApi.getByadmin(user.id));
+    const { data: schedules, reload } = useFetchData(() => {
+        if (!user?.id) return Promise.resolve([]);
+        return examScheduleApi.getByadmin(user.id);
+    });
 
     useEffect(() => {
         const adminid = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).id : null;

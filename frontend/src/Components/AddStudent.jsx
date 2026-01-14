@@ -237,12 +237,12 @@ export default function AddStudent() {
             />
 
             {/* ⬇️ EVERYTHING BELOW IS YOUR ORIGINAL DESIGN (UNCHANGED) ⬇️ */}
-                        <div className="h-full flex flex-col p-4" style={{ overflow: 'hidden' }}>
+                        <div className="h-full flex flex-col p-4">
 
                 <div className="flex-shrink-0">
                     <AppBar title="Student Management" subtitle="Manage and view all students" />
                 </div>
-                <div className="bg-white rounded-2xl shadow-lg border border-slate-200 my-6 flex-1 overflow-y-auto">
+                <div className="bg-white rounded-2xl shadow-lg border border-slate-200 my-6 flex-1">
                     <div className="p-4 md:p-6 border-b border-slate-200">
                         <h2 className="text-xl md:text-2xl font-bold text-center">
                             {id ? "Update Student Info" : "Add Student Info"}

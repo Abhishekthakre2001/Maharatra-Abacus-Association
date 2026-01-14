@@ -25,9 +25,13 @@ export default function Dashboard() {
   const products = [];
   const loading = false;
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : {};
 
-  const { data: summary, reload } = useFetchData(() => summaryapi.getsummary(user.id));
+  const { data: summary, reload } = useFetchData(() => {
+    if (!user?.id) return Promise.resolve(null);
+    return summaryapi.getsummary(user.id);
+  });
   const summaryData = Array.isArray(summary) ? summary[0] : summary;
 
   console.log("summary", summary)

@@ -6,8 +6,12 @@ import userApi from "../api/userApi";
 
 export default function Result() {
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    const { data: students, loading, reload } = useFetchData(() => userApi.getbyadminid(user.id));
+    const storedUser = localStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : {};
+    const { data: students, loading, reload } = useFetchData(() => {
+        if (!user?.id) return Promise.resolve([]);
+        return userApi.getbyadminid(user.id);
+    });
 
     const handleView = () => {
         console.log("View")
