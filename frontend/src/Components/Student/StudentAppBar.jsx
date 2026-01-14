@@ -58,7 +58,7 @@ import Button from "../../UI/Button";
         {/* Profile modal (centered, high z-index) */}
         {open && createPortal(
           <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black bg-opacity-60" onClick={() => setOpen(false)} />
+      
             <div className="relative bg-white w-full max-w-md rounded-2xl p-4 md:p-6 shadow-2xl z-[100000] max-h-[90vh] overflow-y-auto">
               <div className="flex justify-end">
                 <button onClick={() => setOpen(false)} aria-label="Close profile" className="text-gray-600 hover:text-gray-800 text-2xl leading-none w-8 h-8 flex items-center justify-center rounded-full">
@@ -79,7 +79,7 @@ import Button from "../../UI/Button";
                 </div>
 
                 <div className="w-full mt-2">
-                  <Button variant="outline" size="lg" onClick={() => { setOpen(false); onLogout && onLogout(); }} className="w-full">
+                  <Button variant="danger" size="lg" onClick={() => { setOpen(false); onLogout && onLogout(); }} className="w-full">
                     Logout
                   </Button>
                 </div>

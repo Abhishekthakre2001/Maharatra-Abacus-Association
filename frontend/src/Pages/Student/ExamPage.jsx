@@ -47,6 +47,7 @@ export default function ExamPage() {
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     const paperset = localStorage.getItem("paperset");
+    const examType = localStorage.getItem("examType"); // "mock" or "live"
 
     /* ---------- Fetch Questions ---------- */
 
@@ -115,6 +116,8 @@ export default function ExamPage() {
     const { create, loading: createLoading } = useCreate(
         ResultApi.create,
         (response, payload) => {
+            const isMockTest = examType === "mock";
+            
             // ✅ show success modal
             setModal({
                 open: true,
@@ -125,9 +128,15 @@ export default function ExamPage() {
 
             // ⏳ navigate after 3 seconds
             setTimeout(() => {
-                navigate('/student-result', {
-                    state: payload, // optional
-                });
+                if (isMockTest) {
+                    // For mock test - navigate to result page
+                    navigate('/student-result', {
+                        state: payload,
+                    });
+                } else {
+                    // For live exam - navigate back to dashboard
+                    navigate('/student-dashboard');
+                }
             }, 3000);
         },
         (error) => {
@@ -259,8 +268,41 @@ export default function ExamPage() {
                         />
                     </div>
                    
-
-                    <p className="mb-4">{currentQ.question}</p>
+                    {/* Vertical Number Display */}
+                    <div className="mb-4 flex justify-center">
+                        <div className="text-center">
+                            {(() => {
+                                // Parse the question like "1+9" or "15-7"
+                                const questionStr = currentQ.question.toString();
+                                const parts = questionStr.match(/(-?\d+)|([+\-×÷])/g) || [questionStr];
+                                
+                                const numbers = [];
+                                const operators = [];
+                                
+                                parts.forEach((part) => {
+                                    if (/[+\-×÷]/.test(part)) {
+                                        operators.push(part);
+                                    } else {
+                                        numbers.push(part);
+                                    }
+                                });
+                                
+                                return (
+                                    <div className="inline-block text-right">
+                                        {numbers.map((num, i) => (
+                                            <div key={i} className="font-mono text-2xl mb-1">
+                                                {i > 0 && <span className="mr-2">{operators[i-1] === '-' ? '−' : operators[i-1]}</span>}
+                                                {i === 0 && <span className="mr-2 invisible">+</span>}
+                                                {num}
+                                            </div>
+                                        ))}
+                                        <div className="border-t-2 border-black my-1"></div>
+                                        <div className="font-mono text-2xl">?</div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    </div>
 
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         {[currentQ.option1, currentQ.option2, currentQ.option3, currentQ.option4].map(

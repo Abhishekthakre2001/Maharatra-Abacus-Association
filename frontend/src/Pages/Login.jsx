@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, Mail } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import userApi from "../api/userApi";
 import MessageModal from "../utils/MessageModal";
 import colors from "../utils/Color";
+import InputField from "../UI/InputField";
 
 const Login = () => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -70,16 +70,27 @@ const Login = () => {
         onClose={() => setModal({ ...modal, open: false })}
       />
 
-      <div className="h-screen flex overflow-hidden" style={{ backgroundColor: colors.background.blue50 }}>
+      <div className="h-screen flex overflow-hidden relative" style={{ background: `linear-gradient(135deg, ${colors.background.blue50} 0%, ${colors.primary.blue100} 100%)` }}>
+        {/* Floating animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+          <div className="absolute top-40 right-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-40 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
+
         {/* LEFT SIDE - WELCOME */}
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-y-auto" style={{ color: colors.text.gray800 }}>
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-y-auto z-10" style={{ color: colors.text.gray800 }}>
           <div className="flex flex-col justify-center items-start w-full px-8 lg:px-12 xl:px-16 py-8 lg:py-12">
             <div className="max-w-lg mx-auto w-full">
-              <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 lg:mb-4 leading-tight" style={{ color: colors.text.gray800 }}>
-                Welcome to our
-                <br />
-                <span className="bg-gradient-to-r bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(to right, ${colors.primary.blue600}, ${colors.primary.blue700})` }}>
-                  Community
+              <div className="flex items-center gap-3 mb-3 lg:mb-4">
+                {/* <Sparkles className="text-yellow-500 animate-pulse" size={32} /> */}
+                <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight" style={{ color: colors.text.gray800 }}>
+                  Welcome to our
+                </h1>
+              </div>
+              <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 lg:mb-4 leading-tight">
+                <span className="bg-gradient-to-r bg-clip-text text-transparent animate-gradient" style={{ backgroundImage: `linear-gradient(90deg, ${colors.primary.blue600}, ${colors.primary.blue500}, ${colors.primary.blue700}, ${colors.primary.blue600})`, backgroundSize: '200% auto' }}>
+                  Premium Community
                 </span>
               </h1>
               
@@ -89,18 +100,27 @@ const Login = () => {
 
               {/* Illustration */}
               <div className="mb-8 lg:mb-12 flex justify-center">
-                <div className="relative">
+                <div className="relative group">
+                  {/* Animated gradient border */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-full opacity-75 group-hover:opacity-100 blur-md transition-opacity duration-300 animate-spin-slow"></div>
+                  
                   {/* Placeholder for illustration - you can replace with actual image */}
-                  <div className="w-56 h-56 lg:w-72 lg:h-72 xl:w-80 xl:h-80 rounded-full flex items-center justify-center shadow-2xl" style={{ background: `linear-gradient(to bottom right, ${colors.primary.blue200}, ${colors.background.blue100})` }}>
-                    <div className="text-center">
-                      <div className="text-4xl lg:text-5xl xl:text-6xl mb-3 lg:mb-4">🎓</div>
-                      <p className="text-xl lg:text-2xl font-bold" style={{ color: colors.text.gray700 }}>Abacus</p>
+                  <div className="relative w-56 h-56 lg:w-72 lg:h-72 xl:w-80 xl:h-80 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-xl border-4 border-white/50 hover:scale-105 transition-transform duration-500" style={{ background: `linear-gradient(135deg, ${colors.primary.blue200}, ${colors.primary.blue100}, ${colors.background.blue50})` }}>
+                    <div className="text-center relative z-10">
+                      <div className="text-4xl lg:text-5xl xl:text-6xl mb-3 lg:mb-4 animate-bounce-slow">🎓</div>
+                      <p className="text-xl lg:text-2xl font-bold mb-1" style={{ color: colors.text.gray700 }}>Abacus</p>
                       <p className="text-base lg:text-lg" style={{ color: colors.text.gray600 }}>Learning Platform</p>
+                      <div className="mt-4 flex items-center justify-center gap-2">
+                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        <span className="text-sm font-medium" style={{ color: colors.text.gray600 }}>Premium Access</span>
+                      </div>
                     </div>
                   </div>
-                  {/* Decorative elements */}
-                  <div className="absolute -top-3 -right-3 lg:-top-4 lg:-right-4 w-14 h-14 lg:w-20 lg:h-20 bg-yellow-300 rounded-full opacity-60"></div>
-                  <div className="absolute -bottom-3 -left-3 lg:-bottom-4 lg:-left-4 w-12 h-12 lg:w-16 lg:h-16 bg-pink-300 rounded-full opacity-60"></div>
+                  
+                  {/* Enhanced decorative elements */}
+                  <div className="absolute -top-3 -right-3 lg:-top-4 lg:-right-4 w-14 h-14 lg:w-20 lg:h-20 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full opacity-70 animate-pulse shadow-lg"></div>
+                  <div className="absolute -bottom-3 -left-3 lg:-bottom-4 lg:-left-4 w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-pink-300 to-purple-400 rounded-full opacity-70 animate-pulse shadow-lg animation-delay-1000"></div>
+                  <div className="absolute top-1/2 -right-6 lg:-right-8 w-8 h-8 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-60 animate-bounce shadow-lg animation-delay-2000"></div>
                 </div>
               </div>
 
@@ -115,66 +135,44 @@ const Login = () => {
             {/* Mobile Logo */}
             <div className="lg:hidden mb-6 sm:mb-8 text-center">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2" style={{ color: colors.text.gray800 }}>
-                Welcome to <span style={{ color: colors.primary.blue600 }}>Abacus</span>
+                Welcome to <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">Abacus</span>
               </h1>
-              <p style={{ color: colors.text.gray500 }}>Sign in to continue</p>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-xl p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-3xl shadow-2xl border border-white">
-              <div className="mb-6 sm:mb-8">
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2" style={{ color: colors.text.gray800 }}>
+            <div className="bg-white/90 backdrop-blur-2xl p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-3xl shadow-[0_20px_70px_-15px_rgba(0,0,0,0.3)] border border-white/60 hover:shadow-[0_25px_80px_-15px_rgba(0,0,0,0.35)] transition-shadow duration-300 relative overflow-hidden">
+              {/* Subtle gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-purple-50/30 pointer-events-none"></div>
+              
+              <div className="mb-6 sm:mb-8 relative z-10">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 flex items-center gap-2" style={{ color: colors.text.gray800 }}>
                   Sign in to Continue
                 </h2>
-                <p className="text-sm" style={{ color: colors.text.gray500 }}>
-                  Enter your email and password
+                <p className="text-sm ml-1" style={{ color: colors.text.gray500 }}>
+                  Enter your credentials to access your account
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 relative z-10">
                 {/* Email/Username */}
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.text.gray700 }}>
-                    Email or Username
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 sm:py-3.5 border border-gray-200 rounded-lg sm:rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-                      placeholder="Enter your email"
-                      required
-                    />
-                  </div>
-                </div>
+                <InputField
+                  label="Username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your username"
+                  required
+                />
 
                 {/* Password */}
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.text.gray700 }}>
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-4 py-3 sm:py-3.5 border border-gray-200 rounded-lg sm:rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
-                      placeholder="Enter your password"
-                      required
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition"
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                </div>
+                <InputField
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  icon={Lock}
+                  required
+                />
 
                 {/* Remember Me & Forgot Password */}
                 <div className="flex items-center justify-between text-xs sm:text-sm flex-wrap gap-2">
@@ -198,38 +196,48 @@ const Login = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full text-white py-3 sm:py-4 rounded-lg sm:rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.01] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  style={{ background: `linear-gradient(to right, ${colors.primary.blue600}, ${colors.primary.blue700})` }}
+                  className="relative w-full text-white py-3 sm:py-4 rounded-lg sm:rounded-xl font-semibold shadow-[0_10px_40px_-10px_rgba(37,99,235,0.6)] hover:shadow-[0_15px_50px_-10px_rgba(37,99,235,0.8)] transform hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden group"
+                  style={{ background: `linear-gradient(135deg, ${colors.primary.blue600}, ${colors.primary.blue700}, ${colors.primary.blue600})`, backgroundSize: '200% 100%' }}
                 >
-                  {isLoading ? (
-                    <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Signing In...
-                    </span>
-                  ) : (
-                    "Sign in"
-                  )}
+                  {/* Shine effect on hover */}
+                  <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000 ease-out"></div>
+                  
+                  <span className="relative z-10">
+                    {isLoading ? (
+                      <span className="flex items-center justify-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Signing In...
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-center gap-2">
+                        Sign in
+                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                      </span>
+                    )}
+                  </span>
                 </button>
               </form>
 
               {/* Divider */}
-              <div className="relative my-5 sm:my-6">
+              {/* <div className="relative my-5 sm:my-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="px-4 bg-white" style={{ color: colors.text.gray500 }}>or continue with</span>
                 </div>
-              </div>
+              </div> */}
 
-              {/* Social Login */}
+            
              
 
               {/* Footer */}
-              <div className="mt-5 sm:mt-6 text-center">
+              <div className="mt-5 sm:mt-6 text-center relative z-10">
                 <p className="text-xs sm:text-sm" style={{ color: colors.text.gray600 }}>
                   Don't have an account?{" "}
                   <a href="#" className="font-semibold transition" style={{ color: colors.primary.blue600 }}>
