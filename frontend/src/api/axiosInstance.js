@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "https://apiabacus.deveraa.com",
+  // baseURL: "http://localhost:5000",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json"
