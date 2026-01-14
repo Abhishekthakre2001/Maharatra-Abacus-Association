@@ -2,24 +2,24 @@ const cors = require("cors");
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "http://localhost:5173",
-  "https://abacus.deveraa.com"
+  "https://abacus.deveraa.com",
+  "http://localhost:5173" // Vite
 ];
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
+    // allow requests with no origin (Postman, mobile apps)
     if (!origin) return callback(null, true);
 
     if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
     }
-
-    return callback(new Error("CORS not allowed"), false);
   },
-  credentials: true,
+  credentials: true, // ✅ REQUIRED
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-}));
+};
 
-// 🔥 REQUIRED for preflight
-app.options("*", cors());
+module.exports = cors(corsOptions);

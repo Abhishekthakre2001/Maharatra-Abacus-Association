@@ -40,8 +40,9 @@ if (cluster.isMaster) {
 } else {
 
     // ✅ Global middlewares
-    app.use(helmet());             // Security headers
     app.use(corsConfig);           // CORS policy
+    app.use(helmet());             // Security headers
+
     app.use(limiter);              // Rate limiting
     app.use(express.json());       // Parse JSON
     app.use(morgan("combined"));   // Request logging
