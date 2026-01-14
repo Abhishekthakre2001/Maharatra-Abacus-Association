@@ -2,6 +2,7 @@ const cors = require("cors");
 
 const allowedOrigins = [
   "http://localhost:3000",
+  "https://apiabacus.deveraa.com",
   "http://localhost:5173" // Vite
 ];
 
