@@ -27,8 +27,8 @@ export default function StudentDashboard() {
     navigate("/");
   }
 
-  const { data: upcomeingexam, reload } = useFetchData(() => examScheduleApi.getstudnetupcomeingexam(user.level, user.id));
-  const { data: levelwise_set } = useFetchData(() => questionApi.getset(user.level, user.id));
+  const { data: upcomeingexam, reload } = useFetchData(() => examScheduleApi.getstudnetupcomeingexam(user.level, user.createdby));
+  const { data: levelwise_set } = useFetchData(() => questionApi.getset(user.level, user.createdby));
 
   const isToday = (dateStr) => {
     const examDate = new Date(dateStr);
