@@ -40,7 +40,8 @@ if (cluster.isMaster) {
 } else {
 
     // ✅ Global middlewares
-    app.use(corsConfig);           // CORS policy
+    app.use(corsConfig);
+    // app.options("*", corsConfig);           // CORS policy
     app.use(helmet());             // Security headers
 
     app.use(limiter);              // Rate limiting
