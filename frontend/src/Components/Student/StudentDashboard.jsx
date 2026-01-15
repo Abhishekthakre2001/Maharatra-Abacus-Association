@@ -115,19 +115,32 @@ export default function StudentDashboard() {
             <TopAutoCarousel
               className="mb-6"
               items={
-                upcomeingexam?.map((exam) => (
-                  <CreamCarouselCard
-                    key={exam.id}
-                    title={`Abacus Level ${exam.exam_level} Examination`}
-                    subtitle={exam.exam_title}
-                    examDate={formatDate(exam.date)}
-                    startTime={formatTime(exam.start_time)}
-                    endTime={formatTime(exam.end_time)}
-                    image={examImg}
-                  />
-                )) || []
+                upcomeingexam && upcomeingexam.length > 0
+                  ? upcomeingexam.map((exam) => (
+                    <CreamCarouselCard
+                      key={exam.id}
+                      title={`Abacus Level ${exam.exam_level} Examination`}
+                      subtitle={exam.exam_title}
+                      examDate={formatDate(exam.date)}
+                      startTime={formatTime(exam.start_time)}
+                      endTime={formatTime(exam.end_time)}
+                      image={examImg}
+                    />
+                  ))
+                  : [
+                    <CreamCarouselCard
+                      key="default-exam"
+                      title="No Upcoming Exams"
+                      subtitle="Please check back later"
+                      examDate="—"
+                      startTime="—"
+                      endTime="—"
+                      image={examImg}
+                    />,
+                  ]
               }
             />
+
 
 
 
@@ -135,16 +148,16 @@ export default function StudentDashboard() {
             <div className="flex justify-center my-6 md:my-8">
               <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4 w-full max-w-md px-4 sm:px-0">
                 {/* Mock Exam */}
-                {firstExam && (
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => setShowSets(true)}
-                    className="w-full sm:w-auto"
-                  >
-                    Mock Exam
-                  </Button>
-                )}
+                {/* {firstExam && ( */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setShowSets(true)}
+                  className="w-full sm:w-auto"
+                >
+                  Mock Exam
+                </Button>
+                {/* )} */}
 
                 {/* Live Exam */}
                 {liveExamData && (
