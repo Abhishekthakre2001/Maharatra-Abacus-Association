@@ -117,7 +117,7 @@ export default function ExamPage() {
         ResultApi.create,
         (response, payload) => {
             const isMockTest = examType === "mock";
-            
+
             // ✅ show success modal
             setModal({
                 open: true,
@@ -221,12 +221,12 @@ export default function ExamPage() {
 
     return (
         <div className="max-w-full h-screen overflow-hidden flex flex-col">
-        <div className="m-2 mb-0 flex-shrink-0">
-          <StudentAppBar
-            title="Exam Rules & Regulations"
-            subtitle="Please read the following rules carefully before starting your exam"
-          />
-        </div>
+            <div className="m-2 mb-0 flex-shrink-0">
+                {/* <StudentAppBar
+                    title="Exam Rules & Regulations"
+                    subtitle="Train Your Brain Daily"
+                /> */}
+            </div>
             <MessageModal
                 open={modal.open}
                 type={modal.type}
@@ -251,23 +251,23 @@ export default function ExamPage() {
                     </div>
                 </div> */}
 
-                
+
 
                 {/* Question */}
                 <div className="bg-white rounded-lg shadow-lg p-4">
 
                     <div className="flex justify-between">
-                         <h2 className="font-bold mb-3">
-                        Question {currentQuestion + 1} of {questions.length}
-                    </h2>
-                         <Info
+                        <h2 className="font-bold mb-3">
+                            Question {currentQuestion + 1} of {questions.length}
+                        </h2>
+                        <Info
                             icon={Clock}
                             label="Time Remaining"
                             value={formatTime(timeRemaining)}
                             danger={timeRemaining < 300}
                         />
                     </div>
-                   
+
                     {/* Vertical Number Display */}
                     <div className="mb-4 flex justify-center">
                         <div className="text-center">
@@ -275,10 +275,10 @@ export default function ExamPage() {
                                 // Parse the question like "1+9" or "15-7"
                                 const questionStr = currentQ.question.toString();
                                 const parts = questionStr.match(/(-?\d+)|([+\-×÷])/g) || [questionStr];
-                                
+
                                 const numbers = [];
                                 const operators = [];
-                                
+
                                 parts.forEach((part) => {
                                     if (/[+\-×÷]/.test(part)) {
                                         operators.push(part);
@@ -286,12 +286,12 @@ export default function ExamPage() {
                                         numbers.push(part);
                                     }
                                 });
-                                
+
                                 return (
                                     <div className="inline-block text-right">
                                         {numbers.map((num, i) => (
                                             <div key={i} className="font-mono text-2xl mb-1">
-                                                {i > 0 && <span className="mr-2">{operators[i-1] === '-' ? '−' : operators[i-1]}</span>}
+                                                {i > 0 && <span className="mr-2">{operators[i - 1] === '-' ? '−' : operators[i - 1]}</span>}
                                                 {i === 0 && <span className="mr-2 invisible">+</span>}
                                                 {num}
                                             </div>
