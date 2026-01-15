@@ -223,7 +223,7 @@ export default function CsvQuestionManager() {
       setModal({ open: true, type: "success", title: "Success", message: "Questions saved successfully." });
       // Optionally clear questions after save
       setQuestions([]);
-      
+
     } catch (err) {
       console.error(err);
       setModal({ open: true, type: "error", title: "Error", message: "Failed to save questions." });
@@ -234,6 +234,13 @@ export default function CsvQuestionManager() {
   };
 
   console.log("isMockSet", isMockSet)
+  const yesNoOptions = [
+    { id: 1, name: "Yes" },
+    { id: 0, name: "No" }
+  ];
+
+
+
 
   return (
     <>
@@ -281,7 +288,7 @@ export default function CsvQuestionManager() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              {/* <label className="block text-sm font-medium text-gray-700 mb-1">
                 Mock Set
               </label>
 
@@ -294,7 +301,17 @@ export default function CsvQuestionManager() {
                 <option value="">-- Select --</option>
                 <option value={1}>Yes</option>
                 <option value={0}>No</option>
-              </select>
+              </select> */}
+              <SelectField
+                label="Mock Set"
+                value={isMockSet}
+                onChange={(e) => setIsMockSet(Number(e.target.value))}
+                options={yesNoOptions.map(opt => ({
+                  value: opt.id,
+                  label: opt.name
+                }))}
+                placeholder="-- Select --"
+              />
             </div>
 
           </div>
@@ -302,7 +319,7 @@ export default function CsvQuestionManager() {
           <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-4 mt-6">
             <Button
               onClick={handleSubmit}
-              variant="outline"
+              variant="primary"
               className="w-full sm:w-auto"
             >
               Save Questions

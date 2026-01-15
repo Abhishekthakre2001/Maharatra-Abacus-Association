@@ -53,7 +53,8 @@ const colors = {
   text: {
     white: '#ffffff',
     black: '#000000',
-    dark: '#110F12',
+    // sidebar and appbar color 2
+    dark: '#65a30d',
     blue200: '#bfdbfe',
     blue700: '#1d4ed8',
     gray300: '#d1d5db',
@@ -69,7 +70,8 @@ const colors = {
     white: '#ffffff',
     blue50: '#eff6ff',
     blue100: '#dbeafe',
-    blue600: '#2563eb',
+     // sidebar and appbar color 1
+    blue600: '#84cc16',
     blue700: '#1d4ed8',
     indigo50: '#eef2ff',
     gray50: '#f9fafb',

@@ -48,11 +48,11 @@ export default function StudentList() {
     };
 
     const columns = [
-        {
-            key: "id",
-            label: "Sr. No.",
-            render: (value, row, index, serial) => serial + 1
-        },
+        // {
+        //     key: "id",
+        //     label: "Sr. No.",
+        //     render: (value, row, index, serial) => serial + 1
+        // },
         {
             key: "name",
             label: "Student Name",

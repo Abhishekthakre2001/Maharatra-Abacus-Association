@@ -19,7 +19,7 @@ export default function Sets() {
     const [deleteLoading, setDeleteLoading] = useState(false);
 
     const columns = [
-        { key: 'id', label: 'ID' },
+        // { key: 'id', label: 'ID' },
         { key: 'set_name', label: 'Set Name' },
     ];
 

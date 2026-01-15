@@ -166,7 +166,7 @@ export default function Calender() {
 
                 {/* CALENDAR */}
                 <div className="bg-white rounded-lg sm:rounded-2xl shadow p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4">
+                    <div className="flex flex-row justify-between items-center gap-2 mb-4">
                         <Button
                             onClick={() => setCurrentMonth(new Date(year, month - 1))}
                             variant="secondary"
@@ -263,7 +263,7 @@ export default function Calender() {
                                     {filteredSchedules.map(exam => (
                                         <div
                                             key={exam.id}
-                                            className="p-3 sm:p-4 rounded-lg sm:rounded-2xl border bg-gradient-to-r from-blue-50 to-blue-100 shadow flex flex-col sm:flex-row justify-between items-start sm:items-center hover:shadow-lg transition group"
+                                            className="p-3 sm:p-4 rounded-lg sm:rounded-2xl border bg-gradient-to-r from-blue-50 to-blue-100 shadow flex flex-row justify-between items-start sm:items-center hover:shadow-lg transition group"
                                         >
                                             <div className="flex flex-col gap-1">
                                                 <div className="flex items-center gap-2">
@@ -272,12 +272,12 @@ export default function Calender() {
                                                 </div>
                                                 <div className="text-xs sm:text-sm text-gray-600">
                                                     <span className="font-medium text-blue-600">Level {exam.exam_level}</span>
-                                                    <span className="hidden sm:inline"> &nbsp;|&nbsp; </span>
+                                                    <span className="inline"> &nbsp;|&nbsp; </span>
                                                     <span className="font-medium text-purple-600">Set {exam.paper_set}</span>
                                                 </div>
                                                 <div className="text-xxs sm:text-xs text-gray-500 mt-2 sm:mt-0">
                                                     <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded text-xs">{exam.start_time}</span>
-                                                    <span className="hidden sm:inline"> &nbsp;to&nbsp; </span>
+                                                    <span className="inline"> &nbsp;to&nbsp; </span>
                                                     <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded text-xs">{exam.end_time}</span>
                                                 </div>
                                             </div>

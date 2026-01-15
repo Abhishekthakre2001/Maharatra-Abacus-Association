@@ -20,7 +20,7 @@ export default function Level() {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const columns = [
-    { key: 'id', label: 'ID' },
+    // { key: 'id', label: 'ID' },
     { key: 'level', label: 'Level' }
   ];
 

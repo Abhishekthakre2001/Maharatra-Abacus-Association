@@ -8,7 +8,7 @@ const Modal = ({ open, onClose, title, children, width = "max-w-lg", footer }) =
             <div className={`bg-white rounded-xl shadow-xl w-full ${width} relative animate-fadeIn max-h-[90vh] flex flex-col overflow-hidden`}>
 
                 {/* Header - Sticky */}
-                <div className="flex-shrink-0 p-4 sm:p-6 border-b">
+                <div className="flex-shrink-0 p-4 sm:p-6 ">
                     {/* Close Button */}
                     <button
                         onClick={onClose}
@@ -30,7 +30,7 @@ const Modal = ({ open, onClose, title, children, width = "max-w-lg", footer }) =
 
                 {/* Footer - Sticky (if provided) */}
                 {footer && (
-                    <div className="flex-shrink-0 p-4 sm:p-6 border-t bg-gray-50">
+                    <div className="flex-shrink-0 p-4 sm:p-6 bg-gray-50">
                         {footer}
                     </div>
                 )}

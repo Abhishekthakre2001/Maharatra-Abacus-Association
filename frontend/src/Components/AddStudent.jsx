@@ -235,13 +235,10 @@ export default function AddStudent() {
                 message={modal.message}
                 onClose={() => setModal({ ...modal, open: false })}
             />
+              <AppBar title="Student Management" subtitle="Manage and view all students" />
 
             {/* ⬇️ EVERYTHING BELOW IS YOUR ORIGINAL DESIGN (UNCHANGED) ⬇️ */}
-                        <div className="h-full flex flex-col p-4">
-
-                <div className="flex-shrink-0">
-                    <AppBar title="Student Management" subtitle="Manage and view all students" />
-                </div>
+            <div className="h-full flex flex-col">
                 <div className="bg-white rounded-2xl shadow-lg border border-slate-200 my-6 flex-1">
                     <div className="p-4 md:p-6 border-b border-slate-200">
                         <h2 className="text-xl md:text-2xl font-bold text-center">

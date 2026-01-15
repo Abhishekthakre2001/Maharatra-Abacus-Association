@@ -163,7 +163,7 @@ const DataTable = ({
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex sm:flex-row gap-2">
               {onCreate && (
                 <button
                   onClick={onCreate}

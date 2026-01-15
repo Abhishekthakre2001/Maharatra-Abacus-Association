@@ -49,8 +49,8 @@ export default function Dashboard() {
       {/* header */}
       <div className="max-w-7xl mx-auto">
         <AppBar
-          title="Student Management"
-          subtitle="Manage and view all students"
+          title="Abacus"
+          subtitle="Think Faster with Abacus"
         />
 
         {/* CARDS */}

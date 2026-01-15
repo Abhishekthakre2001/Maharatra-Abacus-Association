@@ -37,10 +37,10 @@ const SelectField = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-const filteredOptions = options.filter((opt) => {
-  const optLabel = typeof opt === 'string' ? opt : opt.label;
-  return String(optLabel).toLowerCase().includes(search.toLowerCase());
-});
+  const filteredOptions = options.filter((opt) => {
+    const optLabel = typeof opt === 'string' ? opt : opt.label;
+    return String(optLabel).toLowerCase().includes(search.toLowerCase());
+  });
 
 
   const handleSelect = (option) => {
@@ -79,8 +79,8 @@ const filteredOptions = options.filter((opt) => {
             ref={inputRef}
             type="text"
             value={open ? search : (
-              typeof value === 'object' 
-                ? (options.find(o => o.value === value)?.label || value?.label || '') 
+              typeof value === 'object'
+                ? (options.find(o => o.value === value)?.label || value?.label || '')
                 : (options.find(o => (typeof o === 'object' ? o.value === value : o === value))?.label || value || '')
             )}
             placeholder={!value ? placeholder : ""}
@@ -98,7 +98,8 @@ const filteredOptions = options.filter((opt) => {
         </div>
 
         {open && (
-          <div className="absolute z-50 w-full bg-white border rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+          <div className="absolute z-50 w-full bg-white  border border-gray-300
+ rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option, index) => {
                 const optValue = typeof option === 'string' ? option : option.value;
@@ -106,9 +107,14 @@ const filteredOptions = options.filter((opt) => {
                 return (
                   <div
                     key={`${optValue}-${index}`}
-                    className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
-                      value === optValue ? "bg-blue-50 text-blue-700" : ""
-                    }`}
+                    className={`px-3 py-2 cursor-pointer transition-all
+  hover:bg-gray-100
+  ${value === optValue
+                        ? "bg-gray-100 text-gray-900 border border-gray-400 rounded-md"
+                        : "border border-transparent"
+                      }
+`}
+
                     onClick={() => handleSelect(option)}
                   >
                     {optLabel}

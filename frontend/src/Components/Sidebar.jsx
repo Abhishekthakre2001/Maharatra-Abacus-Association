@@ -63,53 +63,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     navigate(path);
   };
 
-  // ✅ MOBILE: Bottom Navigation
-  if (isMobile) {
-    return (
-      <div 
-        className="fixed bottom-0 left-0 w-full bg-opacity-70 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,0,0,0.45)] overflow-x-auto py-3 z-50 rounded-t-2xl"
-        style={{
-          backgroundImage: `linear-gradient(to bottom, ${colors.primary.blue600}, ${colors.text.dark})`
-        }}
-      >
-
-        <div className="flex justify-between items-center px-4 gap-4 min-w-max">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleClick(item.path)}
-                className="flex flex-col items-center text-xs min-w-[60px]"
-                style={{
-                  color: isActive(item.path) ? colors.accent.orange : colors.text.gray300
-                }}
-              >
-                <Icon size={20} />
-                <span className="mt-1 text-[10px] whitespace-nowrap">{item.label}</span>
-              </button>
-            );
-          })}
-
-          {/* Logout */}
-          <button 
-            className="flex flex-col items-center text-xs min-w-[60px]"
-            style={{ color: colors.danger.red400 }}
-          >
-            <LogOut size={20} />
-            <span className="mt-1 text-[10px]">Logout</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-
+ 
   // ✅ DESKTOP SIDEBAR
   return (
     <>
       <div
         className={`
+        hidden  md:block
         fixed top-4 left-4 h-[92vh]
         ${isCollapsed ? "w-20" : "w-64"}
         transition-all duration-500

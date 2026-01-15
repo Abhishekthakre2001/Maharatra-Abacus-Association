@@ -124,11 +124,11 @@ export default function QuestionPage() {
     };
 
     const setcolumns = [
-        {
-            key: 'id',
-            label: '#',
-            render: (value) => <span className="font-semibold text-gray-700">#{value}</span>
-        },
+        // {
+        //     key: 'id',
+        //     label: '#',
+        //     render: (value) => <span className="font-semibold text-gray-700">#{value}</span>
+        // },
         {
             key: 'paper_set',
             label: 'Paper Set',
@@ -194,11 +194,11 @@ export default function QuestionPage() {
     ]
 
     const questionscolumn = [
-        {
-            key: 'id',
-            label: '#',
-            render: (value) => <span className="font-semibold text-gray-700">#{value}</span>
-        },
+        // {
+        //     key: 'id',
+        //     label: '#',
+        //     render: (value) => <span className="font-semibold text-gray-700">#{value}</span>
+        // },
         {
             key: 'question',
             label: 'Question',
