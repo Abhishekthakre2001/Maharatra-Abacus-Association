@@ -52,7 +52,7 @@ export default function ExamPage() {
     /* ---------- Fetch Questions ---------- */
 
     const { data: PaperQuestion, loading } = useFetchData(
-        () => questionApi.getpapersetformock(user.level, user.id, paperset),
+        () => questionApi.getpapersetformock(user.level, user.createdby, paperset),
         [user.level, user.id, paperset]
     );
 
