@@ -357,40 +357,53 @@ export default function Calender() {
 
                                 <div className="space-y-3">
                                     {filteredSchedules.map(exam => (
-                                        <div
-                                            key={exam.id}
-                                            className="p-3 sm:p-4 rounded-lg sm:rounded-2xl border bg-gradient-to-r from-blue-50 to-blue-100 shadow flex flex-row justify-between items-start sm:items-center hover:shadow-lg transition group"
-                                        >
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
-                                                    <span className="font-bold text-base sm:text-lg text-blue-700 group-hover:text-blue-900">{exam.exam_title}</span>
-                                                </div>
-                                                <div className="text-xs sm:text-sm text-gray-600">
-                                                    <span className="font-medium text-blue-600">Level {exam.exam_level}</span>
-                                                    <span className="inline"> &nbsp;|&nbsp; </span>
-                                                    <span className="font-medium text-purple-600">Set {exam.paper_set}</span>
-                                                </div>
-                                                <div className="text-xxs sm:text-xs text-gray-500 mt-2 sm:mt-0">
-                                                    <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded text-xs">{exam.start_time}</span>
-                                                    <span className="inline"> &nbsp;to&nbsp; </span>
-                                                    <span className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded text-xs">{exam.end_time}</span>
-                                                </div>
-                                            </div>
-                                            {/* DELETE BUTTON */}
-                                            <div className="mt-3 sm:mt-0">
-                                                <button
-                                                    onClick={() => handleDelete(exam.id)}
-                                                    className="text-red-500 hover:text-white hover:bg-red-500 p-2 rounded-full transition flex items-center justify-center"
-                                                    title="Delete Exam"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
+                                        
+
+                                            <div  key={exam.id}
+                                className="
+    group
+    bg-gradient-to-br from-blue-50 to-indigo-100
+    rounded-2xl
+    shadow-md hover:shadow-md hover:shadow-blue-300/40
+    transition-all duration-300
+    p-6 border border-blue-100
+    hover:-translate-y-1
+  "
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-gray-500 font-medium text-md">
+                                            {exam.exam_title}
+                                        </p>
+                                        <div className="flex gap-4">
+  <h2 className="text-2xl font-bold text-slate-800 mt-2">
+                                             {exam.exam_level}{exam.paper_set}
+                                        </h2>
+                                        <p className="mt-3">{exam.start_time} To {exam.end_time} </p>
                                         </div>
+                                      
+                                    </div>
+
+                                    <div onClick={() => handleDelete(exam.id)}
+                                        className="
+        w-14 h-14 rounded-xl
+        bg-gradient-to-br from-blue-300 to-blue-200
+        text-blue-600 
+        flex items-center justify-center
+        group-hover:scale-110 transition-transform
+      "
+                                    >
+                                        {/* Example icon */}
+                                        <Trash2 size={22} />
+                                    </div>
+                                </div>
+                            </div>
                                     ))}
                                 </div>
+
+
                             )}
+                        
 
                         </>
                     )}

@@ -16,15 +16,15 @@ const DashboardCard = ({ title, value, icon: Icon }) => {
     >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-indigo-600 font-medium text-sm">{title}</p>
+          <p className="text-gray-500 font-medium text-[18px]">{title}</p>
           <h2 className="text-4xl font-bold text-slate-800 mt-2">{value}</h2>
         </div>
 
         <div
           className="
             w-14 h-14 rounded-xl
-            bg-gradient-to-br from-blue-500 to-indigo-600
-            text-white shadow-lg
+            bg-gradient-to-br from-blue-300 to-blue-200
+            text-blue-600 shadow-lg
             flex items-center justify-center
             group-hover:scale-110 transition-transform
           "

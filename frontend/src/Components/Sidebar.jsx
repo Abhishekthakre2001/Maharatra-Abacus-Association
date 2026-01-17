@@ -13,7 +13,7 @@ import {
   List
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import logo from "../assets/logo (4).png";
+import logo from "../assets/logo.png";
 import colors from "../utils/Color";
 
 
@@ -94,10 +94,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && (
               <div className="flex flex-col">
                 <span className="text-white font-semibold text-lg tracking-wide leading-none">
-                  Ideal Panel
+                  DevEraa
                 </span>
                 <span className="text-xs mt-1 tracking-wide" style={{ color: colors.text.gray300 }}>
-                  Inventory Suite
+                  Grow with Deveraa
                 </span>
               </div>
             )}
@@ -105,8 +105,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="text-white p-1 rounded-full transition"
-            style={{ backgroundColor: colors.accent.orange }}
+            className=" p-1 rounded-full transition"
+            style={{ backgroundColor: colors.sidebar.toggle_bg, color: colors.sidebar.toggle_color }}
           >
             <ChevronLeft
               size={20}
@@ -132,7 +132,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         `}
                 style={{
                   backgroundColor: isActive(item.path)
-                    ? colors.accent.orange
+                    ? colors.sidebar.active_button
                     : "transparent",
                   color: isActive(item.path)
                     ? colors.text.white
@@ -159,10 +159,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               onClick={logout}
               className={`
         w-full flex items-center gap-3 px-4 py-3 rounded-xl
-        text-white shadow-lg transition hover:opacity-90
+         shadow-lg transition hover:opacity-90
         ${isCollapsed && "justify-center"}
       `}
-              style={{ backgroundColor: colors.accent.orange }}
+              style={{ backgroundColor: colors.accent.orange, color: colors.text.white }}
             >
               <LogOut size={20} />
               {!isCollapsed && <span>Logout</span>}
