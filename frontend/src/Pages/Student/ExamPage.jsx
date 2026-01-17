@@ -282,6 +282,7 @@ export default function ExamPage() {
                             danger={timeRemaining < 300}
                         />
                     </div>
+                    
 
                     {/* Vertical Number Display */}
                     <div className="mb-4 flex justify-center">
