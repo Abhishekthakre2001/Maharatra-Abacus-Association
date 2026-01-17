@@ -8,7 +8,7 @@ import ResultPage from "../Pages/ResultPage";
 import StudentResultDetailPage from "../Pages/StudentResultDetailPage";
 import QuestionPage from "../Pages/QuestionPage";
 import AddQuestionPage from "../Pages/Addquestion";
-import ProtectedRoute from "./ProtectedRoute";
+import ProtectedRoute from "./RoleBasedProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import Masters from "../Pages/Masters";
 import Examschedule from "../Pages/Examschedule";
@@ -18,6 +18,8 @@ import StudentDashboardPage from "../Pages/Student/StudentDashboardPage";
 import ExamRule from "../Pages/Student/ExamRule";
 import ExamPage from "../Pages/Student/ExamPage";
 import StudentResultPage from "../Pages/Student/ResultPage";
+import RoleProtectedRoute from "./RoleBasedProtectedRoute";
+
 
 
 const AppRoutes = () => {
@@ -34,132 +36,134 @@ const AppRoutes = () => {
         }
       />
 
-      {/* 🔒 Protected Routes */}
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
             <Dashboard />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/masters"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
             <Masters />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/exam-schedule"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
             <Examschedule />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/students-list"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
             <StudentPage />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/add-student"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
             <AddStudentPage />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
+
       <Route
         path="/add-student/:id"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
             <AddStudentPage />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/add-question"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
             <AddQuestionPage />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/results"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
             <ResultPage />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/results/:id"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
             <StudentResultDetailPage />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/questions"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
             <QuestionPage />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
+
 
       {/*  student dashboard route added here */}
       <Route
         path="/student-dashboard"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["student"]}>
             <StudentDashboardPage />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/exam-rule"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["student"]}>
             <ExamRule />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/exam-page"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["student"]}>
             <ExamPage />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
 
       <Route
         path="/student-result"
         element={
-          <ProtectedRoute>
+          <RoleProtectedRoute allowedRoles={["student"]}>
             <StudentResultPage />
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
+
 
     </Routes>
   );

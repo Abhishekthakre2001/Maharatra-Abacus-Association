@@ -33,18 +33,25 @@ exports.deleteUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ success: false, message: "Username and password required" });
+      return res.status(400).json({
+        success: false,
+        message: "Username and password required"
+      });
     }
+
+    // ✅ ONLY trim spaces
+    username = username.trim();
 
     const user = await UserService.loginUser(username, password);
 
-    console.log("user", user)
-
     if (!user) {
-      return res.status(401).json({ success: false, message: "Invalid username or password" });
+      return res.status(401).json({
+        success: false,
+        message: "Invalid username or password"
+      });
     }
 
     if (user.status !== 1) {
@@ -54,14 +61,13 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-
-    // ⏳ Subscription expiry check
+    // ⏳ subscription check (unchanged)
     if (user.subscription_end_date) {
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // normalize today
+      today.setHours(0, 0, 0, 0);
 
       const expiryDate = new Date(user.subscription_end_date);
-      expiryDate.setHours(0, 0, 0, 0); // normalize expiry
+      expiryDate.setHours(0, 0, 0, 0);
 
       if (expiryDate < today) {
         return res.status(403).json({
@@ -87,6 +93,10 @@ exports.loginUser = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
+

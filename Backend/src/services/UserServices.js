@@ -26,6 +26,7 @@ const UserService = {
 
     return user;
   }
+
 };
 
 module.exports = UserService;

@@ -1,31 +1,31 @@
 const pool = require("../config/db");
 
 const UserModel = {
- create: async (data) => {
-  const sql = `
+  create: async (data) => {
+    const sql = `
     INSERT INTO users
     (name, class, address, mobilenumber, username, password,
      level, dob, subscription_end_date, usertype, createdby, status)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  const [result] = await pool.query(sql, [
-    data.name,
-    data.class,
-    data.address,
-    data.mobilenumber,
-    data.username,
-    data.password,
-    data.level,
-    data.dob,
-    data.subscription_end_date,
-    data.usertype,
-    data.createdby,
-    data.status ?? 1
-  ]);
+    const [result] = await pool.query(sql, [
+      data.name,
+      data.class,
+      data.address,
+      data.mobilenumber,
+      data.username,
+      data.password,
+      data.level,
+      data.dob,
+      data.subscription_end_date,
+      data.usertype,
+      data.createdby,
+      data.status ?? 1
+    ]);
 
-  return result;
-},
+    return result;
+  },
   findAll: async () => {
     const [rows] = await pool.query("SELECT * FROM users");
     return rows;
@@ -36,7 +36,7 @@ const UserModel = {
     return rows[0];
   },
 
-    findByadminId: async (id) => {
+  findByadminId: async (id) => {
     const [rows] = await pool.query("SELECT * FROM users WHERE createdby = ? && usertype= 'student'", [id]);
     return rows;
   },
@@ -67,13 +67,17 @@ const UserModel = {
     return result;
   },
 
+
   findByUsername: async (username) => {
   const [rows] = await pool.query(
-    "SELECT * FROM users WHERE username = ?",
+    "SELECT * FROM users WHERE BINARY username = ?",
     [username]
   );
+
   return rows[0];
-},
+}
+
+
 
 };
 

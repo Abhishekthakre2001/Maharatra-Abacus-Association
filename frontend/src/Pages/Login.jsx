@@ -11,7 +11,7 @@ const Login = () => {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [modal, setModal] = useState({
@@ -30,20 +30,29 @@ const Login = () => {
 
       const { token, user } = res.data;
 
-      // ✅ Save token in cookie (simple JS cookie)
-      document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24}`;
+      // clear old data
+      localStorage.clear();
+      sessionStorage.clear();
 
-      // ✅ Save user & token in localStorage
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      if (rememberMe) {
+        // ✅ persistent login
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("isremeber", "true");
+      } else {
+        // ✅ session-only login
+        sessionStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+        sessionStorage.setItem("isremeber", "false");
+      }
 
-      console.log("res", res.data.user.usertype)
-
-      if (res.data.user.usertype === "student") {
-        navigate("/student-dashboard")
+      // role based redirect AFTER login
+      if (user.usertype.toLowerCase() === "student") {
+        navigate("/student-dashboard");
       } else {
         navigate("/dashboard");
       }
+
 
 
 
@@ -93,7 +102,7 @@ const Login = () => {
                   Premium Community
                 </span>
               </h1>
-              
+
               <p className="text-base lg:text-lg mb-8 lg:mb-12" style={{ color: colors.text.gray500 }}>
                 A virtual way productive journey starts from here.
               </p>
@@ -103,7 +112,7 @@ const Login = () => {
                 <div className="relative group">
                   {/* Animated gradient border */}
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-full opacity-75 group-hover:opacity-100 blur-md transition-opacity duration-300 animate-spin-slow"></div>
-                  
+
                   {/* Placeholder for illustration - you can replace with actual image */}
                   <div className="relative w-56 h-56 lg:w-72 lg:h-72 xl:w-80 xl:h-80 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-xl border-4 border-white/50 hover:scale-105 transition-transform duration-500" style={{ background: `linear-gradient(135deg, ${colors.primary.blue200}, ${colors.primary.blue100}, ${colors.background.blue50})` }}>
                     <div className="text-center relative z-10">
@@ -116,7 +125,7 @@ const Login = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Enhanced decorative elements */}
                   <div className="absolute -top-3 -right-3 lg:-top-4 lg:-right-4 w-14 h-14 lg:w-20 lg:h-20 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full opacity-70 animate-pulse shadow-lg"></div>
                   <div className="absolute -bottom-3 -left-3 lg:-bottom-4 lg:-left-4 w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-pink-300 to-purple-400 rounded-full opacity-70 animate-pulse shadow-lg animation-delay-1000"></div>
@@ -124,7 +133,7 @@ const Login = () => {
                 </div>
               </div>
 
-              
+
             </div>
           </div>
         </div>
@@ -142,7 +151,7 @@ const Login = () => {
             <div className="bg-white/90 backdrop-blur-2xl p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-3xl shadow-[0_20px_70px_-15px_rgba(0,0,0,0.3)] border border-white/60 hover:shadow-[0_25px_80px_-15px_rgba(0,0,0,0.35)] transition-shadow duration-300 relative overflow-hidden">
               {/* Subtle gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-purple-50/30 pointer-events-none"></div>
-              
+
               <div className="mb-6 sm:mb-8 relative z-10">
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 flex items-center gap-2" style={{ color: colors.text.gray800 }}>
                   Sign in to Continue
@@ -187,9 +196,7 @@ const Login = () => {
                     </div>
                     <span className="transition">Remember Me</span>
                   </label>
-                  <a href="#" className="font-medium transition" style={{ color: colors.primary.blue600 }}>
-                    Forgot Password?
-                  </a>
+
                 </div>
 
                 {/* Sign In Button */}
@@ -201,7 +208,7 @@ const Login = () => {
                 >
                   {/* Shine effect on hover */}
                   <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000 ease-out"></div>
-                  
+
                   <span className="relative z-10">
                     {isLoading ? (
                       <span className="flex items-center justify-center">
@@ -233,21 +240,21 @@ const Login = () => {
                 </div>
               </div> */}
 
-            
-             
+
+
 
               {/* Footer */}
               <div className="mt-5 sm:mt-6 text-center relative z-10">
                 <p className="text-xs sm:text-sm" style={{ color: colors.text.gray600 }}>
-                  Don't have an account?{" "}
-                  <a href="#" className="font-semibold transition" style={{ color: colors.primary.blue600 }}>
-                    Contact Admin
+                  Maintain And Developed By
+                  <a href="https://deveraa.com/" className="font-semibold transition ml-2" style={{ color: colors.primary.blue600 }}>
+                    DevEraa
                   </a>
                 </p>
               </div>
             </div>
 
-           
+
           </div>
         </div>
       </div>
