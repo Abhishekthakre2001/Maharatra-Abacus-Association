@@ -7,8 +7,8 @@ export const validateStudent = (data) => {
   }
 
   // Class → only number
-  if (!data.class || isNaN(data.class)) {
-    errors.class = "Class must be a number";
+  if (!data.class ) {
+    errors.class = "Class is required";
   }
 
   // Address → minimum 3 characters

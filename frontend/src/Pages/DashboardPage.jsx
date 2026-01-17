@@ -1,11 +1,15 @@
 // src/Pages/DashboardPage.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dashboard from "../Components/Dashboard";
 import Sidebar from "../Components/Sidebar";
 
 export default function DashboardPage() {
   // ✅ Sidebar collapse state here
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(()=>{
+    localStorage.setItem("isCollapsed",isCollapsed)
+  },[isCollapsed])
 
   return (
     <>

@@ -116,6 +116,14 @@ export default function StudentList() {
             render: (value) => (
                 <span className="font-medium" style={{ color: colors.text.gray600 }}>{value}</span>
             )
+        },
+        {
+            key: "password",
+            label: "Password",
+            sortable: true,
+            render: (value) => (
+                <span className="font-medium" style={{ color: colors.text.gray600 }}>{value}</span>
+            )
         }
     ];
 

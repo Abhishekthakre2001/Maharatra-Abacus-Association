@@ -10,6 +10,9 @@ import questionApi from "../api/questionApi";
 import setsApi from "../api/SetsApi";
 import { useEffect } from "react";
 import levelApi from "../api/LevelApi";
+import sampleExcel from "../assets/Questions_Bank.csv?url";
+// import sampleExcel from "../assets/Questions_Bank.csv?url";
+
 
 export default function CsvQuestionManager() {
   const [modal, setModal] = useState({ open: false, type: "success", title: "", message: "" });
@@ -75,6 +78,12 @@ export default function CsvQuestionManager() {
         q.id === id ? { ...q, [field]: value } : q
       )
     );
+
+    // clear error for this field
+    setErrors((prev) => ({
+      ...prev,
+      [field]: ""
+    }));
   };
 
   // Delete question
@@ -97,6 +106,29 @@ export default function CsvQuestionManager() {
 
   // Handle manual question addition
   const handleAddQuestion = async () => {
+
+    let newErrors = {};
+
+    if (!level) {
+      newErrors.level = "Please select level";
+    }
+
+    if (!set) {
+      newErrors.set = "Please select set";
+    }
+
+    // ❌ If validation fails
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setModal({
+        open: true,
+        type: "error",
+        title: "Error",
+        message: "Please fix validation errors"
+      });
+      return;
+    }
+
     if (newQuestion.Question && newQuestion["Correct Option"]) {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
       const payload = {
@@ -123,7 +155,7 @@ export default function CsvQuestionManager() {
           "Option 4": newQuestion["Option 4"],
           "Correct Option": newQuestion["Correct Option"]
         };
-        setQuestions([...questions, newQ]);
+        // setQuestions([...questions, newQ]);
         setNewQuestion({
           Question: "",
           "Option 1": "",
@@ -132,10 +164,17 @@ export default function CsvQuestionManager() {
           "Option 4": "",
           "Correct Option": ""
         });
+        setSet(""); setLevel("");
+        // ✅ Clear errors if valid
+        setErrors({});
         setIsModalOpen(false);
+        setModal({ open: true, type: "success", title: "Success", message: "Questions Added In set." });
       } catch (err) {
-        console.error(err);
-        setModal({ open: true, type: "error", title: "Error", message: "Failed to save question." });
+        console.error(err.response.data.error);
+        if (err.response.data.error == "set_time not found for given level and set_id") {
+          setModal({ open: true, type: "error", title: "Error", message: `${level}-${set} Set Are Not Available` });
+        }
+
       }
     }
   };
@@ -168,11 +207,45 @@ export default function CsvQuestionManager() {
     if (v.length >= 6) v = v.slice(0, 5) + ':' + v.slice(5, 7);
 
     setTime(v);
+    setErrors(prev => ({ ...prev, time: "" }));
+  };
+
+  const handleTimeBlur = () => {
+    if (!time) return;
+
+    const parts = time.split(":").map(p => p.padEnd(2, "0"));
+
+    let hh = parts[0] || "00";
+    let mm = parts[1] || "00";
+    let ss = parts[2] || "00";
+
+    // clamp values safely
+    hh = Math.min(23, Number(hh)).toString().padStart(2, "0");
+    mm = Math.min(59, Number(mm)).toString().padStart(2, "0");
+    ss = Math.min(59, Number(ss)).toString().padStart(2, "0");
+
+    setTime(`${hh}:${mm}:${ss}`);
   };
 
 
   // Submit all data: log payload and validate required fields
   const handleSubmit = async () => {
+
+    let newErrors = {};
+
+    if (!level) {
+      newErrors.level = "Please select level";
+    }
+
+    if (!set) {
+      newErrors.set = "Please select set";
+    }
+
+    if (!time) {
+      newErrors.time = "Please enter time";
+    }
+
+
     const payload = {
       level: Number(level),
       set: set,
@@ -188,10 +261,21 @@ export default function CsvQuestionManager() {
       return;
     }
 
-    if (!level || !set || !time) {
-      setModal({ open: true, type: "error", title: "Error", message: "Please fill Level, Set and Time before submitting." });
+
+    // ❌ If validation fails
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setModal({
+        open: true,
+        type: "error",
+        title: "Error",
+        message: "Please fix validation errors"
+      });
       return;
     }
+
+    // ✅ Clear errors if valid
+    setErrors({});
 
     // Prepare questions for backend
     const mapped = questions.map((q) => ({
@@ -239,7 +323,9 @@ export default function CsvQuestionManager() {
     { id: 0, name: "No" }
   ];
 
+  const [errors, setErrors] = useState({});
 
+  console.log("questions", questions)
 
 
   return (
@@ -258,22 +344,30 @@ export default function CsvQuestionManager() {
             <SelectField
               label="Level"
               value={level}
-              onChange={(e) => setLevel(e.target.value)}
+              onChange={(e) => {
+                setLevel(e.target.value);
+                setErrors(prev => ({ ...prev, level: "" })); // ✅ clear error
+              }}
               options={availableLevels.map(lv => ({
                 value: lv.level,
                 label: lv.level || lv.name || `Level ${lv.id}`
               }))}
               placeholder="-- Select Level --"
+              error={errors.level} showError={!!errors.level}
             />
             <SelectField
               label="Set"
               value={set}
-              onChange={(e) => setSet(e.target.value)}
+              onChange={(e) => {
+                setSet(e.target.value);
+                setErrors(prev => ({ ...prev, set: "" })); // ✅ clear error
+              }}
               options={availableSets.map(s => ({
                 value: s.set_name,
                 label: s.set_name || s.name || `Set ${s.id}`
               }))}
               placeholder="-- Select Set --"
+              error={errors.set} showError={!!errors.set}
             />
             <div>
               <InputField
@@ -281,9 +375,12 @@ export default function CsvQuestionManager() {
                 type="text"
                 value={time}
                 onChange={handleTimeChange}
+                onBlur={handleTimeBlur}
                 placeholder="HH:MM:SS"
                 inputMode="numeric"
                 pattern="^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
+                error={errors.time}
+                showError={!!errors.time}
               />
             </div>
 
@@ -327,7 +424,7 @@ export default function CsvQuestionManager() {
 
             {questions.length === 0 && (
               <Button
-                onClick={() => { setModalSetId(set); setModalLevelId(level); setIsModalOpen(true); }}
+                onClick={() => { setModalSetId(set); setModalLevelId(level); setIsModalOpen(true); setSet(""); setTime(""); setLevel(""); }}
                 variant="primary"
                 icon={Plus}
                 className="w-full sm:w-auto whitespace-nowrap"
@@ -335,6 +432,19 @@ export default function CsvQuestionManager() {
                 Add Question Manually in Set
               </Button>
             )}
+
+            <Button
+              onClick={() => {
+                const link = document.createElement("a");
+                link.href = sampleExcel;
+                link.download = "Questions_Bank.csv";
+                link.click();
+              }}
+              variant="primary"
+            >
+              Download Sample Excel Sheet
+            </Button>
+
           </div>
 
           {isUploading && (
@@ -348,42 +458,44 @@ export default function CsvQuestionManager() {
               <div className="text-sm text-gray-600 text-right mt-1">{uploadProgress}%</div>
             </div>
           )}
-        </div>
 
-        {/* Upload Box (hidden once CSV/questions are loaded) */}
-        {questions.length === 0 && (
-          <div
-            className={`border-2 border-dashed rounded-xl p-6 sm:p-10 text-center mb-6
+
+          {/* Upload Box (hidden once CSV/questions are loaded) */}
+          {questions.length === 0 && (
+            <div
+              className={`border-2 border-dashed rounded-xl p-6 sm:p-10 text-center mb-6 mt-6
           ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragActive(true);
-            }}
-            onDragLeave={() => setDragActive(false)}
-            onDrop={handleDrop}
-          >
-            <p className="text-lg font-semibold mb-2">Drag & Drop CSV File Here</p>
-            <p className="text-gray-500 mb-4">Preview, Update & Delete Questions</p>
-
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleFileChange}
-              className="hidden"
-              id="csvUpload"
-            />
-            <label
-              htmlFor="csvUpload"
-              className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors"
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragActive(true);
+              }}
+              onDragLeave={() => setDragActive(false)}
+              onDrop={handleDrop}
             >
-              Browse CSV
-            </label>
-          </div>
-        )}
+              <p className="text-lg font-semibold mb-2">Drag & Drop CSV File Here</p>
+              <p className="text-gray-500 mb-4">Preview, Update & Delete Questions</p>
+
+              <input
+                type="file"
+                accept=".csv, .xlsx, .xls"
+                onChange={handleFileChange}
+                className="hidden"
+                id="csvUpload"
+              />
+              <label
+                htmlFor="csvUpload"
+                className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors"
+              >
+                Browse CSV
+              </label>
+            </div>
+          )}
+
+        </div>
 
         {/* Preview Table */}
         {questions.length > 0 && (
-          <div className="sticky top-0 bg-white rounded-xl shadow-lg">
+          <div className="sticky top-15 bg-white rounded-xl shadow-lg">
             {/* Search Bar and Count Header */}
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -437,7 +549,7 @@ export default function CsvQuestionManager() {
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
+            <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
                   <tr>
@@ -568,6 +680,79 @@ export default function CsvQuestionManager() {
               required
             />
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <SelectField
+                label="Level"
+                value={level}
+                onChange={(e) => {
+                  setLevel(e.target.value);
+                  setErrors(prev => ({ ...prev, level: "" })); // ✅ clear error
+                }}
+                options={availableLevels.map(lv => ({
+                  value: lv.level,
+                  label: lv.level || lv.name || `Level ${lv.id}`
+                }))}
+                placeholder="-- Select Level --"
+                error={errors.level} showError={!!errors.level}
+              />
+              <SelectField
+                label="Set"
+                value={set}
+                onChange={(e) => {
+                  setSet(e.target.value);
+                  setErrors(prev => ({ ...prev, set: "" })); // ✅ clear error
+                }}
+                options={availableSets.map(s => ({
+                  value: s.set_name,
+                  label: s.set_name || s.name || `Set ${s.id}`
+                }))}
+                placeholder="-- Select Set --"
+                error={errors.set} showError={!!errors.set}
+              />
+              {/* <div>
+                <InputField
+                  label="Time (HH:MM:SS)"
+                  type="text"
+                  value={time}
+                  onChange={handleTimeChange}
+                  onBlur={handleTimeBlur}
+                  placeholder="HH:MM:SS"
+                  inputMode="numeric"
+                  pattern="^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
+                  error={errors.time}
+                  showError={!!errors.time}
+                />
+              </div> */}
+
+              <div>
+                {/* <label className="block text-sm font-medium text-gray-700 mb-1">
+                Mock Set
+              </label>
+
+              <select
+                value={isMockSet}
+                onChange={(e) => setIsMockSet(Number(e.target.value))}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+               focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">-- Select --</option>
+                <option value={1}>Yes</option>
+                <option value={0}>No</option>
+              </select> */}
+                {/* <SelectField
+                  label="Mock Set"
+                  value={isMockSet}
+                  onChange={(e) => setIsMockSet(Number(e.target.value))}
+                  options={yesNoOptions.map(opt => ({
+                    value: opt.id,
+                    label: opt.name
+                  }))}
+                  placeholder="-- Select --"
+                /> */}
+              </div>
+
+            </div>
+
             {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Set</label>
@@ -600,17 +785,20 @@ export default function CsvQuestionManager() {
 
             <div className="flex justify-end gap-3 my-8">
               <Button
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => { setIsModalOpen(false); setSet(""); setTime(""); setLevel(""); setErrors({}); }}
                 variant="outline"
               >
                 Cancel
               </Button>
               <Button
-                onClick={handleAddQuestion}
+                onClick={() => {
+                  handleAddQuestion();
+                }}
                 variant="primary"
               >
                 Add Question
               </Button>
+
             </div>
           </div>
         </Modal>

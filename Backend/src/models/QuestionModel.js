@@ -24,7 +24,7 @@ const QuestionModel = {
     console.log("data", data)
     // 1️⃣ Get set_time from sets table
     const getSetTimeSql = `
-    SELECT set_time
+    SELECT set_time, ismockset
     FROM questions
     WHERE level = ? AND set_id = ?
     LIMIT 1
@@ -39,9 +39,10 @@ const QuestionModel = {
       throw new Error("set_time not found for given level and set_id");
     }
 
-    const set_time = setRows[0].set_time; // varchar(8)
+    const set_time = setRows[0].set_time;
+    const ismockset = setRows[0].ismockset
 
-    console.log("set_time ", set_time)
+    console.log("ismockset ", ismockset)
 
     // 2️⃣ Insert question with set_time
     const insertSql = `
@@ -56,9 +57,10 @@ const QuestionModel = {
       level,
       set_id,
       set_time,
+      ismockset,
       createdby
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
     const [result] = await pool.query(insertSql, [
@@ -71,6 +73,7 @@ const QuestionModel = {
       data.level,
       data.set_id,
       set_time,
+      ismockset,
       data.createdby
     ]);
 
@@ -187,9 +190,9 @@ const QuestionModel = {
   },
 
   // models/QuestionModel.js
- getSetsByLevelAndCreator: ({ level, createdby }) =>
-  pool.query(
-    `
+  getSetsByLevelAndCreator: ({ level, createdby }) =>
+    pool.query(
+      `
     SELECT DISTINCT 
       level,
       TRIM(UPPER(set_id)) AS set_id
@@ -198,20 +201,20 @@ const QuestionModel = {
       AND level = ?
     ORDER BY set_id
     `,
-    [createdby, level]
-  ),
+      [createdby, level]
+    ),
 
-   getPaperset: ({ level, createdby, set }) =>
-  pool.query(
-    `
+  getPaperset: ({ level, createdby, set }) =>
+    pool.query(
+      `
     SELECT 
      *
     FROM questions
     WHERE createdby = ?
       AND level = ? AND set_id = ?
     `,
-    [createdby, level, set]
-  ),
+      [createdby, level, set]
+    ),
 };
 
 module.exports = QuestionModel;

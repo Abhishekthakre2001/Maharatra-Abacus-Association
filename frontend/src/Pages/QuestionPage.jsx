@@ -11,11 +11,19 @@ import questionApi from '../api/questionApi';
 import { useEffect } from 'react';
 import Modal from '../UI/Modal';
 import InputField from '../UI/InputField';
+import MessageModal from "../utils/MessageModal";
 
 export default function QuestionPage() {
+    const [modal, setModal] = useState({
+        open: false,
+        type: "",
+        title: "",
+        message: ""
+    });
+
     const [open, setOpen] = useState(false);
     const [time, setTime] = useState("");
- const [isMockSet, setIsMockSet] = useState(0); // default No
+    const [isMockSet, setIsMockSet] = useState(0); // default No
     const [isCollapsed, setIsCollapsed] = useState(false);
     const navigate = useNavigate();
     const [adminId, setAdminId] = useState(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).id : null);
@@ -76,19 +84,22 @@ export default function QuestionPage() {
                 level: selectedQuestion.level,
                 set: selectedQuestion.set,
                 total_time: time,
-                isMockSet : isMockSet
+                isMockSet: isMockSet
             }
             delete payload.id;
             // await questionApi.update(id, payload);
             await questionApi.updateSet(payload);
             await reload();
+            setModal({ open: true, type: "success", title: "Success", message: "Update successfully." });
+            setQuestionsView(false);
+            reload();
             setShowUpdateModal(false);
             setOpen(false);
             setSelectedQuestion(null);
             console.log('Updated question:', updatedQuestion);
         } catch (err) {
             console.error('Update failed', err);
-            alert('Failed to update question');
+            setModal({ open: true, type: "error", title: "Success", message: "Not Update successfully." });
         } finally {
             setLoading(false);
         }
@@ -281,6 +292,13 @@ export default function QuestionPage() {
 
     return (
         <>
+            <MessageModal
+                open={modal.open}
+                type={modal.type}
+                title={modal.title}
+                message={modal.message}
+                onClose={() => setModal({ ...modal, open: false })}
+            />
             <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
             <main className={`transition-all duration-500 ${isCollapsed ? "md:ml-20" : "md:ml-64"} px-2 md:px-8 py-6 mb-12`}>
                 <div className="max-w-7xl mx-auto">

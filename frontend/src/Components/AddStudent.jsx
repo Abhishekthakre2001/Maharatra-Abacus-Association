@@ -27,6 +27,7 @@ export default function AddStudent() {
         level: "",
         dob: "",
         subscription_end_date: "",
+        status: null,
         usertype: "student"
     });
 
@@ -132,7 +133,9 @@ export default function AddStudent() {
             dob: formData.dob,
             subscription_end_date: formData.subscription_end_date,
             usertype: formData.usertype,
-            createdby: user.id
+            createdby: user.id,
+            password: formData.password,
+            status:formData.status
         };
         if (!id || formData.password) {
             payload.password = formData.password;
@@ -184,7 +187,8 @@ export default function AddStudent() {
             subscription_end_date: "",
             usertype: "student",
             status: 1,
-            createdby: "admin"
+            createdby: "admin",
+            status:null
         });
         setErrors({});
     };
@@ -201,12 +205,13 @@ export default function AddStudent() {
                     address: u.address || "",
                     mobileNumber: u.mobilenumber || "",
                     username: u.username || "",
-                    password: "",
-                    confirmPassword: "",
+                    password: u.password,
+                    confirmPassword: u.password,
                     level: u.level || "",
                     dob: u.dob ? u.dob.split('T')[0] : "",
                     subscription_end_date: u.subscription_end_date ? u.subscription_end_date.split('T')[0] : "",
                     usertype: u.usertype || "student",
+                    status:u.status
                 });
             })
             .catch(() => {
@@ -235,7 +240,7 @@ export default function AddStudent() {
                 message={modal.message}
                 onClose={() => setModal({ ...modal, open: false })}
             />
-              <AppBar title="Student Management" subtitle="Manage and view all students" />
+            <AppBar title="Student Management" subtitle="Manage and view all students" />
 
             {/* ⬇️ EVERYTHING BELOW IS YOUR ORIGINAL DESIGN (UNCHANGED) ⬇️ */}
             <div className="h-full flex flex-col">
@@ -273,6 +278,21 @@ export default function AddStudent() {
                             <Input label="Username" value={formData.username} onChange={handleChange("username")} required error={errors.username} showError={!!errors.username} />
                             <Input type="password" label="Password" value={formData.password} onChange={handleChange("password")} required={!id} error={errors.password} showError={!!errors.password} />
                             <Input type="password" label="Confirm Password" value={formData.confirmPassword} onChange={handleChange("confirmPassword")} required={!id} error={errors.confirmPassword} showError={!!errors.confirmPassword} />
+                            <SelectField
+                                label="Is Active"
+                                value={Number(formData.status)}   // 🔑 ensure number
+                                onChange={handleChange("status")} // ✅ FIXED
+                                options={[
+                                    { value: 1, label: "Active" },
+                                    { value: 0, label: "Deactive" }
+                                ]}
+                                placeholder="-- Select Status --"
+                                required
+                                error={errors.status}             // ✅ FIXED
+                                showError={!!errors.status}
+                            />
+
+
                         </div>
                         <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-6 md:mt-8">
                             <Button type="button" variant="secondary" onClick={handleCancel} icon={X}>

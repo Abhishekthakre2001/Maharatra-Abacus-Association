@@ -94,7 +94,10 @@ const SelectField = ({
             readOnly={!open}
           />
 
-          <ChevronDown size={18} className={`${open ? "rotate-180" : ""}`} />
+          <ChevronDown size={18} className={`${open ? "rotate-180" : ""}`} onClick={(e) => {
+            e.stopPropagation();   // 🔑 IMPORTANT
+            setOpen(prev => !prev);
+          }} />
         </div>
 
         {open && (

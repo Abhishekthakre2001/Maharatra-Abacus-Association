@@ -75,18 +75,46 @@ export default function Calender() {
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : {};
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!user?.id) {
-            setMessageModal({ open: true, type: 'error', title: 'Not signed in', message: 'Please sign in to schedule an exam.' });
+            setMessageModal({
+                open: true,
+                type: "error",
+                title: "Not signed in",
+                message: "Please sign in to schedule an exam."
+            });
             return;
         }
 
-        create({
-            ...examData,
-            date: selectedDate,
-            createdby: user.id
-        });
+        try {
+            await create({
+                ...examData,
+                date: selectedDate,
+                createdby: user.id
+            });
+
+            // ✅ SUCCESS ALERT
+            setMessageModal({
+                open: true,
+                type: "success",
+                title: "Success",
+                message: "Exam scheduled successfully."
+            });
+
+            // optional: reset form
+            // setExamData(initialState);
+
+        } catch (error) {
+            // ❌ ERROR ALERT
+            setMessageModal({
+                open: true,
+                type: "error",
+                title: "Error",
+                message: error?.response?.data?.message || "Failed to schedule exam."
+            });
+        }
     };
+
 
     const { data: schedules, reload } = useFetchData(() => {
         if (!user?.id) return Promise.resolve([]);
@@ -95,7 +123,7 @@ export default function Calender() {
 
     useEffect(() => {
         const adminid = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).id : null;
-        
+
         // Fetch levels
         levelApi.getbyadminid(adminid)
             .then(res => {
@@ -103,7 +131,7 @@ export default function Calender() {
                 setLevels(Array.isArray(payload) ? payload : []);
             })
             .catch(err => console.error('Failed to load levels', err));
-        
+
         // Fetch sets
         setsApi.getbyadminid(adminid)
             .then(res => {
@@ -258,7 +286,7 @@ export default function Calender() {
                                     No exams scheduled for this date
                                 </p>
                             ) : (
-                                
+
                                 <div className="space-y-3">
                                     {filteredSchedules.map(exam => (
                                         <div

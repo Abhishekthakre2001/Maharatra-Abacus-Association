@@ -18,6 +18,8 @@ import colors from "../utils/Color";
 
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
+
+  // const isCollapsed = true;
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(false);
@@ -63,7 +65,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     navigate(path);
   };
 
- 
+
   // ✅ DESKTOP SIDEBAR
   return (
     <>
@@ -114,7 +116,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         </div>
 
         {/* Menu */}
-        <div className="px-3 space-y-2">
+        <div className="px-3 space-y-2 mt-10">
           {menuItems.map((item) => {
             const Icon = item.icon;
 
@@ -123,17 +125,18 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                 key={item.id}
                 onClick={() => handleClick(item.path)}
                 className={`
-                  w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                  transition-all duration-300
-                  ${isActive(item.path)
-                    ? "text-white shadow-lg"
-                    : "hover:bg-white/10"
-                  }
-                  ${isCollapsed && "justify-center"}
-                `}
+          w-full flex items-center gap-3 px-4 py-3 rounded-xl
+          transition-all duration-300
+          ${isActive(item.path) ? "text-white shadow-lg" : "hover:bg-white/10"}
+          ${isCollapsed && "justify-center"}
+        `}
                 style={{
-                  backgroundColor: isActive(item.path) ? colors.accent.orange : 'transparent',
-                  color: isActive(item.path) ? colors.text.white : colors.text.gray300
+                  backgroundColor: isActive(item.path)
+                    ? colors.accent.orange
+                    : "transparent",
+                  color: isActive(item.path)
+                    ? colors.text.white
+                    : colors.text.gray300,
                 }}
               >
                 <Icon size={20} />
@@ -143,20 +146,30 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
           })}
         </div>
 
-        {/* Logout */}
-        <div className="p-4" onClick={() => logout()}>
-          <button
-            className={`
-              w-full flex items-center gap-3 px-4 py-3 rounded-xl
-              text-white shadow-lg transition
-              ${isCollapsed && "justify-center"}
-            `}
-            style={{ backgroundColor: colors.accent.orange }}
-          >
-            <LogOut size={20} />
-            {!isCollapsed && <span>Logout</span>}
-          </button>
+        {/* Push Logout to Bottom */}
+        <div className="mt-auto">
+          {/* Divider */}
+          <div className="px-4">
+            <div className="h-px bg-white/20 mt-25" />
+          </div>
+
+          {/* Logout */}
+          <div className="p-4">
+            <button
+              onClick={logout}
+              className={`
+        w-full flex items-center gap-3 px-4 py-3 rounded-xl
+        text-white shadow-lg transition hover:opacity-90
+        ${isCollapsed && "justify-center"}
+      `}
+              style={{ backgroundColor: colors.accent.orange }}
+            >
+              <LogOut size={20} />
+              {!isCollapsed && <span>Logout</span>}
+            </button>
+          </div>
         </div>
+
       </div>
 
       {/* Content Shift */}

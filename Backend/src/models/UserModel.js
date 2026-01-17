@@ -44,7 +44,7 @@ const UserModel = {
   update: async (id, data) => {
     const sql = `
       UPDATE users SET
-      name=?, class=?, address=?, mobilenumber=?, level=?, dob=?, subscription_end_date=?, usertype=?, status=?
+      name=?, class=?, address=?, mobilenumber=?, username=?, password= ?, level=?, dob=?, subscription_end_date=?, usertype=?, status=?
       WHERE id=?
     `;
     const [result] = await pool.query(sql, [
@@ -52,6 +52,8 @@ const UserModel = {
       data.class,
       data.address,
       data.mobilenumber,
+      data.username,
+      data.password,
       data.level,
       data.dob,
       data.subscription_end_date,

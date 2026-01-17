@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 
 const UserService = {
   createUser: async (data) => {
-    data.password = await bcrypt.hash(data.password, 10);
+    // data.password = await bcrypt.hash(data.password, 10);
     return UserModel.create(data);
   },
 
@@ -21,11 +21,14 @@ const UserService = {
     const user = await UserModel.findByUsername(username);
     if (!user) return null;
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return null;
+    // ✅ PLAIN TEXT comparison
+    if (password !== user.password) {
+      return null;
+    }
 
     return user;
   }
+
 
 };
 
