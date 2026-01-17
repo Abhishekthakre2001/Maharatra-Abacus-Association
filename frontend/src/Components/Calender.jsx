@@ -30,7 +30,6 @@ export default function Calender() {
 
     const [openModal, setOpenModal] = useState(false);
     const [deleteModal, setDeleteModal] = useState({ open: false, id: null, loading: false });
-    const [messageModal, setMessageModal] = useState({ open: false, type: "success", title: "", message: "" });
 
     const [examData, setExamData] = useState({
         exam_title: "",
@@ -38,6 +37,13 @@ export default function Calender() {
         paper_set: "",
         start_time: "",
         end_time: ""
+    });
+
+    const [modal, setModal] = useState({
+        open: false,
+        type: "",
+        title: "",
+        message: ""
     });
 
 
@@ -64,7 +70,7 @@ export default function Calender() {
     const { create } = useCreate(examScheduleApi.create, () => {
         reload(); // reload schedules
         setOpenModal(false);
-        setMessageModal({
+        setModal({
             open: true,
             type: "success",
             title: "Success",
@@ -75,9 +81,58 @@ export default function Calender() {
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : {};
 
+    // const handleSave = async () => {
+    //     if (!user?.id) {
+    //         setModal({
+    //             open: true,
+    //             type: "error",
+    //             title: "Not signed in",
+    //             message: "Please sign in to schedule an exam."
+    //         });
+    //         return;
+    //     }
+
+    //     try {
+    //         await create({
+    //             ...examData,
+    //             date: selectedDate,
+    //             createdby: user.id
+    //         });
+
+    //         setModal({
+    //             open: true,
+    //             type: "success",
+    //             title: "Success",
+    //             message: "Exam scheduled successfully."
+    //         });
+
+    //         // optional: reset form
+    //         setExamData(initialState);
+
+    //     } catch (error) {
+
+    //         console.log("error", error?.response?.data?.message)
+    //         if (error?.response?.data?.message == 'Set not available for this level') {
+    //             setModal({
+    //                 open: true,
+    //                 type: "error",
+    //                 title: "Fail",
+    //                 message: "Set not available for this level"
+    //             });
+    //         } else {
+    //             setModal({
+    //                 open: true,
+    //                 type: "error",
+    //                 title: "Fail",
+    //                 message: "Exam Not Schedule Properly"
+    //             });
+    //         }
+
+    //     }
+    // };
     const handleSave = async () => {
         if (!user?.id) {
-            setMessageModal({
+            setModal({
                 open: true,
                 type: "error",
                 title: "Not signed in",
@@ -87,30 +142,43 @@ export default function Calender() {
         }
 
         try {
-            await create({
+            await examScheduleApi.create({
                 ...examData,
                 date: selectedDate,
                 createdby: user.id
             });
 
-            // ✅ SUCCESS ALERT
-            setMessageModal({
+            // ✅ reload calendar data
+            reload();
+
+            // ✅ close schedule modal
+            setOpenModal(false);
+
+            // ✅ reset form
+            setExamData({
+                exam_title: "",
+                exam_level: "",
+                paper_set: "",
+                start_time: "",
+                end_time: ""
+            });
+
+            // ✅ show success modal
+            setModal({
                 open: true,
                 type: "success",
                 title: "Success",
                 message: "Exam scheduled successfully."
             });
 
-            // optional: reset form
-            // setExamData(initialState);
-
         } catch (error) {
-            // ❌ ERROR ALERT
-            setMessageModal({
+            const msg = error?.response?.data?.message;
+
+            setModal({
                 open: true,
                 type: "error",
-                title: "Error",
-                message: error?.response?.data?.message || "Failed to schedule exam."
+                title: "Fail",
+                message: msg || "Exam not scheduled properly"
             });
         }
     };
@@ -168,11 +236,11 @@ export default function Calender() {
     return (
         <>
             <MessageModal
-                open={messageModal.open}
-                type={messageModal.type}
-                title={messageModal.title}
-                message={messageModal.message}
-                onClose={() => setMessageModal({ ...messageModal, open: false })}
+                open={modal.open}
+                type={modal.type}
+                title={modal.title}
+                message={modal.message}
+                onClose={() => setModal({ ...modal, open: false })}
             />
             <DeleteConfirmModal
                 open={deleteModal.open}
