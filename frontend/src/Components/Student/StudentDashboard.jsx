@@ -172,10 +172,10 @@ export default function StudentDashboard() {
           {/* ================= ACTION SECTION ================= */}
           <div className="bg-white rounded-2xl shadow-md border border-blue-100 p-6">
             <h3 className="text-lg font-semibold text-slate-800 mb-2">
-              Start Your Practice
+              Your Exams
             </h3>
             <p className="text-sm text-slate-500 mb-5">
-              Choose a mock test to practice or start a live exam if it is currently active.
+              Test exams anytime • Live exams only during scheduled time
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 max-w-md">
@@ -183,7 +183,7 @@ export default function StudentDashboard() {
 
               {!showSets && (
                 <Button
-                  variant="outline"
+                  variant="primary"
                   size="lg"
                   onClick={() => setShowSets(true)}
                   className="w-full"
