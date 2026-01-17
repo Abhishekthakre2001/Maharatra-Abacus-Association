@@ -20,7 +20,7 @@ const TopAutoCarousel = ({
     return () => clearInterval(timer);
   }, [isPaused, items.length, interval]);
 
-  // 👆 TOUCH HANDLERS (TOP STOP)
+  // 👆 TOUCH HANDLERS
   const onTouchStart = (e) => {
     setIsPaused(true);
     touchStartX.current = e.touches[0].clientX;
@@ -37,36 +37,49 @@ const TopAutoCarousel = ({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl ${className}`}
-      onMouseEnter={() => setIsPaused(true)}   // 🛑 STOP on hover
+      className={`
+        relative overflow-hidden rounded-2xl
+        bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100
+        border border-blue-100
+        shadow-lg hover:shadow-xl transition-shadow
+        ${className}
+      `}
+      onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
+      {/* GLASS OVERLAY */}
+      <div className="absolute inset-0 bg-white/40 backdrop-blur-md pointer-events-none" />
+
       {/* SLIDES */}
       <div
-        className="flex transition-transform duration-700 ease-[cubic-bezier(.4,0,.2,1)]"
+        className="relative z-10 flex transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)]"
         style={{ transform: `translateX(-${index * 100}%)` }}
       >
         {items.map((item, i) => (
-          <div key={i} className="w-full flex-shrink-0">
+          <div key={i} className="w-full flex-shrink-0 px-1 py-1">
             {item}
           </div>
         ))}
       </div>
 
-      {/* DOTS */}
+      {/* DOT INDICATORS */}
       {items.length > 1 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
           {items.map((_, i) => (
-            <span
+            <button
               key={i}
               onClick={() => setIndex(i)}
-              className={`cursor-pointer transition-all rounded-full
+              aria-label={`Go to slide ${i + 1}`}
+              className={`
+                transition-all duration-300
+                rounded-full
                 ${index === i
-                  ? "w-6 h-2 bg-white shadow"
-                  : "w-2 h-2 bg-white/60"
-                }`}
+                  ? "w-8 h-2 bg-blue-600 shadow-md"
+                  : "w-2 h-2 bg-blue-400/60 hover:bg-blue-500"
+                }
+              `}
             />
           ))}
         </div>

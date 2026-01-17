@@ -3,14 +3,16 @@ import { X, CheckCircle, AlertTriangle } from "lucide-react";
 
 const MessageModal = ({
   open,
-  type = "success", // "success" or "error"
+  type = "success", // success | error | warning
   title,
   message,
   onClose,
+  onConfirm, // ✅ NEW (used for warning yes)
 }) => {
   if (!open) return null;
 
   const isSuccess = type === "success";
+  const isWarning = type === "warning";
 
   return (
     <div
@@ -34,14 +36,21 @@ const MessageModal = ({
           {isSuccess ? (
             <CheckCircle size={48} className="text-green-500" />
           ) : (
-            <AlertTriangle size={48} className="text-red-500" />
+            <AlertTriangle
+              size={48}
+              className={isWarning ? "text-orange-500" : "text-red-500"}
+            />
           )}
         </div>
 
         {/* Title */}
         <h2
           className={`text-xl font-semibold text-center ${
-            isSuccess ? "text-green-600" : "text-red-600"
+            isSuccess
+              ? "text-green-600"
+              : isWarning
+              ? "text-orange-600"
+              : "text-red-600"
           }`}
         >
           {title}
@@ -52,12 +61,33 @@ const MessageModal = ({
 
         {/* Buttons */}
         <div className="flex justify-center gap-3 pt-2">
-          <button
-            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
-            onClick={onClose}
-          >
-            OK
-          </button>
+          {isWarning ? (
+            <>
+              <button
+                className="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition"
+                onClick={onClose}
+              >
+                No
+              </button>
+
+              <button
+                className="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition"
+                onClick={() => {
+                  onConfirm?.();   // ✅ YES action
+                  onClose();
+                }}
+              >
+                Yes
+              </button>
+            </>
+          ) : (
+            <button
+              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+              onClick={onClose}
+            >
+              OK
+            </button>
+          )}
         </div>
       </div>
 
@@ -86,63 +116,3 @@ const MessageModal = ({
 };
 
 export default MessageModal;
-
-
-
-//  how to use this 
-
-// import React, { useState } from "react";
-// import MessageModal from "../components/MessageModal";
-
-// export default function DemoPage() {
-//   const [modal, setModal] = useState({
-//     open: false,
-//     type: "success",
-//     title: "",
-//     message: "",
-//   });
-
-//   const showSuccess = () => {
-//     setModal({
-//       open: true,
-//       type: "success",
-//       title: "Success!",
-//       message: "Data saved successfully ✅",
-//     });
-//   };
-
-//   const showError = () => {
-//     setModal({
-//       open: true,
-//       type: "error",
-//       title: "Error!",
-//       message: "Something went wrong ❌",
-//     });
-//   };
-
-//   return (
-//     <>
-//       <button
-//         onClick={showSuccess}
-//         className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-//       >
-//         Show Success
-//       </button>
-
-//       <button
-//         onClick={showError}
-//         className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded ml-3"
-//       >
-//         Show Error
-//       </button>
-
-//       <MessageModal
-//         open={modal.open}
-//         type={modal.type}
-//         title={modal.title}
-//         message={modal.message}
-//         onClose={() => setModal({ ...modal, open: false })}
-//       />
-//     </>
-//   );
-// }

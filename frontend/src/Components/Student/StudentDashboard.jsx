@@ -66,12 +66,14 @@ export default function StudentDashboard() {
   const handleSetSelect = (level, set) => {
     localStorage.setItem("paperset", set);
     localStorage.setItem("paperlevel", level);
+    localStorage.setItem("examType", "mock")
     navigate("/exam-rule");
   };
 
   const liveExam = () => {
     localStorage.setItem("paperset", liveExamData?.paper_set);
     localStorage.setItem("paperlevel", liveExamData?.exam_level);
+    localStorage.setItem("examType", "live")
     navigate("/exam-rule");
   }
 
@@ -96,21 +98,46 @@ export default function StudentDashboard() {
 
   return (
     <>
-      <div className=' bg-gradient-to-br from-[#F0F7FF] via-[#E6F2FF] to-[#D9EBFF] h-[100vh]'>
+      <div className="min-h-screen bg-gradient-to-br from-[#F0F7FF] via-[#E6F2FF] to-[#D9EBFF]">
 
+        {/* ================= APP BAR ================= */}
+        <StudentAppBar
+          title="Student Dashboard"
+          subtitle="Train Your Brain Daily"
+          userName={userName}
+          userInitials={userInitials}
+          userImage={userImage}
+          onLogout={handleLogout}
+        />
 
-        <div className="max-w-full m-2 md:m-4 px-2 md:px-0 ">
-          <StudentAppBar
-            title="Student Dashboard"
-            subtitle="Train Your Brain Daily"
-            userName={userName}
-            userInitials={userInitials}
-            userImage={userImage}
-            onLogout={handleLogout}
-          />
+        <div className="max-w-6xl mx-auto px-4 pb-10">
 
-          {/* Upcoming Exams Carousel Section */}
-          <div className="my-6 md:my-10">
+          {/* ================= WELCOME SECTION ================= */}
+          {/* <div className="mt-6 bg-white/70 backdrop-blur-lg border border-blue-100 rounded-2xl shadow-lg p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-800">
+                Welcome back, {userName}
+              </h2>
+              <p className="text-sm text-slate-600 mt-1">
+                You are currently practicing <span className="font-semibold text-blue-600">Abacus Level {user.level}</span>
+              </p>
+              <p className="text-sm text-slate-500 mt-2 max-w-xl">
+                Practice daily with mock exams or attempt live exams scheduled by your teacher to improve accuracy and speed.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="px-4 py-2 rounded-xl bg-blue-50 text-blue-700 text-sm font-semibold">
+                Level {user.level}
+              </div>
+            </div>
+          </div> */}
+
+          {/* ================= UPCOMING EXAMS ================= */}
+          <div className="my-8">
+            {/* <h3 className="text-lg font-semibold text-slate-800 mb-3">
+              Upcoming Examinations
+            </h3> */}
 
             <TopAutoCarousel
               className="mb-6"
@@ -140,69 +167,79 @@ export default function StudentDashboard() {
                   ]
               }
             />
+          </div>
 
+          {/* ================= ACTION SECTION ================= */}
+          <div className="bg-white rounded-2xl shadow-md border border-blue-100 p-6">
+            <h3 className="text-lg font-semibold text-slate-800 mb-2">
+              Start Your Practice
+            </h3>
+            <p className="text-sm text-slate-500 mb-5">
+              Choose a mock test to practice or start a live exam if it is currently active.
+            </p>
 
+            <div className="flex flex-col sm:flex-row gap-4 max-w-md">
+              {/* MOCK EXAM */}
 
-
-            {/* Start Exam Buttons */}
-            <div className="flex justify-center my-6 md:my-8">
-              <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4 w-full max-w-md px-4 sm:px-0">
-                {/* Mock Exam */}
-                {/* {firstExam && ( */}
+              {!showSets && (
                 <Button
                   variant="outline"
                   size="lg"
                   onClick={() => setShowSets(true)}
-                  className="w-full sm:w-auto"
+                  className="w-full"
                 >
-                  Mock Exam
+                  Start Mock Exam
                 </Button>
-                {/* )} */}
+              )}
 
-                {/* Live Exam */}
-                {liveExamData && (
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    onClick={() => liveExam()}
-                    className="w-full sm:w-auto"
-                  >
-                    Live Exam
-                  </Button>
-                )}
-              </div>
+
+              {/* LIVE EXAM */}
+              {liveExamData && (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={liveExam}
+                  className="w-full"
+                >
+                  Start Live Exam
+                </Button>
+              )}
             </div>
-          </div>
-        </div>
 
+            {/* ================= MOCK SET SELECT ================= */}
+          {showSets && (
+            <div className="mt-6 bg-white rounded-2xl  ">
+              {/* <h3 className="text-base font-semibold text-slate-800 mb-4">
+                Select Question Set
+              </h3> */}
 
-
-        {showSets &&
-
-          <div className='p-4'>
-            <h3 className="text-base md:text-lg font-semibold mb-4 text-center pr-8">
-              Select Question Set
-            </h3>
-            <div className="grid grid-cols-2 gap-3 md:gap-4">
-              {levelwise_set?.map((item) => (
-                <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {levelwise_set?.map((item) => (
                   <button
                     key={`${item.level}-${item.set_id}`}
                     type="button"
                     onClick={() => handleSetSelect(item.level, item.set_id)}
-                    className="border-2 border-blue-600 text-blue-600 rounded-lg py-2 md:py-3 px-2 font-semibold text-sm md:text-base hover:bg-blue-600 hover:text-white transition active:scale-95"
+                    className="
+                    border-2 border-blue-600 text-blue-600
+                    rounded-xl py-3 font-semibold text-sm
+                    hover:bg-blue-600 hover:text-white
+                    transition-all active:scale-95
+                  "
                   >
                     Set {item.level}{item.set_id}
                   </button>
-                </>
-
-              ))}
+                ))}
+              </div>
             </div>
+          )}
           </div>
-        }
 
+          
+
+        </div>
       </div>
     </>
-  )
+  );
+
 }
 

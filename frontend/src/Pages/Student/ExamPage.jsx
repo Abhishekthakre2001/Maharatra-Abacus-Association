@@ -126,6 +126,8 @@ export default function ExamPage() {
                 message: "Exam Submitted successfully",
             });
 
+            console.log("isMockTest",isMockTest)
+
             // ⏳ navigate after 3 seconds
             setTimeout(() => {
                 if (isMockTest) {
@@ -149,7 +151,14 @@ export default function ExamPage() {
         }
     );
 
-
+    const Endexamwarning = () => {
+        setModal({
+            open: true,
+            type: "warning",
+            title: "Warning",
+            message: "Really want to submit Exam",
+        });
+    }
 
     const handleSubmitExam = async () => {
         const total_question = questions.length;
@@ -192,6 +201,7 @@ export default function ExamPage() {
         };
 
         console.log("📊 EXAM RESULT:", resultPayload);
+         localStorage.setItem("result", JSON.stringify(resultPayload))
 
         // ✅ THIS WILL CALL API
         create(resultPayload);
@@ -220,7 +230,7 @@ export default function ExamPage() {
     const currentQ = questions[currentQuestion];
 
     return (
-        <div className="max-w-full h-screen overflow-hidden flex flex-col">
+        <div className="max-w-full h-screen overflow-hidden flex flex-col bg-blue-200">
             <div className="m-2 mb-0 flex-shrink-0">
                 {/* <StudentAppBar
                     title="Exam Rules & Regulations"
@@ -233,7 +243,12 @@ export default function ExamPage() {
                 title={modal.title}
                 message={modal.message}
                 onClose={() => setModal({ ...modal, open: false })}
+                onConfirm={() => {
+                    console.log("OK");        // ✅ YES clicked
+                    handleSubmitExam();       // your submit logic
+                }}
             />
+
 
             {/* <div className="m-2 mb-0 flex-shrink-0">
                 <StudentAppBar title={`Level ${currentQ.level} - Set ${currentQ.set_id}`} />
@@ -347,9 +362,9 @@ export default function ExamPage() {
                 </div>
 
                 {/* Timeline */}
-                <div className="bg-white rounded-lg shadow-md p-3 mb-3">
+                <div className="bg-white rounded-lg shadow-md p-3 my-3">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Question Progress</h3>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 mb-4">
                         {questions.map((_, index) => (
                             <button
                                 key={index}
@@ -365,6 +380,10 @@ export default function ExamPage() {
                             </button>
                         ))}
                     </div>
+
+                    <Button variant="danger" onClick={Endexamwarning} className='w-[100%]'>
+                        Submit Exam
+                    </Button>
                 </div>
             </div>
         </div>
