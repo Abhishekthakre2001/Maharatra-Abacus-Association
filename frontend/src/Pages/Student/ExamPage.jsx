@@ -340,7 +340,7 @@ export default function ExamPage() {
                         )}
                     </div>
 
-                    <div className="flex justify-between items-center border-t pt-4">
+                    <div className="flex justify-between items-center border-t border-gray-400 pt-4">
                         <Button
                             variant="secondary"
                             onClick={handlePrevious}
