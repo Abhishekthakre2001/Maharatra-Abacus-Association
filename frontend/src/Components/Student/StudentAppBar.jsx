@@ -14,6 +14,11 @@ const StudentAppBar = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
+  // Compute user initials from first name
+  const getUserInitial = (userObj) => {
+    if (!userObj || !userObj.name) return "U";
+    return userObj.name.trim().charAt(0).toUpperCase();
+  };
 
   const navigate = useNavigate();
 
@@ -59,7 +64,7 @@ const StudentAppBar = ({
             className="w-12 h-12 rounded-full flex items-center justify-center font-bold border-2 border-white"
             style={{ backgroundColor: colors.primary.blue500 }}
           >
-            {userInitials}
+            {getUserInitial(user)}
           </div>
         )}
 
@@ -96,7 +101,7 @@ const StudentAppBar = ({
                     className="w-24 h-24 rounded-full flex items-center justify-center text-2xl font-bold text-white"
                     style={{ backgroundColor: colors.primary.blue500 }}
                   >
-                    {userInitials}
+                    {getUserInitial(user)}
                   </div>
                 )}
 

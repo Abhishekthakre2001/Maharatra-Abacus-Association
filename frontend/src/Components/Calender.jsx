@@ -1,10 +1,21 @@
+// Helper to format time in 12-hour format with AM/PM
+function formatTime12hr(timeStr) {
+    if (!timeStr) return '';
+    const [h, m] = timeStr.split(":");
+    let hour = parseInt(h, 10);
+    const minute = m ? m.padStart(2, '0') : '00';
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    if (hour === 0) hour = 12;
+    return `${hour}:${minute} ${ampm}`;
+}
 import React, { useState, useEffect } from "react";
 import AppBar from "../UI/AppBar";
 import Button from "../UI/Button";
 import InputField from "../UI/InputField";
 import SelectField from "../UI/SelectField";
 import Modal from "../UI/Modal";
-import { Calendar1, MoveLeft, MoveRight, Trash2 } from 'lucide-react';
+import { Calendar1, MoveLeft, MoveRight, Trash2,Pencil  } from 'lucide-react';
 import { useCreate } from "../hooks/useCreate";
 import examScheduleApi from "../api/examScheduleApi";
 import { useFetchData } from "../hooks/useFetchData";
@@ -29,6 +40,8 @@ export default function Calender() {
     const [selectedDate, setSelectedDate] = useState(formatToday(today));
 
     const [openModal, setOpenModal] = useState(false);
+    const [isUpdate, setIsUpdate] = useState(false);
+    const [updateExamId, setUpdateExamId] = useState(null);
     const [deleteModal, setDeleteModal] = useState({ open: false, id: null, loading: false });
 
     const [examData, setExamData] = useState({
@@ -142,19 +155,24 @@ export default function Calender() {
         }
 
         try {
-            await examScheduleApi.create({
-                ...examData,
-                date: selectedDate,
-                createdby: user.id
-            });
+            if (isUpdate && updateExamId) {
+                // Update existing exam
+                await examScheduleApi.update(updateExamId, {
+                    ...examData,
+                    date: selectedDate,
+                    updatedby: user.id
+                });
+            } else {
+                // Create new exam
+                await examScheduleApi.create({
+                    ...examData,
+                    date: selectedDate,
+                    createdby: user.id
+                });
+            }
 
-            // ✅ reload calendar data
             reload();
-
-            // ✅ close schedule modal
             setOpenModal(false);
-
-            // ✅ reset form
             setExamData({
                 exam_title: "",
                 exam_level: "",
@@ -162,23 +180,21 @@ export default function Calender() {
                 start_time: "",
                 end_time: ""
             });
-
-            // ✅ show success modal
+            setIsUpdate(false);
+            setUpdateExamId(null);
             setModal({
                 open: true,
                 type: "success",
                 title: "Success",
-                message: "Exam scheduled successfully."
+                message: isUpdate ? "Exam updated successfully." : "Exam scheduled successfully."
             });
-
         } catch (error) {
             const msg = error?.response?.data?.message;
-
             setModal({
                 open: true,
                 type: "error",
                 title: "Fail",
-                message: msg || "Exam not scheduled properly"
+                message: msg || (isUpdate ? "Exam not updated properly" : "Exam not scheduled properly")
             });
         }
     };
@@ -306,13 +322,27 @@ export default function Calender() {
                                     "0"
                                 )}-${String(day).padStart(2, "0")}`;
 
+                            // Check if this date has a scheduled exam
+                            const hasExam = schedules.some(exam => {
+                                const examDate = exam.date ? exam.date.split('T')[0] : '';
+                                return examDate === fullDate;
+                            });
+
+                            let dayClass = "bg-gray-100 hover:bg-blue-100";
+                            let textClass = "text-xs sm:text-sm";
+                            if (selectedDate === fullDate) {
+                                dayClass = "bg-blue-600 text-white";
+                            } else if (hasExam) {
+                                dayClass = "bg-orange-200 text-orange-700 font-bold";
+                                textClass = "text-xs sm:text-sm";
+                            }
                             return (
                                 <div
                                     key={i}
                                     onClick={() => day && setSelectedDate(fullDate)}
-                                    className={`h-10 sm:h-12 flex items-center justify-center rounded-xl cursor-pointer ${!day ? "bg-transparent cursor-default" : ""} ${selectedDate === fullDate ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-blue-100"}`}
+                                    className={`h-10 sm:h-12 flex items-center justify-center rounded-xl cursor-pointer ${!day ? "bg-transparent cursor-default" : dayClass}`}
                                 >
-                                    <span className="text-xs sm:text-sm">{day}</span>
+                                    <span className={textClass}>{day}</span>
                                 </div>
                             );
                         })}
@@ -343,7 +373,11 @@ export default function Calender() {
                             {/* ✅ ALWAYS SHOW BUTTON */}
                             <Button
                                 className="mb-4 w-full sm:w-auto"
-                                onClick={() => setOpenModal(true)}
+                                onClick={() => {
+                                    // Only allow scheduling for today or future
+                                    if (selectedDate >= formatToday(today)) setOpenModal(true);
+                                }}
+                                disabled={selectedDate < formatToday(today)}
                             >
                                 Schedule Exam
                             </Button>
@@ -357,10 +391,10 @@ export default function Calender() {
 
                                 <div className="space-y-3">
                                     {filteredSchedules.map(exam => (
-                                        
 
-                                            <div  key={exam.id}
-                                className="
+
+                                        <div key={exam.id}
+                                            className="
     group
     bg-gradient-to-br from-blue-50 to-indigo-100
     rounded-2xl
@@ -369,41 +403,57 @@ export default function Calender() {
     p-6 border border-blue-100
     hover:-translate-y-1
   "
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-gray-500 font-medium text-md">
-                                            {exam.exam_title}
-                                        </p>
-                                        <div className="flex gap-4">
-  <h2 className="text-2xl font-bold text-slate-800 mt-2">
-                                             {exam.exam_level}{exam.paper_set}
-                                        </h2>
-                                        <p className="mt-3">{exam.start_time} To {exam.end_time} </p>
-                                        </div>
-                                      
-                                    </div>
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-gray-500 font-medium text-md">
+                                                        {exam.exam_title}
+                                                    </p>
+                                                    <div className="flex gap-4">
+                                                        <h2 className="text-2xl font-bold text-slate-800 mt-2">
+                                                            {exam.exam_level}{exam.paper_set}
+                                                        </h2>
+                                                        <p className="mt-3">
+                                                            {formatTime12hr(exam.start_time)} To {formatTime12hr(exam.end_time)}
+                                                        </p>
+                                                    </div>
 
-                                    <div onClick={() => handleDelete(exam.id)}
-                                        className="
-        w-14 h-14 rounded-xl
-        bg-gradient-to-br from-blue-300 to-blue-200
-        text-blue-600 
-        flex items-center justify-center
-        group-hover:scale-110 transition-transform
-      "
-                                    >
-                                        {/* Example icon */}
-                                        <Trash2 size={22} />
-                                    </div>
-                                </div>
-                            </div>
+                                                </div>
+
+                                                <div className="flex gap-2 items-center">
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsUpdate(true);
+                                                            setUpdateExamId(exam.id);
+                                                            setExamData({
+                                                                exam_title: exam.exam_title,
+                                                                exam_level: exam.exam_level,
+                                                                paper_set: exam.paper_set,
+                                                                start_time: exam.start_time,
+                                                                end_time: exam.end_time
+                                                            });
+                                                            setOpenModal(true);
+                                                        }}
+                                                        className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-300 to-green-200 text-green-700 flex items-center justify-center group-hover:scale-110 transition-transform border border-green-200"
+                                                        title="Update Exam"
+                                                    >
+                                                        <Pencil size={22} />
+                                                    </button>
+                                                    <div onClick={() => handleDelete(exam.id)}
+                                                        className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-300 to-blue-200 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform"
+                                                        title="Delete Exam"
+                                                    >
+                                                        <Trash2 size={22} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
 
 
                             )}
-                        
+
 
                         </>
                     )}
@@ -411,7 +461,7 @@ export default function Calender() {
 
 
             </div>
-            <Modal open={openModal} onClose={() => setOpenModal(false)} title="Schedule Exam">
+            <Modal open={openModal} onClose={() => { setOpenModal(false); setIsUpdate(false); setUpdateExamId(null); }} title={isUpdate ? "Update Exam" : "Schedule Exam"}>
                 <div className="space-y-4">
                     <InputField
                         label="Exam Name"

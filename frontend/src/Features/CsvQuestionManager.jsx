@@ -490,7 +490,6 @@ export default function CsvQuestionManager() {
               </label>
             </div>
           )}
-
         </div>
 
         {/* Preview Table */}
@@ -672,11 +671,17 @@ export default function CsvQuestionManager() {
               />
             </div>
 
-            <InputField
+            <SelectField
               label="Correct Option"
               value={newQuestion["Correct Option"]}
-              onChange={(e) => setNewQuestion({ ...newQuestion, "Correct Option": e.target.value })}
-              placeholder="Enter correct option (1, 2, 3, or 4)"
+              onChange={e => setNewQuestion({ ...newQuestion, "Correct Option": e.target.value })}
+              options={[
+                { value: "1", label: "Option 1" },
+                { value: "2", label: "Option 2" },
+                { value: "3", label: "Option 3" },
+                { value: "4", label: "Option 4" }
+              ]}
+              placeholder="Select correct option"
               required
             />
 

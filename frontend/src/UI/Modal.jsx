@@ -4,7 +4,7 @@ const Modal = ({ open, onClose, title, children, width = "max-w-lg", footer }) =
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div className={`bg-white rounded-xl shadow-xl w-full ${width} relative animate-fadeIn max-h-[90vh] flex flex-col overflow-hidden`}>
 
                 {/* Header - Sticky */}

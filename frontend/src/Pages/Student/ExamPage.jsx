@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ExamLoading from './ExamLoading';
 import StudentAppBar from '../../Components/Student/StudentAppBar';
 import Button from '../../UI/Button';
 import { ChevronLeft, ChevronRight, Clock, User, Award, BookOpen } from 'lucide-react';
@@ -37,6 +38,7 @@ export default function ExamPage() {
         title: "",
         message: ""
     });
+    const [blockNav, setBlockNav] = useState(true);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answers, setAnswers] = useState({});
     const [questions, setQuestions] = useState([]);
@@ -67,6 +69,27 @@ export default function ExamPage() {
         setTimeRemaining(seconds);
         setTotalExamTime(seconds);
     }, [PaperQuestion]);
+
+    // Block browser navigation during exam
+    useEffect(() => {
+        if (!blockNav) return;
+        const handleBeforeUnload = (e) => {
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        const handlePopState = (e) => {
+            // Show custom modal instead of navigating
+            Endexamwarning();
+            window.history.pushState(null, '', window.location.href); // Prevent back
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener('popstate', handlePopState);
+        window.history.pushState(null, '', window.location.href); // Push state to block back
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [blockNav]);
 
     /* ---------- Timer ---------- */
 
@@ -156,7 +179,7 @@ export default function ExamPage() {
             open: true,
             type: "warning",
             title: "Warning",
-            message: "Really want to submit Exam",
+            message: "Really want to submit Exam? If you leave, your progress may be lost.",
         });
     }
 
@@ -212,11 +235,7 @@ export default function ExamPage() {
     /* ---------- UI ---------- */
 
     if (loading) {
-        return (
-            <div className="h-screen flex items-center justify-center font-semibold">
-                Loading Question Paper...
-            </div>
-        );
+        return <ExamLoading />;
     }
 
     if (questions.length === 0) {
@@ -355,7 +374,7 @@ export default function ExamPage() {
                                 Next <ChevronRight />
                             </Button>
                         ) : (
-                            <Button variant="primary" onClick={handleSubmitExam}>
+                            <Button variant="primary" onClick={Endexamwarning}>
                                 Submit Exam
                             </Button>
                         )}

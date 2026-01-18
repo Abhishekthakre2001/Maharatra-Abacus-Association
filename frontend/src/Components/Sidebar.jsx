@@ -62,6 +62,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   };
 
   const handleClick = (path) => {
+    // Only navigate, do not expand sidebar if collapsed
     navigate(path);
   };
 
@@ -119,11 +120,11 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         <div className="px-3 space-y-2 mt-10">
           {menuItems.map((item) => {
             const Icon = item.icon;
-
             return (
               <button
                 key={item.id}
                 onClick={() => handleClick(item.path)}
+                type="button"
                 className={`
           w-full flex items-center gap-3 px-4 py-3 rounded-xl
           transition-all duration-300

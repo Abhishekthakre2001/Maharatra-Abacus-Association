@@ -1,5 +1,16 @@
 import { Calendar, Clock } from "lucide-react";
 
+function formatTime12hr(timeStr) {
+    if (!timeStr) return '';
+    const [h, m] = timeStr.split(":");
+    let hour = parseInt(h, 10);
+    const minute = m ? m.padStart(2, '0') : '00';
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    if (hour === 0) hour = 12;
+    return `${hour}:${minute} ${ampm}`;
+}
+
 const CreamCarouselCard = ({
     title,
     subtitle,
@@ -71,7 +82,7 @@ const CreamCarouselCard = ({
                         {startTime && endTime && (
                             <div className="flex items-center gap-2">
                                 <Clock size={15} className="text-gray-600" />
-                                <span>{startTime} – {endTime}</span>
+                                <span>{formatTime12hr(startTime)} – {formatTime12hr(endTime)}</span>
                             </div>
                         )}
                     </div>
