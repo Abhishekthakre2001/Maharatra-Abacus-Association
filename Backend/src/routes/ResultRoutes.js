@@ -3,7 +3,8 @@ const controller = require("../controllers/ResultController");
 
 router.get("/", controller.getAll);
 router.post("/", controller.create);
-router.get("/:id", controller.getById);
+// get by student id
+router.get("/:id", controller.getById); 
 router.put("/:id", controller.update);
 router.delete("/:id", controller.remove);
 
