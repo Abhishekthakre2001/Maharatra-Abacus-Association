@@ -39,6 +39,7 @@ export default function CsvQuestionManager() {
   const [isMockSet, setIsMockSet] = useState(0); // default No
   const [availableLevels, setAvailableLevels] = useState([]);
   const [modalLevelId, setModalLevelId] = useState("");
+  const [ButtonLoading, setButtonLoading] = useState(false)
 
   // Handle CSV file
   const parseCSV = (file) => {
@@ -106,7 +107,7 @@ export default function CsvQuestionManager() {
 
   // Handle manual question addition
   const handleAddQuestion = async () => {
-
+    setButtonLoading(true);
     let newErrors = {};
 
     if (!level) {
@@ -126,6 +127,7 @@ export default function CsvQuestionManager() {
         title: "Error",
         message: "Please fix validation errors"
       });
+      setButtonLoading(false);
       return;
     }
 
@@ -168,12 +170,14 @@ export default function CsvQuestionManager() {
         // ✅ Clear errors if valid
         setErrors({});
         setIsModalOpen(false);
+        setButtonLoading(false);
         setModal({ open: true, type: "success", title: "Success", message: "Questions Added In set." });
       } catch (err) {
         console.error(err.response.data.error);
         if (err.response.data.error == "set_time not found for given level and set_id") {
           setModal({ open: true, type: "error", title: "Error", message: `${level}-${set} Set Are Not Available` });
         }
+        setButtonLoading(false);
 
       }
     }
@@ -230,7 +234,7 @@ export default function CsvQuestionManager() {
 
   // Submit all data: log payload and validate required fields
   const handleSubmit = async () => {
-
+    setButtonLoading(true);
     let newErrors = {};
 
     if (!level) {
@@ -257,6 +261,7 @@ export default function CsvQuestionManager() {
 
     // Validation
     if (!questions || questions.length < 1) {
+      setButtonLoading(false);
       setModal({ open: true, type: "error", title: "Error", message: "Please upload or add at least one question before submitting." });
       return;
     }
@@ -271,6 +276,7 @@ export default function CsvQuestionManager() {
         title: "Error",
         message: "Please fix validation errors"
       });
+      setButtonLoading(false);
       return;
     }
 
@@ -304,15 +310,18 @@ export default function CsvQuestionManager() {
       });
 
       console.log("Bulk save response:", response.data);
+      setButtonLoading(false);
       setModal({ open: true, type: "success", title: "Success", message: "Questions saved successfully." });
       // Optionally clear questions after save
       setQuestions([]);
 
     } catch (err) {
       console.error(err);
+      setButtonLoading(false);
       setModal({ open: true, type: "error", title: "Error", message: "Failed to save questions." });
     } finally {
       setIsUploading(false);
+      setButtonLoading(false);
       setUploadProgress(0);
     }
   };
@@ -417,9 +426,11 @@ export default function CsvQuestionManager() {
             <Button
               onClick={handleSubmit}
               variant="primary"
+              disabled={ButtonLoading}
               className="w-full sm:w-auto"
             >
-              Save Questions
+              {ButtonLoading ? "Saveing..." : "Save Questions"}
+
             </Button>
 
             {questions.length === 0 && (
@@ -671,21 +682,23 @@ export default function CsvQuestionManager() {
               />
             </div>
 
-            <SelectField
-              label="Correct Option"
-              value={newQuestion["Correct Option"]}
-              onChange={e => setNewQuestion({ ...newQuestion, "Correct Option": e.target.value })}
-              options={[
-                { value: "1", label: "Option 1" },
-                { value: "2", label: "Option 2" },
-                { value: "3", label: "Option 3" },
-                { value: "4", label: "Option 4" }
-              ]}
-              placeholder="Select correct option"
-              required
-            />
+
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <SelectField
+                label="Correct Option"
+                value={newQuestion["Correct Option"]}
+                onChange={e => setNewQuestion({ ...newQuestion, "Correct Option": e.target.value })}
+                options={[
+                  { value: "1", label: "Option 1" },
+                  { value: "2", label: "Option 2" },
+                  { value: "3", label: "Option 3" },
+                  { value: "4", label: "Option 4" }
+                ]}
+                placeholder="Select correct option"
+                required
+              />
+
               <SelectField
                 label="Level"
                 value={level}
@@ -796,12 +809,13 @@ export default function CsvQuestionManager() {
                 Cancel
               </Button>
               <Button
+                disabled={ButtonLoading}
                 onClick={() => {
                   handleAddQuestion();
                 }}
                 variant="primary"
               >
-                Add Question
+                {ButtonLoading ? "Saveing..." : "Add Question"}
               </Button>
 
             </div>
