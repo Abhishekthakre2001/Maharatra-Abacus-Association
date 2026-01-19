@@ -5,8 +5,8 @@ const ResultApi = {
   getbyadminid: (id) => axiosInstance.get(`/sets/admin/${id}`),
   create: (payload) => axiosInstance.post("/results", payload),
 
-
-  getbystudentid:(id) => axiosInstance.get(`/results/${id}`),
+// get result
+  getresult:(id) => axiosInstance.get(`/results/${id}`),
 };
 
 export default ResultApi;

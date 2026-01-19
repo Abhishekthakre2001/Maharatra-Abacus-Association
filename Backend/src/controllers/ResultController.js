@@ -11,7 +11,7 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getById = async (req, res) => {
-  const [[row]] = await ResultModel.findById(req.params.id);
+  const [row] = await ResultModel.findById(req.params.id);
   res.json(row);
 };
 

@@ -5,7 +5,7 @@ import Dashboard from "../Pages/DashboardPage";
 import StudentPage from "../Pages/StudentPage";
 import AddStudentPage from "../Pages/AddStudentPage";
 import ResultPage from "../Pages/ResultPage";
-import StudentResultDetailPage from "../Pages/StudentResultDetailPage";
+import StudentResultDetailPage from "../Pages/ResultDetailPage";
 import QuestionPage from "../Pages/QuestionPage";
 import AddQuestionPage from "../Pages/Addquestion";
 import ProtectedRoute from "./RoleBasedProtectedRoute";
@@ -109,7 +109,7 @@ const AppRoutes = () => {
       />
 
       <Route
-        path="/results/:id"
+        path="/studentresults/:id"
         element={
           <RoleProtectedRoute allowedRoles={["Admin"]}>
             <StudentResultDetailPage />
