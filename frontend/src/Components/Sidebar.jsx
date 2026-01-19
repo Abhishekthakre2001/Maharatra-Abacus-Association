@@ -48,6 +48,11 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const isActive = (path) => {
     if (path === "/students-list" && location.pathname.startsWith("/add-student")) return true;
     if (path === "/questions" && location.pathname.startsWith("/add-question")) return true;
+    
+    if (
+      path === "/results" &&
+      location.pathname.startsWith("/studentresults")
+    ) return true;
     return location.pathname === path;
   };
 
