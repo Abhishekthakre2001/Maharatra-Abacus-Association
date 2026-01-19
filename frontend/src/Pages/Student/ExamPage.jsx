@@ -45,6 +45,8 @@ export default function ExamPage() {
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [totalExamTime, setTotalExamTime] = useState(0);
 
+    const [visited, setVisited] = useState(new Set());
+
     const navigate = useNavigate();
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -121,19 +123,23 @@ export default function ExamPage() {
 
     const handleNext = () => {
         if (currentQuestion < questions.length - 1) {
+            setVisited(prev => new Set(prev).add(currentQuestion + 1));
             setCurrentQuestion(prev => prev + 1);
         }
     };
 
     const handlePrevious = () => {
         if (currentQuestion > 0) {
+            setVisited(prev => new Set(prev).add(currentQuestion - 1));
             setCurrentQuestion(prev => prev - 1);
         }
     };
 
     const handleQuestionClick = (index) => {
+        setVisited(prev => new Set(prev).add(index));
         setCurrentQuestion(index);
     };
+
 
     /* ---------- Submit Exam ---------- */
     const { create, loading: createLoading } = useCreate(
@@ -149,7 +155,7 @@ export default function ExamPage() {
                 message: "Exam Submitted successfully",
             });
 
-            console.log("isMockTest",isMockTest)
+            console.log("isMockTest", isMockTest)
 
             // ⏳ navigate after 3 seconds
             setTimeout(() => {
@@ -224,7 +230,7 @@ export default function ExamPage() {
         };
 
         console.log("📊 EXAM RESULT:", resultPayload);
-         localStorage.setItem("result", JSON.stringify(resultPayload))
+        localStorage.setItem("result", JSON.stringify(resultPayload))
 
         // ✅ THIS WILL CALL API
         create(resultPayload);
@@ -301,7 +307,7 @@ export default function ExamPage() {
                             danger={timeRemaining < 300}
                         />
                     </div>
-                    
+
 
                     {/* Vertical Number Display */}
                     <div className="mb-4 flex justify-center">
@@ -390,11 +396,14 @@ export default function ExamPage() {
                                 key={index}
                                 onClick={() => handleQuestionClick(index)}
                                 className={`w-10 h-10 rounded-lg font-semibold text-sm transition-all ${currentQuestion === index
-                                    ? 'bg-blue-600 text-white scale-110'
+                                    ? 'bg-blue-600 text-white scale-110'          // CURRENT
                                     : answers[index] !== undefined
-                                        ? 'bg-green-100 text-green-700'
-                                        : 'bg-gray-100 text-gray-600'
+                                        ? 'bg-green-500 text-white'           // SOLVED
+                                        : visited.has(index)
+                                            ? 'bg-yellow-500 text-white'     // VISITED (UNSOLVED)
+                                            : 'bg-gray-100 text-gray-600'          // UNVISITED
                                     }`}
+
                             >
                                 {index + 1}
                             </button>

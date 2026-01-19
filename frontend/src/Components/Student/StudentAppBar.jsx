@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Phone, MapPin, User, Calendar } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import colors from "../../utils/Color";
 import Button from "../../UI/Button";
+import MessageModal from "../../utils/MessageModal";
 
 const StudentAppBar = ({
   subtitle,
@@ -14,19 +15,11 @@ const StudentAppBar = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
-  // Compute user initials from first name
-  const getUserInitial = (userObj) => {
-    if (!userObj || !userObj.name) return "U";
-    return userObj.name.trim().charAt(0).toUpperCase();
-  };
+
+  // ✅ NEW: logout confirmation modal state
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const navigate = useNavigate();
-
-  const logout = () => {
-    localStorage.clear();
-    document.cookie = "token=; Max-Age=0; path=/";
-    navigate("/");
-  };
 
   // 🔹 Load user from localStorage
   useEffect(() => {
@@ -38,43 +31,56 @@ const StudentAppBar = ({
 
   if (!user) return null;
 
+  const getUserInitial = (userObj) =>
+    userObj?.name ? userObj.name.trim().charAt(0).toUpperCase() : "U";
+
   const formatDate = (date) =>
     date ? new Date(date).toLocaleDateString("en-IN") : "—";
 
+  // ✅ ACTUAL LOGOUT LOGIC
+  const logout = () => {
+    localStorage.clear();
+    document.cookie = "token=; Max-Age=0; path=/";
+    onLogout && onLogout(); // optional external handler
+    navigate("/");
+  };
+
   return (
-    <div
-      className={`relative bg-opacity-70 backdrop-blur-xl rounded-2xl p-6  text-white shadow-lg ${className}`}
-      style={{
-        backgroundImage: `linear-gradient(to right, ${colors.primary.blue600}, ${colors.text.dark})`
-      }}
-    >
-      {/* APP BAR */}
-      <button
-        onClick={() => setOpen(true)}
-        className="flex items-center gap-4 bg-transparent border-0"
+    <>
+      {/* ================= APP BAR ================= */}
+      <div
+        className={`relative bg-opacity-70 backdrop-blur-xl rounded-2xl p-6 text-white shadow-lg ${className}`}
+        style={{
+          backgroundImage: `linear-gradient(to right, ${colors.primary.blue600}, ${colors.text.dark})`
+        }}
       >
-        {userImage ? (
-          <img
-            src={userImage}
-            alt={user.name}
-            className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-lg"
-          />
-        ) : (
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center font-bold border-2 border-white"
-            style={{ backgroundColor: colors.primary.blue500 }}
-          >
-            {getUserInitial(user)}
+        <button
+          onClick={() => setOpen(true)}
+          className="flex items-center gap-4 bg-transparent border-0"
+        >
+          {userImage ? (
+            <img
+              src={userImage}
+              alt={user.name}
+              className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-lg"
+            />
+          ) : (
+            <div
+              className="w-12 h-12 rounded-full flex items-center justify-center font-bold border-2 border-white"
+              style={{ backgroundColor: colors.primary.blue500 }}
+            >
+              {getUserInitial(user)}
+            </div>
+          )}
+
+          <div className="text-left">
+            <h2 className="text-lg font-semibold">{user.name}</h2>
+            <p className="text-sm opacity-90">{subtitle}</p>
           </div>
-        )}
+        </button>
+      </div>
 
-        <div className="text-left">
-          <h2 className="text-lg font-semibold">{user.name}</h2>
-          <p className="text-sm opacity-90">{subtitle}</p>
-        </div>
-      </button>
-
-      {/* PROFILE MODAL */}
+      {/* ================= PROFILE MODAL ================= */}
       {open &&
         createPortal(
           <div className="fixed inset-0 z-[99999] bg-black/40 flex items-center justify-center p-4">
@@ -131,7 +137,7 @@ const StudentAppBar = ({
                   className="w-full"
                   onClick={() => {
                     setOpen(false);
-                    onLogout && logout();
+                    setShowLogoutConfirm(true); // ✅ OPEN WARNING
                   }}
                 >
                   Logout
@@ -141,7 +147,17 @@ const StudentAppBar = ({
           </div>,
           document.body
         )}
-    </div>
+
+      {/* ================= LOGOUT CONFIRMATION ================= */}
+      <MessageModal
+        open={showLogoutConfirm}
+        type="warning"
+        title="Confirm Logout"
+        message="Are you sure you want to logout?"
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={logout}
+      />
+    </>
   );
 };
 
