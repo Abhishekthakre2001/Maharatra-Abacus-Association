@@ -30,7 +30,7 @@ module.exports = {
     `),
 
   findById: (id) =>
-    pool.query("SELECT * FROM result WHERE id = ?", [id]),
+    pool.query("SELECT * FROM result WHERE user_id = ?", [id]),
 
   update: (id, data) =>
     pool.query(
