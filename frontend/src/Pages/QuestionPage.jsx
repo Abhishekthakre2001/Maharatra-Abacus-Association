@@ -31,12 +31,12 @@ export default function QuestionPage() {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [buttonloading, setLoading] = useState(false);
     const [QuestionsView, setQuestionsView] = useState(false);
     const [Paperset, SetPaperset] = useState("")
     const user = JSON.parse(localStorage.getItem("user"));
     // const { data: fetchedQuestions, reload } = useFetchData(questionApi.getbyadmin(adminId));
-    const { data: fetchedQuestions, reload } = useFetchData(() => questionApi.getbyadmin(adminId));
+    const { data: fetchedQuestions, loading, reload } = useFetchData(() => questionApi.getbyadmin(adminId));
 
     const [questions, setQuestions] = useState([]);
 
@@ -87,8 +87,44 @@ export default function QuestionPage() {
                 isMockSet: isMockSet
             }
             delete payload.id;
+            console.log("payload", payload)
             // await questionApi.update(id, payload);
             await questionApi.updateSet(payload);
+            await reload();
+            setModal({ open: true, type: "success", title: "Success", message: "Update successfully." });
+            setQuestionsView(false);
+            reload();
+            setShowUpdateModal(false);
+            setOpen(false);
+            setSelectedQuestion(null);
+            console.log('Updated question:', updatedQuestion);
+        } catch (err) {
+            console.error('Update failed', err);
+            setModal({ open: true, type: "error", title: "Success", message: "Not Update successfully." });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    const UpdateQuestion = async (updatedQuestion) => {
+        console.log("selectedQuestion", selectedQuestion)
+        setLoading(true);
+        try {
+            const id = updatedQuestion.id;
+            // Send update to API (strip id)
+            const payload = { ...updatedQuestion };
+            // const payload = {
+            //     level: selectedQuestion.level,
+            //     set: selectedQuestion.set,
+            //     total_time: time,
+            //     isMockSet: isMockSet
+            // }
+            // delete payload.id;
+            console.log("payload", payload)
+
+            await questionApi.update(id, payload);
+            // await questionApi.update(payload(payload.id));
             await reload();
             setModal({ open: true, type: "success", title: "Success", message: "Update successfully." });
             setQuestionsView(false);
@@ -288,7 +324,7 @@ export default function QuestionPage() {
         setTime(v);
     };
 
-    console.log("time", time)
+    // console.log("time", tableloading)
 
     return (
         <>
@@ -325,6 +361,7 @@ export default function QuestionPage() {
                         <DataTable
                             title="Questions Bank"
                             data={questions}
+                            loading={loading}
                             columns={QuestionsView ? questionscolumn : setcolumns}
                             showActions={true}
                             onEdit={handleUpdate}
@@ -346,9 +383,9 @@ export default function QuestionPage() {
                     setShowUpdateModal(false);
                     setSelectedQuestion(null);
                 }}
-                onUpdate={handleUpdateSubmit}
+                onUpdate={UpdateQuestion}
                 question={selectedQuestion}
-                loading={loading}
+                loading={buttonloading}
             />
 
             {/* Delete Confirm Modal */}
@@ -361,7 +398,7 @@ export default function QuestionPage() {
                 onConfirm={handleDeleteConfirm}
                 title="Delete Question"
                 message={`Are you sure you want to delete the question: "${selectedQuestion?.question}"? This action cannot be undone.`}
-                loading={loading}
+                loading={buttonloading}
             />
 
             {/* update set model */}
@@ -413,11 +450,11 @@ export default function QuestionPage() {
                         Cancel
                     </button>
                     <button
-                        disabled={loading}
+                        disabled={buttonloading}
                         onClick={handleUpdateSubmit}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg"
                     >
-                        {loading ? "Saving..." : "Save"}
+                        {buttonloading ? "Saving..." : "Save"}
                     </button>
                 </div>
             </Modal>

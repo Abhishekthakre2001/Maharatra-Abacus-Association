@@ -79,7 +79,7 @@ const UpdateQuestionModal = ({ open, onClose, onUpdate, question, loading = fals
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Question <span className="text-red-500">*</span>
                     </label>
-                    <textarea
+                    <InputField
                         value={formData.question}
                         onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
                         required
