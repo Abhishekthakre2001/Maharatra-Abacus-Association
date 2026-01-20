@@ -65,7 +65,13 @@ const CreamCarouselCard = ({
                     <div className="w-12 h-[2px] bg-gradient-to-r from-[#D9A441] to-transparent rounded-full" />
 
                     {/* DATE & TIME */}
-                    <div className="flex flex-col gap-2 text-sm text-gray-700">
+                    {examDate === "—" ?
+                    <>
+                       <div className="flex flex-col gap-2 text-sm text-gray-700">
+                      
+                    </div>
+                    </> : <>
+                       <div className="flex flex-col gap-2 text-sm text-gray-700">
                         {examDate && (
                             <div className="flex items-center gap-2">
                                 <Calendar size={15} className="text-gray-600" />
@@ -86,6 +92,9 @@ const CreamCarouselCard = ({
                             </div>
                         )}
                     </div>
+                    </> 
+                    }
+                 
                 </div>
             </div>
 

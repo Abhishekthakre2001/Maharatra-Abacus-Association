@@ -190,7 +190,7 @@ export default function QuestionPage() {
         },
         {
             key: 'ismock',
-            label: 'Is Mock Test',
+            label: 'Is Exam Set',
             render: (value) => (
                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${value === 'Advanced' ? 'bg-purple-100 text-purple-700' :
                     value === 'Intermediate' ? 'bg-blue-100 text-blue-700' :
@@ -397,7 +397,7 @@ export default function QuestionPage() {
                 }}
                 onConfirm={handleDeleteConfirm}
                 title="Delete Question"
-                message={`Are you sure you want to delete the question: "${selectedQuestion?.question}"? This action cannot be undone.`}
+                message={`Are you sure you want to delete ? This action cannot be undone.`}
                 loading={buttonloading}
             />
 
@@ -423,7 +423,7 @@ export default function QuestionPage() {
                 {/* Input 1 */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Mock Set
+                        Is Exam Set
                     </label>
 
                     <select

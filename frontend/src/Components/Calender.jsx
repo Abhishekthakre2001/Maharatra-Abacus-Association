@@ -94,55 +94,63 @@ export default function Calender() {
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : {};
 
-    // const handleSave = async () => {
-    //     if (!user?.id) {
-    //         setModal({
-    //             open: true,
-    //             type: "error",
-    //             title: "Not signed in",
-    //             message: "Please sign in to schedule an exam."
-    //         });
-    //         return;
-    //     }
 
-    //     try {
-    //         await create({
-    //             ...examData,
-    //             date: selectedDate,
-    //             createdby: user.id
-    //         });
-
-    //         setModal({
-    //             open: true,
-    //             type: "success",
-    //             title: "Success",
-    //             message: "Exam scheduled successfully."
-    //         });
-
-    //         // optional: reset form
-    //         setExamData(initialState);
-
-    //     } catch (error) {
-
-    //         console.log("error", error?.response?.data?.message)
-    //         if (error?.response?.data?.message == 'Set not available for this level') {
+    //     const handleSave = async () => {
+    //         if (!user?.id) {
     //             setModal({
     //                 open: true,
     //                 type: "error",
-    //                 title: "Fail",
-    //                 message: "Set not available for this level"
+    //                 title: "Not signed in",
+    //                 message: "Please sign in to schedule an exam."
     //             });
-    //         } else {
+    //             return;
+    //         }
+    // console.log("selectedDate",examData)
+    //         try {
+    //             if (isUpdate && updateExamId) {
+    //                 // Update existing exam
+    //                 await examScheduleApi.update(updateExamId, {
+    //                     ...examData,
+    //                     date: selectedDate,
+    //                     updatedby: user.id
+    //                 });
+    //             } else {
+    //                 // Create new exam
+    //                 await examScheduleApi.create({
+    //                     ...examData,
+    //                     date: selectedDate,
+    //                     createdby: user.id
+    //                 });
+    //             }
+
+    //             reload();
+    //             setOpenModal(false);
+    //             setExamData({
+    //                 exam_title: "",
+    //                 exam_level: "",
+    //                 paper_set: "",
+    //                 start_time: "",
+    //                 end_time: ""
+    //             });
+    //             setIsUpdate(false);
+    //             setUpdateExamId(null);
+    //             setModal({
+    //                 open: true,
+    //                 type: "success",
+    //                 title: "Success",
+    //                 message: isUpdate ? "Exam updated successfully." : "Exam scheduled successfully."
+    //             });
+    //         } catch (error) {
+    //             const msg = error?.response?.data?.message;
     //             setModal({
     //                 open: true,
     //                 type: "error",
     //                 title: "Fail",
-    //                 message: "Exam Not Schedule Properly"
+    //                 message: msg || (isUpdate ? "Exam not updated properly" : "Exam not scheduled properly")
     //             });
     //         }
+    //     };
 
-    //     }
-    // };
     const handleSave = async () => {
         if (!user?.id) {
             setModal({
@@ -154,16 +162,79 @@ export default function Calender() {
             return;
         }
 
+        const { exam_title, exam_level, paper_set, start_time, end_time } = examData;
+
+        // ---------- BASIC REQUIRED FIELD VALIDATION ----------
+        if (
+            !exam_title?.trim() ||
+            !exam_level ||
+            !paper_set ||
+            !start_time ||
+            !end_time ||
+            !selectedDate
+        ) {
+            setModal({
+                open: true,
+                type: "error",
+                title: "Validation Error",
+                message: "All fields are compulsory."
+            });
+            return;
+        }
+
+        // ---------- DATE & TIME VALIDATION ----------
+        const today = new Date();
+        const selected = new Date(selectedDate);
+
+        // Normalize dates (compare only date part)
+        today.setHours(0, 0, 0, 0);
+        selected.setHours(0, 0, 0, 0);
+
+        const now = new Date();
+
+        // Convert start & end time to Date objects
+        const startTime = new Date(selectedDate);
+        const endTime = new Date(selectedDate);
+
+        const [startHour, startMinute] = start_time.split(":");
+        const [endHour, endMinute] = end_time.split(":");
+
+        startTime.setHours(startHour, startMinute, 0);
+        endTime.setHours(endHour, endMinute, 0);
+
+        // ---------- IF TODAY → START TIME MUST BE IN FUTURE ----------
+        if (today.getTime() === selected.getTime()) {
+            if (startTime <= now) {
+                setModal({
+                    open: true,
+                    type: "error",
+                    title: "Invalid Start Time",
+                    message: "Start time must be greater than current time."
+                });
+                return;
+            }
+        }
+
+        // ---------- END TIME MUST BE GREATER THAN START TIME ----------
+        if (endTime <= startTime) {
+            setModal({
+                open: true,
+                type: "error",
+                title: "Invalid End Time",
+                message: "End time must be greater than start time."
+            });
+            return;
+        }
+
+        // ---------- API CALL ----------
         try {
             if (isUpdate && updateExamId) {
-                // Update existing exam
                 await examScheduleApi.update(updateExamId, {
                     ...examData,
                     date: selectedDate,
                     updatedby: user.id
                 });
             } else {
-                // Create new exam
                 await examScheduleApi.create({
                     ...examData,
                     date: selectedDate,
@@ -182,11 +253,14 @@ export default function Calender() {
             });
             setIsUpdate(false);
             setUpdateExamId(null);
+
             setModal({
                 open: true,
                 type: "success",
                 title: "Success",
-                message: isUpdate ? "Exam updated successfully." : "Exam scheduled successfully."
+                message: isUpdate
+                    ? "Exam updated successfully."
+                    : "Exam scheduled successfully."
             });
         } catch (error) {
             const msg = error?.response?.data?.message;
@@ -194,10 +268,13 @@ export default function Calender() {
                 open: true,
                 type: "error",
                 title: "Fail",
-                message: msg || (isUpdate ? "Exam not updated properly" : "Exam not scheduled properly")
+                message: msg || (isUpdate
+                    ? "Exam not updated properly"
+                    : "Exam not scheduled properly")
             });
         }
     };
+
 
 
     const { data: schedules, loading, reload } = useFetchData(() => {

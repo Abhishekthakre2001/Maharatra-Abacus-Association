@@ -197,7 +197,7 @@ const QuestionModel = {
       TRIM(UPPER(set_id)) AS set_id
     FROM questions
     WHERE createdby = ?
-      AND level = ?
+      AND level = ? AND ismockset != 1
     ORDER BY set_id
     `,
       [createdby, level]
