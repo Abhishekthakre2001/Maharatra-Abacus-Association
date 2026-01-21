@@ -56,7 +56,6 @@ export default function QuestionPage() {
             setOpen(true);
         }
 
-
     };
 
     const handleDelete = (row) => {
