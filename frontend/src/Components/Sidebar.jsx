@@ -3,11 +3,12 @@ import {
   LayoutDashboard,
   Settings,
   ChevronLeft,
-  QrCode,
+  FileUser,
   LogOut,
-  Proportions,
-  CaptionsOff,
-  List
+  FileQuestionMark ,
+  FileClock ,
+  List,
+  Users 
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/logo.png";
@@ -38,10 +39,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-    { id: "student-list", label: "Students", icon: Proportions, path: "/students-list" },
-    { id: "questions", label: "Questions", icon: QrCode, path: "/questions" },
-    { id: "result", label: "Result", icon: List, path: "/results" },
-    { id: "exam-schedule", label: "Exam Schedule", icon: CaptionsOff, path: "/exam-schedule" },
+    { id: "student-list", label: "Students", icon: Users , path: "/students-list" },
+    { id: "questions", label: "Questions", icon: FileQuestionMark , path: "/questions" },
+    { id: "result", label: "Result", icon: FileUser, path: "/results" },
+    { id: "exam-schedule", label: "Exam Schedule", icon: FileClock  , path: "/exam-schedule" },
     { id: "masters", label: "Masters", icon: Settings, path: "/masters" },
   ];
 

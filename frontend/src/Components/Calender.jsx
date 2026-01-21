@@ -15,7 +15,7 @@ import Button from "../UI/Button";
 import InputField from "../UI/InputField";
 import SelectField from "../UI/SelectField";
 import Modal from "../UI/Modal";
-import { Calendar1, MoveLeft, MoveRight, Trash2,Pencil  } from 'lucide-react';
+import { Calendar1, MoveLeft, MoveRight, Trash2, Pencil } from 'lucide-react';
 import { useCreate } from "../hooks/useCreate";
 import examScheduleApi from "../api/examScheduleApi";
 import { useFetchData } from "../hooks/useFetchData";
@@ -94,55 +94,63 @@ export default function Calender() {
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : {};
 
-    // const handleSave = async () => {
-    //     if (!user?.id) {
-    //         setModal({
-    //             open: true,
-    //             type: "error",
-    //             title: "Not signed in",
-    //             message: "Please sign in to schedule an exam."
-    //         });
-    //         return;
-    //     }
 
-    //     try {
-    //         await create({
-    //             ...examData,
-    //             date: selectedDate,
-    //             createdby: user.id
-    //         });
-
-    //         setModal({
-    //             open: true,
-    //             type: "success",
-    //             title: "Success",
-    //             message: "Exam scheduled successfully."
-    //         });
-
-    //         // optional: reset form
-    //         setExamData(initialState);
-
-    //     } catch (error) {
-
-    //         console.log("error", error?.response?.data?.message)
-    //         if (error?.response?.data?.message == 'Set not available for this level') {
+    //     const handleSave = async () => {
+    //         if (!user?.id) {
     //             setModal({
     //                 open: true,
     //                 type: "error",
-    //                 title: "Fail",
-    //                 message: "Set not available for this level"
+    //                 title: "Not signed in",
+    //                 message: "Please sign in to schedule an exam."
     //             });
-    //         } else {
+    //             return;
+    //         }
+    // console.log("selectedDate",examData)
+    //         try {
+    //             if (isUpdate && updateExamId) {
+    //                 // Update existing exam
+    //                 await examScheduleApi.update(updateExamId, {
+    //                     ...examData,
+    //                     date: selectedDate,
+    //                     updatedby: user.id
+    //                 });
+    //             } else {
+    //                 // Create new exam
+    //                 await examScheduleApi.create({
+    //                     ...examData,
+    //                     date: selectedDate,
+    //                     createdby: user.id
+    //                 });
+    //             }
+
+    //             reload();
+    //             setOpenModal(false);
+    //             setExamData({
+    //                 exam_title: "",
+    //                 exam_level: "",
+    //                 paper_set: "",
+    //                 start_time: "",
+    //                 end_time: ""
+    //             });
+    //             setIsUpdate(false);
+    //             setUpdateExamId(null);
+    //             setModal({
+    //                 open: true,
+    //                 type: "success",
+    //                 title: "Success",
+    //                 message: isUpdate ? "Exam updated successfully." : "Exam scheduled successfully."
+    //             });
+    //         } catch (error) {
+    //             const msg = error?.response?.data?.message;
     //             setModal({
     //                 open: true,
     //                 type: "error",
     //                 title: "Fail",
-    //                 message: "Exam Not Schedule Properly"
+    //                 message: msg || (isUpdate ? "Exam not updated properly" : "Exam not scheduled properly")
     //             });
     //         }
+    //     };
 
-    //     }
-    // };
     const handleSave = async () => {
         if (!user?.id) {
             setModal({
@@ -154,16 +162,79 @@ export default function Calender() {
             return;
         }
 
+        const { exam_title, exam_level, paper_set, start_time, end_time } = examData;
+
+        // ---------- BASIC REQUIRED FIELD VALIDATION ----------
+        if (
+            !exam_title?.trim() ||
+            !exam_level ||
+            !paper_set ||
+            !start_time ||
+            !end_time ||
+            !selectedDate
+        ) {
+            setModal({
+                open: true,
+                type: "error",
+                title: "Validation Error",
+                message: "All fields are compulsory."
+            });
+            return;
+        }
+
+        // ---------- DATE & TIME VALIDATION ----------
+        const today = new Date();
+        const selected = new Date(selectedDate);
+
+        // Normalize dates (compare only date part)
+        today.setHours(0, 0, 0, 0);
+        selected.setHours(0, 0, 0, 0);
+
+        const now = new Date();
+
+        // Convert start & end time to Date objects
+        const startTime = new Date(selectedDate);
+        const endTime = new Date(selectedDate);
+
+        const [startHour, startMinute] = start_time.split(":");
+        const [endHour, endMinute] = end_time.split(":");
+
+        startTime.setHours(startHour, startMinute, 0);
+        endTime.setHours(endHour, endMinute, 0);
+
+        // ---------- IF TODAY → START TIME MUST BE IN FUTURE ----------
+        if (today.getTime() === selected.getTime()) {
+            if (startTime <= now) {
+                setModal({
+                    open: true,
+                    type: "error",
+                    title: "Invalid Start Time",
+                    message: "Start time must be greater than current time."
+                });
+                return;
+            }
+        }
+
+        // ---------- END TIME MUST BE GREATER THAN START TIME ----------
+        if (endTime <= startTime) {
+            setModal({
+                open: true,
+                type: "error",
+                title: "Invalid End Time",
+                message: "End time must be greater than start time."
+            });
+            return;
+        }
+
+        // ---------- API CALL ----------
         try {
             if (isUpdate && updateExamId) {
-                // Update existing exam
                 await examScheduleApi.update(updateExamId, {
                     ...examData,
                     date: selectedDate,
                     updatedby: user.id
                 });
             } else {
-                // Create new exam
                 await examScheduleApi.create({
                     ...examData,
                     date: selectedDate,
@@ -182,11 +253,14 @@ export default function Calender() {
             });
             setIsUpdate(false);
             setUpdateExamId(null);
+
             setModal({
                 open: true,
                 type: "success",
                 title: "Success",
-                message: isUpdate ? "Exam updated successfully." : "Exam scheduled successfully."
+                message: isUpdate
+                    ? "Exam updated successfully."
+                    : "Exam scheduled successfully."
             });
         } catch (error) {
             const msg = error?.response?.data?.message;
@@ -194,13 +268,16 @@ export default function Calender() {
                 open: true,
                 type: "error",
                 title: "Fail",
-                message: msg || (isUpdate ? "Exam not updated properly" : "Exam not scheduled properly")
+                message: msg || (isUpdate
+                    ? "Exam not updated properly"
+                    : "Exam not scheduled properly")
             });
         }
     };
 
 
-    const { data: schedules, reload } = useFetchData(() => {
+
+    const { data: schedules, loading, reload } = useFetchData(() => {
         if (!user?.id) return Promise.resolve([]);
         return examScheduleApi.getByadmin(user.id);
     });
@@ -247,7 +324,7 @@ export default function Calender() {
         }
     );
 
-
+    console.log("loading", loading)
 
     return (
         <>
@@ -276,125 +353,155 @@ export default function Calender() {
 
             <div className="px-4 sm:px-6 py-4 sm:py-6 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                {/* CALENDAR */}
-                <div className="bg-white rounded-lg sm:rounded-2xl shadow p-4 sm:p-6">
-                    <div className="flex flex-row justify-between items-center gap-2 mb-4">
-                        <Button
-                            onClick={() => setCurrentMonth(new Date(year, month - 1))}
-                            variant="secondary"
-                            size="sm"
-                        >
-                            <MoveLeft />
-                        </Button>
-
-                        <h2 className="text-base sm:text-lg font-semibold">
-                            {currentMonth.toLocaleString("default", {
-                                month: "long",
-                            })}{" "}
-                            {year}
-                        </h2>
-
-                        <Button
-                            onClick={() => setCurrentMonth(new Date(year, month + 1))}
-                            variant="secondary"
-                            size="sm"
-                        >
-                            <MoveRight />
-                        </Button>
-                    </div>
-
-                    {/* WEEK DAYS */}
-                    <div className="grid grid-cols-7 text-center text-xs sm:text-sm font-medium text-gray-500 mb-2">
-                        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                            (day) => (
-                                <div key={day}>{day}</div>
-                            )
-                        )}
-                    </div>
-
-                    {/* DATES */}
-                    <div className="grid grid-cols-7 gap-1 sm:gap-2">
-                        {days.map((day, i) => {
-                            const fullDate =
-                                day &&
-                                `${year}-${String(month + 1).padStart(
-                                    2,
-                                    "0"
-                                )}-${String(day).padStart(2, "0")}`;
-
-                            // Check if this date has a scheduled exam
-                            const hasExam = schedules.some(exam => {
-                                const examDate = exam.date ? exam.date.split('T')[0] : '';
-                                return examDate === fullDate;
-                            });
-
-                            let dayClass = "bg-gray-100 hover:bg-blue-100";
-                            let textClass = "text-xs sm:text-sm";
-                            if (selectedDate === fullDate) {
-                                dayClass = "bg-blue-600 text-white";
-                            } else if (hasExam) {
-                                dayClass = "bg-orange-200 text-orange-700 font-bold";
-                                textClass = "text-xs sm:text-sm";
-                            }
-                            return (
-                                <div
-                                    key={i}
-                                    onClick={() => day && setSelectedDate(fullDate)}
-                                    className={`h-10 sm:h-12 flex items-center justify-center rounded-xl cursor-pointer ${!day ? "bg-transparent cursor-default" : dayClass}`}
-                                >
-                                    <span className={textClass}>{day}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* RIGHT PANEL */}
-                {/* RIGHT PANEL */}
-                <div className="bg-white rounded-lg sm:rounded-2xl shadow p-4 sm:p-6">
-                    <h3 className="text-base sm:text-lg font-semibold mb-3">
-                        Exam Schedule
-                    </h3>
-
-                    {!selectedDate ? (
-                        <p className="text-gray-500">
-                            Select a date from calendar
-                        </p>
-                    ) : (
+                {loading ?
+                    (
                         <>
-                            <p className="text-gray-600 mb-4 flex gap-2 items-center text-sm">
-                                <Calendar1 />
-                                Selected Date:
-                                <span className="font-medium">
-                                    {selectedDate}
-                                </span>
-                            </p>
+                            <div className="fixed inset-0 flex items-center justify-center bg-white">
+                                <div className="flex flex-col items-center gap-4">
+                                    <svg
+                                        aria-hidden="true"
+                                        className="w-10 h-10 animate-spin text-blue-600"
+                                        viewBox="0 0 100 101"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                            fill="currentColor"
+                                        />
+                                        <path
+                                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873"
+                                            fill="currentFill"
+                                        />
+                                    </svg>
 
-                            {/* ✅ ALWAYS SHOW BUTTON */}
-                            <Button
-                                className="mb-4 w-full sm:w-auto"
-                                onClick={() => {
-                                    // Only allow scheduling for today or future
-                                    if (selectedDate >= formatToday(today)) setOpenModal(true);
-                                }}
-                                disabled={selectedDate < formatToday(today)}
-                            >
-                                Schedule Exam
-                            </Button>
+                                    <p className="text-blue-600 text-sm font-medium animate-pulse">
+                                        Loading, please wait...
+                                    </p>
+                                </div>
+                            </div>
 
-                            {/* SCHEDULE LIST */}
-                            {filteredSchedules.length === 0 ? (
+                        </>
+                    ) : (<>
+                        {/* CALENDAR */}
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow p-4 sm:p-6">
+                            <div className="flex flex-row justify-between items-center gap-2 mb-4">
+                                <Button
+                                    onClick={() => setCurrentMonth(new Date(year, month - 1))}
+                                    variant="secondary"
+                                    size="sm"
+                                >
+                                    <MoveLeft />
+                                </Button>
+
+                                <h2 className="text-base sm:text-lg font-semibold">
+                                    {currentMonth.toLocaleString("default", {
+                                        month: "long",
+                                    })}{" "}
+                                    {year}
+                                </h2>
+
+                                <Button
+                                    onClick={() => setCurrentMonth(new Date(year, month + 1))}
+                                    variant="secondary"
+                                    size="sm"
+                                >
+                                    <MoveRight />
+                                </Button>
+                            </div>
+
+                            {/* WEEK DAYS */}
+                            <div className="grid grid-cols-7 text-center text-xs sm:text-sm font-medium text-gray-500 mb-2">
+                                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                                    (day) => (
+                                        <div key={day}>{day}</div>
+                                    )
+                                )}
+                            </div>
+
+                            {/* DATES */}
+                            <div className="grid grid-cols-7 gap-1 sm:gap-2">
+                                {days.map((day, i) => {
+                                    const fullDate =
+                                        day &&
+                                        `${year}-${String(month + 1).padStart(
+                                            2,
+                                            "0"
+                                        )}-${String(day).padStart(2, "0")}`;
+
+                                    // Check if this date has a scheduled exam
+                                    const hasExam = schedules.some(exam => {
+                                        const examDate = exam.date ? exam.date.split('T')[0] : '';
+                                        return examDate === fullDate;
+                                    });
+
+                                    let dayClass = "bg-gray-100 hover:bg-blue-100";
+                                    let textClass = "text-xs sm:text-sm";
+                                    if (selectedDate === fullDate) {
+                                        dayClass = "bg-blue-600 text-white";
+                                    } else if (hasExam) {
+                                        dayClass = "bg-orange-200 text-orange-700 font-bold";
+                                        textClass = "text-xs sm:text-sm";
+                                    }
+                                    return (
+                                        <div
+                                            key={i}
+                                            onClick={() => day && setSelectedDate(fullDate)}
+                                            className={`h-10 sm:h-12 flex items-center justify-center rounded-xl cursor-pointer ${!day ? "bg-transparent cursor-default" : dayClass}`}
+                                        >
+                                            <span className={textClass}>{day}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* RIGHT PANEL */}
+                        {/* RIGHT PANEL */}
+                        <div className="bg-white rounded-lg sm:rounded-2xl shadow p-4 sm:p-6">
+                            <h3 className="text-base sm:text-lg font-semibold mb-3">
+                                Exam Schedule
+                            </h3>
+
+                            {!selectedDate ? (
                                 <p className="text-gray-500">
-                                    No exams scheduled for this date
+                                    Select a date from calendar
                                 </p>
                             ) : (
+                                <>
+                                    <p className="text-gray-600 mb-4 flex gap-2 items-center text-sm">
+                                        <Calendar1 />
+                                        Selected Date:
+                                        <span className="font-medium">
+                                            {selectedDate}
+                                        </span>
+                                    </p>
 
-                                <div className="space-y-3">
-                                    {filteredSchedules.map(exam => (
+                                    {/* ✅ ALWAYS SHOW BUTTON */}
+                                    <Button
+                                        className="mb-4 w-full sm:w-auto"
+                                        onClick={() => {
+                                            // Only allow scheduling for today or future
+                                            if (selectedDate >= formatToday(today)) setOpenModal(true);
+                                        }}
+                                        disabled={selectedDate < formatToday(today)}
+                                    >
+                                        Schedule Exam
+                                    </Button>
+
+                                    {/* SCHEDULE LIST */}
+                                    {filteredSchedules.length === 0 ? (
+                                        <p className="text-gray-500">
+                                            No exams scheduled for this date
+                                        </p>
+                                    ) : (
+
+                                        <div className="space-y-3">
+                                            {filteredSchedules.map(exam => (
 
 
-                                        <div key={exam.id}
-                                            className="
+                                                <div key={exam.id}
+                                                    className="
     group
     bg-gradient-to-br from-blue-50 to-indigo-100
     rounded-2xl
@@ -403,61 +510,65 @@ export default function Calender() {
     p-6 border border-blue-100
     hover:-translate-y-1
   "
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <p className="text-gray-500 font-medium text-md">
-                                                        {exam.exam_title}
-                                                    </p>
-                                                    <div className="flex gap-4">
-                                                        <h2 className="text-2xl font-bold text-slate-800 mt-2">
-                                                            {exam.exam_level}{exam.paper_set}
-                                                        </h2>
-                                                        <p className="mt-3">
-                                                            {formatTime12hr(exam.start_time)} To {formatTime12hr(exam.end_time)}
-                                                        </p>
-                                                    </div>
+                                                >
+                                                    <div className="flex items-center justify-between">
+                                                        <div>
+                                                            <p className="text-gray-500 font-medium text-md">
+                                                                {exam.exam_title}
+                                                            </p>
+                                                            <div className="flex gap-4">
+                                                                <h2 className="text-2xl font-bold text-slate-800 mt-2">
+                                                                    {exam.exam_level}{exam.paper_set}
+                                                                </h2>
+                                                                <p className="mt-3">
+                                                                    {formatTime12hr(exam.start_time)} To {formatTime12hr(exam.end_time)}
+                                                                </p>
+                                                            </div>
 
-                                                </div>
+                                                        </div>
 
-                                                <div className="flex gap-2 items-center">
-                                                    <button
-                                                        onClick={() => {
-                                                            setIsUpdate(true);
-                                                            setUpdateExamId(exam.id);
-                                                            setExamData({
-                                                                exam_title: exam.exam_title,
-                                                                exam_level: exam.exam_level,
-                                                                paper_set: exam.paper_set,
-                                                                start_time: exam.start_time,
-                                                                end_time: exam.end_time
-                                                            });
-                                                            setOpenModal(true);
-                                                        }}
-                                                        className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-300 to-green-200 text-green-700 flex items-center justify-center group-hover:scale-110 transition-transform border border-green-200"
-                                                        title="Update Exam"
-                                                    >
-                                                        <Pencil size={22} />
-                                                    </button>
-                                                    <div onClick={() => handleDelete(exam.id)}
-                                                        className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-300 to-blue-200 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform"
-                                                        title="Delete Exam"
-                                                    >
-                                                        <Trash2 size={22} />
+                                                        <div className="flex gap-2 items-center">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setIsUpdate(true);
+                                                                    setUpdateExamId(exam.id);
+                                                                    setExamData({
+                                                                        exam_title: exam.exam_title,
+                                                                        exam_level: exam.exam_level,
+                                                                        paper_set: exam.paper_set,
+                                                                        start_time: exam.start_time,
+                                                                        end_time: exam.end_time
+                                                                    });
+                                                                    setOpenModal(true);
+                                                                }}
+                                                                className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-300 to-green-200 text-green-700 flex items-center justify-center group-hover:scale-110 transition-transform border border-green-200"
+                                                                title="Update Exam"
+                                                            >
+                                                                <Pencil size={22} />
+                                                            </button>
+                                                            <div onClick={() => handleDelete(exam.id)}
+                                                                className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-300 to-blue-200 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform"
+                                                                title="Delete Exam"
+                                                            >
+                                                                <Trash2 size={22} />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
 
 
+                                    )}
+
+
+                                </>
                             )}
+                        </div>
+                    </>)
+                }
 
 
-                        </>
-                    )}
-                </div>
 
 
             </div>

@@ -132,27 +132,27 @@ export default function StudentDashboard() {
               items={
                 filteredUpcomingExams.length > 0
                   ? filteredUpcomingExams.map((exam) => (
-                      <CreamCarouselCard
-                        key={exam.id}
-                        title={`Abacus Level ${exam.exam_level} Examination`}
-                        subtitle={exam.exam_title}
-                        examDate={formatDate(exam.date)}
-                        startTime={formatTime(exam.start_time)}
-                        endTime={formatTime(exam.end_time)}
-                        image={examImg}
-                      />
-                    ))
+                    <CreamCarouselCard
+                      key={exam.id}
+                      title={`Abacus Level ${exam.exam_level} Examination`}
+                      subtitle={exam.exam_title}
+                      examDate={formatDate(exam.date)}
+                      startTime={formatTime(exam.start_time)}
+                      endTime={formatTime(exam.end_time)}
+                      image={examImg}
+                    />
+                  ))
                   : [
-                      <CreamCarouselCard
-                        key="no-exam"
-                        title="No Upcoming Exams"
-                        subtitle="Please check back later"
-                        examDate="—"
-                        startTime="—"
-                        endTime="—"
-                        image={examImg}
-                      />
-                    ]
+                    <CreamCarouselCard
+                      key="no-exam"
+                      title="No Upcoming Exams"
+                      subtitle="Please check back later"
+                      examDate="—"
+                      startTime="—"
+                      endTime="—"
+                      image={examImg}
+                    />
+                  ]
               }
             />
           </div>
@@ -167,17 +167,25 @@ export default function StudentDashboard() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 max-w-md">
-              {!showSets && (
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={() => setShowSets(true)}
-                  className="w-full"
-                >
-                  Start Mock Exam
-                </Button>
-              )}
+              {levelwise_set.length === 0 ? <>
+                <p className="text-sm text-center text-slate-500 mb-5">
+                  Sorry Practice Question Sets Not Available,<br /> Please Contact Your Admin
+                </p>
+              </> :
+                <>
+                  {!showSets && (
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      onClick={() => setShowSets(true)}
+                      className="w-full"
+                    >
+                      Start Mock Exam
+                    </Button>
+                  )}
 
+
+                </>}
               {liveExamData && (
                 <Button
                   variant="primary"

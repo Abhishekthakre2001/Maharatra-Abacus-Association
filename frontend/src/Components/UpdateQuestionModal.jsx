@@ -12,7 +12,7 @@ const UpdateQuestionModal = ({ open, onClose, onUpdate, question, loading = fals
         option2: '',
         option3: '',
         option4: '',
-        correctAnswer: '',
+        correctoption: '',
         level: '',
         category: ''
     });
@@ -25,7 +25,7 @@ const UpdateQuestionModal = ({ open, onClose, onUpdate, question, loading = fals
                 option2: question.option2 || '',
                 option3: question.option3 || '',
                 option4: question.option4 || '',
-                correctAnswer: question.correctAnswer || '',
+                correctoption: question.correctoption || '',
                 level: question.level || '',
                 category: question.category || ''
             });
@@ -47,10 +47,10 @@ const UpdateQuestionModal = ({ open, onClose, onUpdate, question, loading = fals
     };
 
     return (
-        <Modal 
-            open={open} 
-            onClose={onClose} 
-            title="Update Question" 
+        <Modal
+            open={open}
+            onClose={onClose}
+            title="Update Question"
             width="max-w-3xl"
             footer={
                 <div className="flex justify-end gap-3">
@@ -79,7 +79,7 @@ const UpdateQuestionModal = ({ open, onClose, onUpdate, question, loading = fals
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Question <span className="text-red-500">*</span>
                     </label>
-                    <textarea
+                    <InputField
                         value={formData.question}
                         onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
                         required
@@ -125,14 +125,14 @@ const UpdateQuestionModal = ({ open, onClose, onUpdate, question, loading = fals
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <SelectField
                         label="Correct Answer"
-                        value={formData.correctAnswer}
-                        onChange={handleChange('correctAnswer')}
+                        value={formData.correctoption}
+                        onChange={handleChange('correctoption')}
                         options={[
                             { value: '', label: 'Select correct answer' },
-                            { value: 'option1', label: 'Option A' },
-                            { value: 'option2', label: 'Option B' },
-                            { value: 'option3', label: 'Option C' },
-                            { value: 'option4', label: 'Option D' }
+                            { value: '1', label: '1' },
+                            { value: '2', label: '2' },
+                            { value: '3', label: '3' },
+                            { value: '4', label: '4' }
                         ]}
                         required
                     />

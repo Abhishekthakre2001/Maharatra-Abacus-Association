@@ -65,19 +65,44 @@ const UserModel = {
   },
 
   remove: async (id) => {
-    const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
-    return result;
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.beginTransaction();
+
+      // 1️⃣ Delete child records first
+      await connection.query(
+        "DELETE FROM result WHERE user_id = ?",
+        [id]
+      );
+
+      // 2️⃣ Delete parent record
+      const [userResult] = await connection.query(
+        "DELETE FROM users WHERE id = ?",
+        [id]
+      );
+
+      await connection.commit();
+      return userResult;
+
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+
+    } finally {
+      connection.release();
+    }
   },
 
 
   findByUsername: async (username) => {
-  const [rows] = await pool.query(
-    "SELECT * FROM users WHERE BINARY username = ?",
-    [username]
-  );
+    const [rows] = await pool.query(
+      "SELECT * FROM users WHERE BINARY username = ?",
+      [username]
+    );
 
-  return rows[0];
-}
+    return rows[0];
+  }
 
 
 

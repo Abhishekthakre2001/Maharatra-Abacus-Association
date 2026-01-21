@@ -80,7 +80,10 @@ const AppBar = ({
           <button
             onClick={() => setOpen(!open)}
             className="md:hidden p-2 rounded-xl"
-            style={{ backgroundColor: colors.accent.orange }}
+             style={{
+              backgroundColor: colors.sidebar.toggle_bg,
+              color: colors.sidebar.toggle_color
+            }}
           >
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -142,10 +145,13 @@ const AppBar = ({
             <button
               className={`mt-[15%]
                               w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                              text-white shadow-lg transition
+                               shadow-lg transition
                               "justify-center"}
                             `}
-              style={{ backgroundColor: colors.accent.orange }}
+              style={{
+                backgroundColor: colors.sidebar.toggle_bg,
+                color: colors.sidebar.toggle_color
+              }}
             >
               <LogOut size={20} />
               {<span>Logout</span>}

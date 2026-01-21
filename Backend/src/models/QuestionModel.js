@@ -110,10 +110,11 @@ const QuestionModel = {
   },
 
   update: async (id, data) => {
+    console.log(data)
     const sql = `
       UPDATE questions SET
       question=?, option1=?, option2=?, option3=?, option4=?,
-      correctoption=?, level=?, set_id=?
+      correctoption=?
       WHERE id=?
     `;
     const [result] = await pool.query(sql, [
@@ -123,8 +124,6 @@ const QuestionModel = {
       data.option3,
       data.option4,
       data.correctoption,
-      data.level,
-      data.set_id,
       id
     ]);
     return result;
@@ -198,7 +197,7 @@ const QuestionModel = {
       TRIM(UPPER(set_id)) AS set_id
     FROM questions
     WHERE createdby = ?
-      AND level = ?
+      AND level = ? AND ismockset != 1
     ORDER BY set_id
     `,
       [createdby, level]

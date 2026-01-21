@@ -102,6 +102,13 @@ export default function ExamPage() {
             setTimeRemaining(prev => {
                 if (prev <= 1) {
                     clearInterval(timer);
+
+                    setModal({
+                        open: true,
+                        type: "warning",
+                        title: "Times Up",
+                        message: "Your Time is Reach",
+                    });
                     handleSubmitExam();
                     return 0;
                 }

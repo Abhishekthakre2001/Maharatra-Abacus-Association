@@ -10,7 +10,7 @@ import questionApi from "../api/questionApi";
 import setsApi from "../api/SetsApi";
 import { useEffect } from "react";
 import levelApi from "../api/LevelApi";
-import sampleExcel from "../assets/Questions_Bank.csv?url";
+import sampleExcel from "../assets/Questions_Bank.xls?url";
 // import sampleExcel from "../assets/Questions_Bank.csv?url";
 
 
@@ -409,7 +409,7 @@ export default function CsvQuestionManager() {
                 <option value={0}>No</option>
               </select> */}
               <SelectField
-                label="Mock Set"
+                label="Exam Set"
                 value={isMockSet}
                 onChange={(e) => setIsMockSet(Number(e.target.value))}
                 options={yesNoOptions.map(opt => ({
@@ -448,7 +448,7 @@ export default function CsvQuestionManager() {
               onClick={() => {
                 const link = document.createElement("a");
                 link.href = sampleExcel;
-                link.download = "Questions_Bank.csv";
+                link.download = "Questions_Bank.xls";
                 link.click();
               }}
               variant="primary"
