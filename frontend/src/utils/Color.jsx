@@ -63,7 +63,7 @@ const colors = {
     dark: '#90cdf4',
     blue200: '#bfdbfe',
     blue700: '#1d4ed8',
-    gray300: '#d1d5db',
+    gray300: '#efefef',
     gray400: '#9ca3af',
     gray500: '#6b7280',
     gray600: '#4b5563',

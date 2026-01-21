@@ -186,7 +186,7 @@ export default function StudentDashboard() {
 
 
                 </>}
-              {liveExamData && (
+              {(liveExamData && !showSets ) && (
                 <Button
                   variant="primary"
                   size="lg"

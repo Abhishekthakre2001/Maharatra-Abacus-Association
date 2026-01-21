@@ -339,9 +339,11 @@ export default function QuestionPage() {
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
                     <AppBar
-                        title="Student Management"
-                        subtitle="Manage and view all students"
+                        title="Question Management"
+                        subtitle="Create, organize, and manage all questions"
                     />
+
+
 
                     <div className="mt-8">
                         {/* Back Button for QuestionsView */}
@@ -396,7 +398,7 @@ export default function QuestionPage() {
                 }}
                 onConfirm={handleDeleteConfirm}
                 title="Delete Question"
-                message={`Are you sure you want to delete ? This action cannot be undone.`}
+                message={`Are you sure you want to delete ${selectedQuestion?.paper_set || selectedQuestion?.question} ? This action cannot be undone.`}
                 loading={buttonloading}
             />
 

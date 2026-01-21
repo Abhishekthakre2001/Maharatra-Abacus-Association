@@ -347,9 +347,10 @@ export default function Calender() {
                 message="Are you sure you want to delete this exam? This action cannot be undone."
             />
             <AppBar
-                title="Student Management"
-                subtitle="Exam Schedule Calendar"
+                title="Exam Management"
+                subtitle="Schedule, organize, and manage examinations"
             />
+
 
             <div className="px-4 sm:px-6 py-4 sm:py-6 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -473,7 +474,7 @@ export default function Calender() {
                                         <Calendar1 />
                                         Selected Date:
                                         <span className="font-medium">
-                                            {selectedDate}
+                                            {new Date(selectedDate).toLocaleDateString("en-GB")}
                                         </span>
                                     </p>
 
@@ -541,16 +542,16 @@ export default function Calender() {
                                                                     });
                                                                     setOpenModal(true);
                                                                 }}
-                                                                className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-300 to-green-200 text-green-700 flex items-center justify-center group-hover:scale-110 transition-transform border border-green-200"
+                                                                className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-300 to-green-200 text-green-700 flex items-center justify-center group-hover:scale-110 transition-transform border border-green-200"
                                                                 title="Update Exam"
                                                             >
-                                                                <Pencil size={22} />
+                                                                <Pencil size={20} />
                                                             </button>
                                                             <div onClick={() => handleDelete(exam.id)}
-                                                                className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-300 to-blue-200 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform"
+                                                                className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-300 to-blue-200 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform"
                                                                 title="Delete Exam"
                                                             >
-                                                                <Trash2 size={22} />
+                                                                <Trash2 size={20} />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -642,9 +643,22 @@ export default function Calender() {
                 </div>
 
                 <div className="flex justify-end gap-3 mt-6">
-                    <Button variant="outline" onClick={() => setOpenModal(false)}>
+                    <Button
+                        variant="outline"
+                        onClick={() => {
+                            setOpenModal(false);
+                            setExamData({
+                                exam_title: "",
+                                exam_level: "",
+                                paper_set: "",
+                                start_time: "",
+                                end_time: ""
+                            });
+                        }}
+                    >
                         Cancel
                     </Button>
+
                     <Button onClick={handleSave}>
                         Save
                     </Button>

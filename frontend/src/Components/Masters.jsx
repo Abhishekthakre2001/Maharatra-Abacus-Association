@@ -9,9 +9,10 @@ export default function Masters() {
         <>
             <div className="max-w-7xl mx-auto">
                 <AppBar
-                    title="Student Management"
-                    subtitle="Manage and view all students"
+                    title="Masters Management"
+                    subtitle="Configure and manage system-wide master data"
                 />
+
 
                 {/* Add Student Button - Responsive */}
                 {/* <div className="flex justify-center md:justify-end mt-6">

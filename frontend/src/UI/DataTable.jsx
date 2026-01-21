@@ -26,7 +26,8 @@ const DataTable = ({
   showActions = true,
   searchable = true,
   pagination = true,
-  loading = false
+  loading = false,
+  exportable = true
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -97,11 +98,11 @@ const DataTable = ({
   const handleExportCSV = () => {
     // Filter out any existing serial number columns to avoid duplication
     const serialNumberPatterns = /^(sr\.?\s*no\.?|serial\s*number|s\.?\s*no\.?|sn|#)$/i;
-    const exportColumns = columns.filter(col => 
-      !serialNumberPatterns.test(col.label || '') && 
+    const exportColumns = columns.filter(col =>
+      !serialNumberPatterns.test(col.label || '') &&
       !serialNumberPatterns.test(col.key || '')
     );
-    
+
     const headers = ['Sr. No', ...exportColumns.map(col => col.label)];
     const rows = sortedData.map((row, index) => [
       index + 1,  // Serial number starting from 1
@@ -175,14 +176,17 @@ const DataTable = ({
                 </button>
               )}
 
-              <button
-                onClick={onExport ?? handleExportCSV}
-                className="flex items-center justify-center gap-2 bg-[#FF7F36] hover:bg-[#e86f2c] text-white px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
-              >
-                <Download size={16} />
-                <span className="hidden xs:inline">Export CSV</span>
-                <span className="xs:hidden">Export</span>
-              </button>
+              {exportable && (
+                <button
+                  onClick={onExport ?? handleExportCSV}
+                  className="flex items-center justify-center gap-2 bg-[#FF7F36] hover:bg-[#e86f2c] text-white px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
+                >
+                  <Download size={16} />
+                  <span className="hidden xs:inline">Export CSV</span>
+                  <span className="xs:hidden">Export</span>
+                </button>
+              )}
+
 
               {/* ⭐ CLEAR FILTER BUTTON */}
               <button
