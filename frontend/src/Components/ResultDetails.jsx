@@ -20,6 +20,18 @@ export default function ResultDetails() {
 
     const columns = [
         {
+            key: "resultfor",
+            label: "Exam Type",
+            sortable: true,
+            render: (value) => <span className="font-medium">{value}</span>
+        },
+         {
+            key: "examtitle",
+            label: "Exam Title",
+            sortable: true,
+            render: (value) => <span className="font-medium">{value}</span>
+        },
+        {
             key: "total_question",
             label: "Total Questions",
             sortable: true,

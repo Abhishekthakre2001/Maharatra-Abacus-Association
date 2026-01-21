@@ -9,6 +9,7 @@ import questionApi from '../../api/questionApi';
 import ResultApi from '../../api/result';
 import { useCreate } from '../../hooks/useCreate';
 import MessageModal from "../../utils/MessageModal";
+import ExamViolationGuard from "../../Features/ExamViolationGuard"
 
 /* ---------- Helpers ---------- */
 
@@ -162,6 +163,11 @@ export default function ExamPage() {
                 message: "Exam Submitted successfully",
             });
 
+            localStorage.removeItem("examType");
+            localStorage.removeItem("paperlevel");
+            localStorage.removeItem("paperset");
+            localStorage.removeItem("result");
+            localStorage.removeItem("Exam_Tittle");
             console.log("isMockTest", isMockTest)
 
             // ⏳ navigate after 3 seconds
@@ -222,6 +228,8 @@ export default function ExamPage() {
 
 
         const user = JSON.parse(localStorage.getItem("user") || "{}");
+        const resultfor = localStorage.getItem("examType") === "mock" ? "Test" : "Exam";
+        const examtitle = localStorage.getItem("Exam_Tittle") || "Not Available";
 
         const resultPayload = {
             user_id: user.id,
@@ -233,7 +241,9 @@ export default function ExamPage() {
             time: mysqlDateTime,
             totaltime: formatTime(totalExamTime),
             time_taken: formatTime(totalExamTime - timeRemaining),
-            createdby: user.createdby, // ✅ usually user.id, not createdby
+            createdby: user.createdby,
+            resultfor: resultfor,
+            examtitle: examtitle
         };
 
         console.log("📊 EXAM RESULT:", resultPayload);
@@ -261,6 +271,18 @@ export default function ExamPage() {
 
     const currentQ = questions[currentQuestion];
 
+    const handleExamEnd = () => {
+        alert("Exam ended due to multiple violations.");
+        //  setModal({
+        //     open: true,
+        //     type: "error",
+        //     title: "Warning",
+        //     message: "Exam ended due to multiple violations.",
+        // });
+        handleSubmitExam();
+    };
+
+
     return (
         <div className="max-w-full h-screen overflow-hidden flex flex-col bg-blue-200">
             <div className="m-2 mb-0 flex-shrink-0">
@@ -269,6 +291,9 @@ export default function ExamPage() {
                     subtitle="Train Your Brain Daily"
                 /> */}
             </div>
+
+            <ExamViolationGuard onExamEnd={handleExamEnd} />
+
             <MessageModal
                 open={modal.open}
                 type={modal.type}
@@ -388,7 +413,7 @@ export default function ExamPage() {
 
             {/* Drawer Overlay */}
             {drawerOpen && (
-                <div 
+                <div
                     className="fixed inset-0  bg-opacity-50 z-40"
                     onClick={() => setDrawerOpen(false)}
                 />
@@ -396,9 +421,8 @@ export default function ExamPage() {
 
             {/* Drawer */}
             <div
-                className={`fixed right-0 top-0 h-full w-80 bg-gradient-to-b from-slate-50 to-slate-100 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
-                    drawerOpen ? 'translate-x-0' : 'translate-x-full'
-                }`}
+                className={`fixed right-0 top-0 h-full w-80 bg-gradient-to-b from-slate-50 to-slate-100 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${drawerOpen ? 'translate-x-0' : 'translate-x-full'
+                    }`}
             >
                 <div className="h-full flex flex-col p-5">
                     {/* Header */}
@@ -434,7 +458,7 @@ export default function ExamPage() {
                     {/* Legend */}
                     <div className="bg-white rounded-lg p-4 mb-6 shadow-sm border border-gray-200">
                         {/* <h4 className="text-xs font-bold text-gray-700 mb-3 uppercase tracking-wide">Legend</h4> */}
-                        <div className="grid grid-cols-2 gap-3">
+                        {/* <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
                                 <div className="w-5 h-5 bg-blue-600 rounded-md shadow-sm"></div>
                                 <span className="text-xs text-gray-700 font-medium">Current</span>
@@ -451,6 +475,27 @@ export default function ExamPage() {
                                 <div className="w-5 h-5 bg-gray-200 rounded-md border-2 border-gray-400 shadow-sm"></div>
                                 <span className="text-xs text-gray-700 font-medium">Skipped</span>
                             </div>
+                        </div> */}
+                        {/* Stats */}
+                        <div className="mt-8 space-y-3">
+                            <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-green-600 font-medium">Answered</span>
+                                    <span className="text-lg font-bold text-green-600">{Object.keys(answers).length}</span>
+                                </div>
+                            </div>
+                            <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-yellow-600 font-medium">Unanswered</span>
+                                    <span className="text-lg font-bold text-yellow-600">{visited.size - Object.keys(answers).length}</span>
+                                </div>
+                            </div>
+                            <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-gray-600 font-medium">Skipped</span>
+                                    <span className="text-lg font-bold text-gray-600">{questions.length - visited.size}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -462,15 +507,14 @@ export default function ExamPage() {
                                 <button
                                     key={index}
                                     onClick={() => handleQuestionClick(index)}
-                                    className={`h-10 rounded-lg font-semibold text-xs transition-all duration-200 transform hover:scale-105 ${
-                                        currentQuestion === index
-                                            ? 'bg-blue-600 text-white shadow-lg scale-110 ring-2 ring-blue-400'
-                                            : answers[index] !== undefined
-                                                ? 'bg-green-500 text-white shadow-md hover:shadow-lg'
-                                                : visited.has(index)
-                                                    ? 'bg-yellow-500 text-white shadow-md hover:shadow-lg'
-                                                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300 shadow-sm'
-                                    }`}
+                                    className={`h-10 rounded-lg font-semibold text-xs transition-all duration-200 transform hover:scale-105 ${currentQuestion === index
+                                        ? 'bg-blue-600 text-white shadow-lg scale-110 ring-2 ring-blue-400'
+                                        : answers[index] !== undefined
+                                            ? 'bg-green-500 text-white shadow-md hover:shadow-lg'
+                                            : visited.has(index)
+                                                ? 'bg-yellow-500 text-white shadow-md hover:shadow-lg'
+                                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300 shadow-sm'
+                                        }`}
                                     title={`Question ${index + 1}`}
                                 >
                                     {index + 1}
@@ -478,27 +522,7 @@ export default function ExamPage() {
                             ))}
                         </div>
 
-                        {/* Stats */}
-                        <div className="mt-8 space-y-3">
-                            <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs text-gray-600 font-medium">Answered</span>
-                                    <span className="text-lg font-bold text-green-600">{Object.keys(answers).length}</span>
-                                </div>
-                            </div>
-                            <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs text-gray-600 font-medium">Unanswered</span>
-                                    <span className="text-lg font-bold text-yellow-600">{visited.size - Object.keys(answers).length}</span>
-                                </div>
-                            </div>
-                            <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs text-gray-600 font-medium">Skipped</span>
-                                    <span className="text-lg font-bold text-gray-600">{questions.length - visited.size}</span>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
 
                     {/* Submit Button */}

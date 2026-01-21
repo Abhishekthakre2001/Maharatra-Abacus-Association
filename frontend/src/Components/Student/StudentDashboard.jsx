@@ -106,6 +106,7 @@ export default function StudentDashboard() {
   const liveExam = () => {
     localStorage.setItem("paperset", liveExamData.paper_set);
     localStorage.setItem("paperlevel", liveExamData.exam_level);
+    localStorage.setItem("Exam_Tittle", liveExamData.exam_title);
     localStorage.setItem("examType", "live");
     navigate("/exam-rule");
   };
