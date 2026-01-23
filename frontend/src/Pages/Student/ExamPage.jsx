@@ -65,33 +65,40 @@ export default function ExamPage() {
     useEffect(() => {
         if (!PaperQuestion || PaperQuestion.length === 0) return;
 
+        // Check if exam state exists in localStorage
+        const savedExamState = localStorage.getItem("examState");
+        
+        if (savedExamState) {
+            // Restore from localStorage
+            const { currentQ, answers: savedAnswers, timeRemaining: savedTime, visited: savedVisited } = JSON.parse(savedExamState);
+            setCurrentQuestion(currentQ);
+            setAnswers(savedAnswers);
+            setTimeRemaining(savedTime);
+            setVisited(new Set(savedVisited));
+        } else {
+            // First time - initialize exam
+            setQuestions(PaperQuestion);
+            const seconds = timeToSeconds(PaperQuestion[0].set_time);
+            setTimeRemaining(seconds);
+            setTotalExamTime(seconds);
+        }
+        
         setQuestions(PaperQuestion);
-
-        const seconds = timeToSeconds(PaperQuestion[0].set_time);
-        setTimeRemaining(seconds);
-        setTotalExamTime(seconds);
     }, [PaperQuestion]);
 
-    // Block browser navigation during exam
+    // Save exam state to localStorage whenever it changes
     useEffect(() => {
-        if (!blockNav) return;
-        const handleBeforeUnload = (e) => {
-            e.preventDefault();
-            e.returnValue = '';
+        if (questions.length === 0) return;
+        
+        const examState = {
+            currentQ: currentQuestion,
+            answers,
+            timeRemaining,
+            visited: Array.from(visited)
         };
-        const handlePopState = (e) => {
-            // Show custom modal instead of navigating
-            Endexamwarning();
-            window.history.pushState(null, '', window.location.href); // Prevent back
-        };
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        window.addEventListener('popstate', handlePopState);
-        window.history.pushState(null, '', window.location.href); // Push state to block back
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-            window.removeEventListener('popstate', handlePopState);
-        };
-    }, [blockNav]);
+        
+        localStorage.setItem("examState", JSON.stringify(examState));
+    }, [currentQuestion, answers, timeRemaining, visited, questions.length]);
 
     /* ---------- Timer ---------- */
 
@@ -102,7 +109,7 @@ export default function ExamPage() {
             setTimeRemaining(prev => {
                 if (prev <= 1) {
                     clearInterval(timer);
-
+                    localStorage.removeItem("examState"); // Clear on completion
                     setModal({
                         open: true,
                         type: "warning",
@@ -242,6 +249,7 @@ export default function ExamPage() {
         // ✅ THIS WILL CALL API
         create(resultPayload);
 
+        localStorage.removeItem("examState"); // Clear exam state after submission
     };
 
 
