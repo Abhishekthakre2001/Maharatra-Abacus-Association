@@ -106,6 +106,7 @@ export default function Level() {
         pagination
         showActions
         loading={loading}
+        exportable={false}
       />
 
       <DeleteConfirmModal

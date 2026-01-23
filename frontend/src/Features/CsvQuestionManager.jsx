@@ -409,7 +409,7 @@ export default function CsvQuestionManager() {
                 <option value={0}>No</option>
               </select> */}
               <SelectField
-                label="Exam Set"
+                label="Is Test Set"
                 value={isMockSet}
                 onChange={(e) => setIsMockSet(Number(e.target.value))}
                 options={yesNoOptions.map(opt => ({

@@ -5,8 +5,8 @@ module.exports = {
     pool.query(
       `INSERT INTO result
       (user_id, total_question, total_answer, total_correct, total_unsolve,
-       date, time, totaltime, time_taken, createdby)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       date, time, totaltime, time_taken, createdby, resultfor, examtitle)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         data.user_id,
         data.total_question,
@@ -17,7 +17,9 @@ module.exports = {
         data.time,
         data.totaltime,
         data.time_taken,
-        data.createdby
+        data.createdby,
+        data.resultfor,
+        data.examtitle
       ]
     ),
 

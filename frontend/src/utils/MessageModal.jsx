@@ -38,7 +38,7 @@ const MessageModal = ({
           ) : (
             <AlertTriangle
               size={48}
-              className={isWarning ? "text-orange-500" : "text-red-500"}
+              className={isWarning ? "text-red-500" : "text-red-500"}
             />
           )}
         </div>
@@ -49,7 +49,7 @@ const MessageModal = ({
             isSuccess
               ? "text-green-600"
               : isWarning
-              ? "text-orange-600"
+              ? "text-red-600"
               : "text-red-600"
           }`}
         >
@@ -71,7 +71,7 @@ const MessageModal = ({
               </button>
 
               <button
-                className="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition"
+                className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
                 onClick={() => {
                   onConfirm?.();   // ✅ YES action
                   onClose();

@@ -6,7 +6,7 @@ import AppBar from '../UI/AppBar';
 import userApi from "../api/userApi";
 
 export default function Result() {
-     const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : {};
@@ -84,9 +84,10 @@ export default function Result() {
     return (
         <div className="max-w-7xl mx-auto">
             <AppBar
-                title="Student Management"
-                subtitle="Manage and view all students"
+                title="Performance Results"
+                subtitle="Insights into student achievements"
             />
+
 
             {/* Student Table */}
             <div className="p-0 my-8">

@@ -73,7 +73,23 @@ export default function QuestionPage() {
     console.log("Question View", QuestionsView)
 
     const handleUpdateSubmit = async (updatedQuestion) => {
-        console.log("selectedQuestion", selectedQuestion)
+        // ✅ VALIDATION
+        if (
+            !time ||                          // empty / undefined
+            time.length !== 8 ||              // not HH:MM:SS
+            time === "00:00:00"               // invalid zero time
+        ) {
+            setModal({
+                open: true,
+                type: "error",
+                title: "Invalid Time",
+                message: "Total time must be in HH:MM:SS format and cannot be 00:00:00"
+            });
+            setLoading(true);
+            return;
+
+        }
+
         setLoading(true);
         try {
             const id = updatedQuestion.id;
@@ -189,7 +205,7 @@ export default function QuestionPage() {
         },
         {
             key: 'ismock',
-            label: 'Is Exam Set',
+            label: 'Is Test Set',
             render: (value) => (
                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${value === 'Advanced' ? 'bg-purple-100 text-purple-700' :
                     value === 'Intermediate' ? 'bg-blue-100 text-blue-700' :
@@ -339,9 +355,11 @@ export default function QuestionPage() {
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
                     <AppBar
-                        title="Student Management"
-                        subtitle="Manage and view all students"
+                        title="Question Management"
+                        subtitle="Create, organize, and manage all questions"
                     />
+
+
 
                     <div className="mt-8">
                         {/* Back Button for QuestionsView */}
@@ -396,7 +414,7 @@ export default function QuestionPage() {
                 }}
                 onConfirm={handleDeleteConfirm}
                 title="Delete Question"
-                message={`Are you sure you want to delete ? This action cannot be undone.`}
+                message={`Are you sure you want to delete ${selectedQuestion?.paper_set || selectedQuestion?.question} ? This action cannot be undone.`}
                 loading={buttonloading}
             />
 
@@ -404,7 +422,7 @@ export default function QuestionPage() {
             <Modal
                 open={open}
                 onClose={() => setOpen(false)}
-                title="Update set Time"
+                title="Update set"
                 width="max-w-md"
             >
                 {/* Input 1 */}
@@ -422,7 +440,7 @@ export default function QuestionPage() {
                 {/* Input 1 */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Is Exam Set
+                        Is Test Set
                     </label>
 
                     <select

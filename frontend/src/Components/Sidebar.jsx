@@ -5,10 +5,10 @@ import {
   ChevronLeft,
   FileUser,
   LogOut,
-  FileQuestionMark ,
-  FileClock ,
+  FileQuestionMark,
+  FileClock,
   List,
-  Users 
+  Users
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/logo.png";
@@ -39,17 +39,17 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-    { id: "student-list", label: "Students", icon: Users , path: "/students-list" },
-    { id: "questions", label: "Questions", icon: FileQuestionMark , path: "/questions" },
+    { id: "student-list", label: "Students", icon: Users, path: "/students-list" },
+    { id: "questions", label: "Questions", icon: FileQuestionMark, path: "/questions" },
     { id: "result", label: "Result", icon: FileUser, path: "/results" },
-    { id: "exam-schedule", label: "Exam Schedule", icon: FileClock  , path: "/exam-schedule" },
+    { id: "exam-schedule", label: "Exam Schedule", icon: FileClock, path: "/exam-schedule" },
     { id: "masters", label: "Masters", icon: Settings, path: "/masters" },
   ];
 
   const isActive = (path) => {
     if (path === "/students-list" && location.pathname.startsWith("/add-student")) return true;
     if (path === "/questions" && location.pathname.startsWith("/add-question")) return true;
-    
+
     if (
       path === "/results" &&
       location.pathname.startsWith("/studentresults")
@@ -85,7 +85,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && (
               <div>
                 <p className="text-white font-semibold text-lg">DevEraa</p>
-                <p className="text-xs text-gray-300">Grow with Deveraa</p>
+                <p className="text-[14px] text-gray-300">Grow with Deveraa</p>
               </div>
             )}
           </div>
@@ -105,56 +105,60 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
           </button>
         </div>
 
-        {/* MENU */}
-        <div className="px-3 space-y-2 mt-10">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleClick(item.path)}
-                className={`
+        <div className="flex flex-col justify-between h-[80%]">
+
+          {/* MENU */}
+          <div className="px-3 space-y-2 mt-10">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleClick(item.path)}
+                  className={`
                   w-full flex items-center gap-3 px-4 py-3 rounded-xl
                   transition-all duration-300
                   ${isActive(item.path) ? "text-white shadow-lg" : "hover:bg-white/10"}
                   ${isCollapsed && "justify-center"}
                 `}
-                style={{
-                  backgroundColor: isActive(item.path)
-                    ? colors.sidebar.active_button
-                    : "transparent",
-                  color: isActive(item.path)
-                    ? colors.text.white
-                    : colors.text.gray300,
-                }}
-              >
-                <Icon size={20} />
-                {!isCollapsed && <span>{item.label}</span>}
-              </button>
-            );
-          })}
-        </div>
+                  style={{
+                    backgroundColor: isActive(item.path)
+                      ? colors.sidebar.active_button
+                      : "transparent",
+                    color: isActive(item.path)
+                      ? colors.text.white
+                      : colors.text.gray300,
+                  }}
+                >
+                  <Icon size={20} />
+                  {!isCollapsed && <span>{item.label}</span>}
+                </button>
+              );
+            })}
+          </div>
 
-        {/* LOGOUT */}
-        <div className="mt-auto p-4">
-          <div className="h-px bg-white/20 mb-4" />
+          {/* LOGOUT */}
+          <div className="mt-auto p-4 mt-10">
+            <div className="h-px bg-white/20 mb-4" />
 
-          <button
-            onClick={() => setShowLogoutModal(true)}
-            className={`
+            <button
+              onClick={() => setShowLogoutModal(true)}
+              className={`
               w-full flex items-center gap-3 px-4 py-3 rounded-xl
               shadow-lg hover:opacity-90 transition
               ${isCollapsed && "justify-center"}
             `}
-            style={{
-              backgroundColor: colors.accent.orange,
-              color: colors.text.white
-            }}
-          >
-            <LogOut size={20} />
-            {!isCollapsed && <span>Logout</span>}
-          </button>
+              style={{
+                backgroundColor: colors.accent.orange,
+                color: colors.text.white
+              }}
+            >
+              <LogOut size={20} />
+              {!isCollapsed && <span>Logout</span>}
+            </button>
+          </div>
         </div>
+
       </div>
 
       {/* CONTENT SHIFT */}

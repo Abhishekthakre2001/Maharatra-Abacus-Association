@@ -105,6 +105,7 @@ export default function Sets() {
                 pagination
                 showActions
                 loading={loading}
+                exportable={false}
             />
 
             <DeleteConfirmModal

@@ -20,6 +20,18 @@ export default function ResultDetails() {
 
     const columns = [
         {
+            key: "resultfor",
+            label: "Exam Type",
+            sortable: true,
+            render: (value) => <span className="font-medium">{value}</span>
+        },
+         {
+            key: "examtitle",
+            label: "Exam Title",
+            sortable: true,
+            render: (value) => <span className="font-medium">{value}</span>
+        },
+        {
             key: "total_question",
             label: "Total Questions",
             sortable: true,
@@ -81,8 +93,8 @@ export default function ResultDetails() {
     return (
         <div className="max-w-7xl mx-auto">
             <AppBar
-                title="Student Management"
-                subtitle="Manage and view all students"
+                title="Performance Results"
+                subtitle="Insights into student achievements"
             />
 
             {/* Student Table */}
@@ -94,7 +106,7 @@ export default function ResultDetails() {
                     // onView={handleView}
                     searchable
                     pagination
-                    showActions = {false}
+                    showActions={false}
                     loading={loading}
                 />
             </div>
