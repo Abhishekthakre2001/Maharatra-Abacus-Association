@@ -307,6 +307,7 @@ export default function ExamPage() {
         const user = JSON.parse(localStorage.getItem("user") || "{}");
         const resultfor = examType === "mock" ? "Test" : "Exam";
         const examtitle = localStorage.getItem("Exam_Tittle") || "Not Available";
+        const exam_id = localStorage.getItem("exam_id") || null;
 
         const resultPayload = {
             user_id: user.id,
@@ -320,7 +321,8 @@ export default function ExamPage() {
             time_taken: safeFormatTime(usedTime),
             createdby: user.createdby,
             resultfor,
-            examtitle
+            examtitle,
+            exam_id
         };
 
         localStorage.setItem("result", JSON.stringify(resultPayload));

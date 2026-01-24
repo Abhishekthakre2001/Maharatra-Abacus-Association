@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import StudentAppBar from './StudentAppBar';
 import Button from '../../UI/Button';
 import { useNavigate } from 'react-router-dom';
 import examScheduleApi from '../../api/examScheduleApi';
 import questionApi from '../../api/questionApi';
+import resultapi from '../../api/result';
 import { useFetchData } from '../../hooks/useFetchData';
 import TopAutoCarousel from './LightDashboardCard';
 import CreamCarouselCard from './CreamCarouselCard';
@@ -96,6 +97,24 @@ export default function StudentDashboard() {
       isLiveTime(exam.start_time, exam.end_time)
   );
 
+  const [isexam, setIsExam] = useState(false);
+
+  useEffect(() => {
+    const checkExam = async () => {
+      if (!user?.id || !liveExamData?.id) return;
+
+      try {
+        const res = await resultapi.examcheck(user.id, liveExamData.id);
+        setIsExam(Boolean(res.data.exam));
+      } catch (err) {
+        console.error("Exam check failed", err);
+        setIsExam(false);
+      }
+    };
+
+    checkExam();
+  }, [user?.id, liveExamData?.id]);
+
   const handleSetSelect = (level, set) => {
     localStorage.setItem("paperset", set);
     localStorage.setItem("paperlevel", level);
@@ -108,8 +127,12 @@ export default function StudentDashboard() {
     localStorage.setItem("paperlevel", liveExamData.exam_level);
     localStorage.setItem("Exam_Tittle", liveExamData.exam_title);
     localStorage.setItem("examType", "live");
+    localStorage.setItem('exam_id', liveExamData.id)
     navigate("/exam-rule");
   };
+
+
+  console.log("isexam", isexam)
 
   return (
     <>
@@ -187,7 +210,7 @@ export default function StudentDashboard() {
 
 
                 </>}
-              {(liveExamData ) && (
+              {liveExamData && !isexam && (
                 <Button
                   variant="primary"
                   size="lg"

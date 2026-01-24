@@ -5,8 +5,8 @@ module.exports = {
     pool.query(
       `INSERT INTO result
       (user_id, total_question, total_answer, total_correct, total_unsolve,
-       date, time, totaltime, time_taken, createdby, resultfor, examtitle)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       date, time, totaltime, time_taken, createdby, resultfor, examtitle, exam_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         data.user_id,
         data.total_question,
@@ -19,7 +19,8 @@ module.exports = {
         data.time_taken,
         data.createdby,
         data.resultfor,
-        data.examtitle
+        data.examtitle,
+        data.exam_id
       ]
     ),
 
@@ -54,6 +55,15 @@ module.exports = {
         id
       ]
     ),
+
+  findByUserAndExam: (user_id, exam_id) =>
+    pool.query(
+      `SELECT id FROM result 
+     WHERE user_id = ? AND exam_id = ?
+     LIMIT 1`,
+      [user_id, exam_id]
+    ),
+
 
   remove: (id) =>
     pool.query("DELETE FROM result WHERE id = ?", [id])
