@@ -142,8 +142,8 @@ export default function QuestionPage() {
             // await questionApi.update(payload(payload.id));
             await reload();
             setModal({ open: true, type: "success", title: "Success", message: "Update successfully." });
-            setQuestionsView(false);
-            reload();
+            // setQuestionsView(false);
+            // reload();
             setShowUpdateModal(false);
             setOpen(false);
             setSelectedQuestion(null);
@@ -167,7 +167,7 @@ export default function QuestionPage() {
             }
 
             await reload();
-            setQuestionsView(false);
+            // setQuestionsView(false);
             setShowDeleteModal(false);
             setSelectedQuestion(null);
             console.log('Deleted question:', selectedQuestion);
