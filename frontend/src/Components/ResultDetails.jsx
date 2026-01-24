@@ -19,13 +19,13 @@ export default function ResultDetails() {
 
 
     const columns = [
+        // {
+        //     key: "resultfor",
+        //     label: "Exam Type",
+        //     sortable: true,
+        //     render: (value) => <span className="font-medium">{value}</span>
+        // },
         {
-            key: "resultfor",
-            label: "Exam Type",
-            sortable: true,
-            render: (value) => <span className="font-medium">{value}</span>
-        },
-         {
             key: "examtitle",
             label: "Exam Title",
             sortable: true,
@@ -90,6 +90,11 @@ export default function ResultDetails() {
         }
     ];
 
+    const filteredResult = Array.isArray(result)
+        ? result.filter(item => item.resultfor !== "Test")
+        : [];
+
+
     return (
         <div className="max-w-7xl mx-auto">
             <AppBar
@@ -101,7 +106,7 @@ export default function ResultDetails() {
             <div className="p-0 my-8">
                 <DataTable
                     columns={columns}
-                    data={result}
+                    data={filteredResult}
                     title="Exam Result"
                     // onView={handleView}
                     searchable

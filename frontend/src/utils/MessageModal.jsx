@@ -17,7 +17,7 @@ const MessageModal = ({
   return (
     <div
       className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-100 animate-fadeIn"
-      onClick={onClose}
+      
     >
       <div
         className="bg-white p-6 rounded-2xl shadow-2xl w-80 space-y-4 animate-scaleIn relative"
