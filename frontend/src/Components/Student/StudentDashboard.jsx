@@ -131,9 +131,6 @@ export default function StudentDashboard() {
     navigate("/exam-rule");
   };
 
-
-  console.log("isexam", isexam)
-
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-[#F0F7FF] via-[#E6F2FF] to-[#D9EBFF]">
