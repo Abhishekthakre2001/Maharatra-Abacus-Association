@@ -146,6 +146,7 @@ export default function QuestionPage() {
             // reload();
             setShowUpdateModal(false);
             setOpen(false);
+            setQuestionsView(false);
             setSelectedQuestion(null);
             console.log('Updated question:', updatedQuestion);
         } catch (err) {

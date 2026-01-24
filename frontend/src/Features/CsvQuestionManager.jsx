@@ -586,7 +586,7 @@ export default function CsvQuestionManager() {
               onDragLeave={() => setDragActive(false)}
               onDrop={handleDrop}
             >
-              <p className="text-lg font-semibold mb-2">Drag & Drop CSV File Here</p>
+              <p className="text-lg font-semibold mb-2">Drag & Drop Excel File Here</p>
               <p className="text-gray-500 mb-4">Preview, Update & Delete Questions</p>
 
               <input
@@ -600,7 +600,7 @@ export default function CsvQuestionManager() {
                 htmlFor="csvUpload"
                 className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors"
               >
-                Browse CSV
+                Browse File
               </label>
             </div>
           )}
@@ -906,7 +906,16 @@ export default function CsvQuestionManager() {
 
             <div className="flex justify-end gap-3 my-8">
               <Button
-                onClick={() => { setIsModalOpen(false); setSet(""); setTime(""); setLevel(""); setErrors({}); }}
+                onClick={() => {
+                  setIsModalOpen(false); setSet(""); setTime(""); setLevel(""); setErrors({}); setNewQuestion({
+                    Question: "",
+                    "Option 1": "",
+                    "Option 2": "",
+                    "Option 3": "",
+                    "Option 4": "",
+                    "Correct Option": ""
+                  });
+                }}
                 variant="outline"
               >
                 Cancel

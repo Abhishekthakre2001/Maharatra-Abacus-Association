@@ -184,7 +184,7 @@ export default function ExamPage() {
             localStorage.removeItem("examType");
             localStorage.removeItem("paperlevel");
             localStorage.removeItem("paperset");
-            localStorage.removeItem("result");
+            localStorage.removeItem("examState");
             localStorage.removeItem("Exam_Tittle");
             console.log("isMockTest", isMockTest)
 
@@ -217,7 +217,7 @@ export default function ExamPage() {
             open: true,
             type: "warning",
             title: "Warning",
-            message: "Really want to submit Exam? If you leave, your progress may be lost.",
+            message: "Really want to submit Exam?",
         });
     }
 
@@ -325,8 +325,9 @@ export default function ExamPage() {
             exam_id
         };
 
-        localStorage.setItem("result", JSON.stringify(resultPayload));
         localStorage.removeItem("examState");
+        localStorage.setItem("result", JSON.stringify(resultPayload));
+
 
         create(resultPayload); // API call
     };
@@ -512,7 +513,7 @@ export default function ExamPage() {
 
             {/* Drawer */}
             <div
-                className={`fixed right-0 top-0 h-full w-80 bg-gradient-to-b from-slate-50 to-slate-100 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${drawerOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed right-0 top-0 h-full w-100 bg-gradient-to-b from-slate-50 to-slate-100 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${drawerOpen ? 'translate-x-0' : 'translate-x-full'
                     }`}
             >
                 <div className="h-full flex flex-col p-5">
@@ -547,45 +548,32 @@ export default function ExamPage() {
                     </div>
 
                     {/* Legend */}
-                    <div className="bg-white rounded-lg p-4 mb-6 shadow-sm border border-gray-200">
-                        {/* <h4 className="text-xs font-bold text-gray-700 mb-3 uppercase tracking-wide">Legend</h4> */}
-                        {/* <div className="grid grid-cols-2 gap-3">
-                            <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 bg-blue-600 rounded-md shadow-sm"></div>
-                                <span className="text-xs text-gray-700 font-medium">Current</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 bg-green-500 rounded-md shadow-sm"></div>
-                                <span className="text-xs text-gray-700 font-medium">Answered</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 bg-yellow-500 rounded-md shadow-sm"></div>
-                                <span className="text-xs text-gray-700 font-medium">Visited</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 bg-gray-200 rounded-md border-2 border-gray-400 shadow-sm"></div>
-                                <span className="text-xs text-gray-700 font-medium">Skipped</span>
-                            </div>
-                        </div> */}
+                    <div className="bg-white rounded-lg p-0 shadow-sm border border-gray-200">
                         {/* Stats */}
-                        <div className="mt-8 space-y-3">
+                        <div className="mt-8 space-y-3 flex gap-2 p-2">
                             <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-                                <div className="flex justify-between items-center">
+                                <div className="flex flex-col justify-between items-center">
                                     <span className="text-xs text-green-600 font-medium">Answered</span>
                                     <span className="text-lg font-bold text-green-600">{Object.keys(answers).length}</span>
                                 </div>
                             </div>
                             <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-                                <div className="flex justify-between items-center">
+                                <div className="flex flex-col justify-between items-center">
                                     <span className="text-xs text-yellow-600 font-medium">Unanswered</span>
-                                    <span className="text-lg font-bold text-yellow-600">{visited.size - Object.keys(answers).length}</span>
+                                    <span className="text-lg font-bold text-yellow-600">{(questions.length) - (Object.keys(answers).length)}</span>
                                 </div>
                             </div>
                             <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-                                <div className="flex justify-between items-center">
+                                <div className="flex flex-col justify-between items-center">
                                     <span className="text-xs text-gray-600 font-medium">Unvisited</span>
                                     <span className="text-lg font-bold text-gray-600">{(questions.length - visited.size) - 1}</span>
                                 </div>
+                            </div>
+                            <div className="bg-white rounded-lg p-3">
+                                {/* <div className="flex flex-col justify-between items-center">
+                                    <span className="text-xs text-gray-600 font-medium">Unvisited</span>
+                                    <span className="text-lg font-bold text-gray-600">{(questions.length - visited.size) - 1}</span>
+                                </div> */}
                             </div>
                         </div>
                     </div>

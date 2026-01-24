@@ -17,7 +17,7 @@ const MessageModal = ({
   return (
     <div
       className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-100 animate-fadeIn"
-      
+
     >
       <div
         className="bg-white p-6 rounded-2xl shadow-2xl w-80 space-y-4 animate-scaleIn relative"
@@ -45,13 +45,12 @@ const MessageModal = ({
 
         {/* Title */}
         <h2
-          className={`text-xl font-semibold text-center ${
-            isSuccess
+          className={`text-xl font-semibold text-center ${isSuccess
               ? "text-green-600"
               : isWarning
-              ? "text-red-600"
-              : "text-red-600"
-          }`}
+                ? "text-red-600"
+                : "text-red-600"
+            }`}
         >
           {title}
         </h2>

@@ -194,7 +194,7 @@ const Login = () => {
                         className="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
                       />
                     </div>
-                    <span className="transition">Remember Me</span>
+                    <span className="transition mb-2">Remember Me</span>
                   </label>
 
                 </div>

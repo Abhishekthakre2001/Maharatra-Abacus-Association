@@ -15,7 +15,7 @@ import Button from "../UI/Button";
 import InputField from "../UI/InputField";
 import SelectField from "../UI/SelectField";
 import Modal from "../UI/Modal";
-import { Calendar1, MoveLeft, MoveRight, Trash2, Pencil } from 'lucide-react';
+import { Calendar1, MoveLeft, MoveRight, Trash2, Pencil, Edit, } from 'lucide-react';
 import { useCreate } from "../hooks/useCreate";
 import examScheduleApi from "../api/examScheduleApi";
 import { useFetchData } from "../hooks/useFetchData";
@@ -43,6 +43,8 @@ export default function Calender() {
     const [isUpdate, setIsUpdate] = useState(false);
     const [updateExamId, setUpdateExamId] = useState(null);
     const [deleteModal, setDeleteModal] = useState({ open: false, id: null, loading: false });
+    const [haserror, sethaserror] = useState(false);
+    const [buttonloading, setbuttonloading] = useState(false)
 
     const [examData, setExamData] = useState({
         exam_title: "",
@@ -152,6 +154,7 @@ export default function Calender() {
     //     };
 
     const handleSave = async () => {
+        setbuttonloading(true)
         if (!user?.id) {
             setModal({
                 open: true,
@@ -179,6 +182,9 @@ export default function Calender() {
                 title: "Validation Error",
                 message: "All fields are compulsory."
             });
+            sethaserror(true);
+            setOpenModal(false);
+            setbuttonloading(false);
             return;
         }
 
@@ -211,6 +217,9 @@ export default function Calender() {
                     title: "Invalid Start Time",
                     message: "Start time must be greater than current time."
                 });
+                setOpenModal(false);
+                sethaserror(true);
+                setbuttonloading(false);
                 return;
             }
         }
@@ -223,6 +232,9 @@ export default function Calender() {
                 title: "Invalid End Time",
                 message: "End time must be greater than start time."
             });
+            setOpenModal(false);
+            sethaserror(true);
+            setbuttonloading(false);
             return;
         }
 
@@ -251,8 +263,10 @@ export default function Calender() {
                 start_time: "",
                 end_time: ""
             });
+            sethaserror(false);
             setIsUpdate(false);
             setUpdateExamId(null);
+            setbuttonloading(false);
 
             setModal({
                 open: true,
@@ -264,6 +278,8 @@ export default function Calender() {
             });
         } catch (error) {
             const msg = error?.response?.data?.message;
+            sethaserror(true);
+            setbuttonloading(false);
             setModal({
                 open: true,
                 type: "error",
@@ -272,6 +288,7 @@ export default function Calender() {
                     ? "Exam not updated properly"
                     : "Exam not scheduled properly")
             });
+
         }
     };
 
@@ -333,7 +350,15 @@ export default function Calender() {
                 type={modal.type}
                 title={modal.title}
                 message={modal.message}
-                onClose={() => setModal({ ...modal, open: false })}
+                onClose={() => {
+                    if (haserror) {
+                        setModal({ ...modal, open: false });
+                        setOpenModal(true);
+                    } else {
+                        setModal({ ...modal, open: false });
+                    }
+                }}
+
             />
             <DeleteConfirmModal
                 open={deleteModal.open}
@@ -529,7 +554,7 @@ export default function Calender() {
                                                         </div>
 
                                                         <div className="flex gap-2 items-center">
-                                                            <button
+                                                            {/* <button
                                                                 onClick={() => {
                                                                     setIsUpdate(true);
                                                                     setUpdateExamId(exam.id);
@@ -552,7 +577,27 @@ export default function Calender() {
                                                                 title="Delete Exam"
                                                             >
                                                                 <Trash2 size={15} />
-                                                            </div>
+                                                            </div> */}
+
+                                                            <button title="Update Exam" className="p-1 sm:p-1.5 text-orange-600 hover:bg-orange-100 rounded" onClick={() => {
+                                                                setIsUpdate(true);
+                                                                setUpdateExamId(exam.id);
+                                                                setExamData({
+                                                                    exam_title: exam.exam_title,
+                                                                    exam_level: exam.exam_level,
+                                                                    paper_set: exam.paper_set,
+                                                                    start_time: exam.start_time,
+                                                                    end_time: exam.end_time
+                                                                });
+                                                                setOpenModal(true);
+                                                            }}>
+                                                                <Edit size={14} className="sm:w-4 sm:h-4" />
+                                                            </button>
+
+                                                            <button className="p-1 sm:p-1.5 text-red-600 hover:bg-red-100 rounded" onClick={() => handleDelete(exam.id)}>
+                                                                <Trash2 size={14} className="sm:w-4 sm:h-4" />
+                                                            </button>
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -659,8 +704,8 @@ export default function Calender() {
                         Cancel
                     </Button>
 
-                    <Button onClick={handleSave}>
-                        Save
+                    <Button onClick={handleSave} disabled={buttonloading}>
+                        {buttonloading ? "Saveing..." : 'Save'}
                     </Button>
                 </div>
             </Modal>
