@@ -187,7 +187,7 @@ export default function StudentDashboard() {
 
 
                 </>}
-              {(liveExamData && !showSets ) && (
+              {(liveExamData ) && (
                 <Button
                   variant="primary"
                   size="lg"
@@ -201,6 +201,7 @@ export default function StudentDashboard() {
 
             {showSets && (
               <div className="mt-6 bg-white rounded-2xl">
+                <p className="text-sm text-left text-slate-500 mb-5">Select Set For Test</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {levelwise_set?.map((item) => (
                     <button

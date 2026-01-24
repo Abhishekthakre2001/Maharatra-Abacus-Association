@@ -49,7 +49,7 @@ const StudentAppBar = ({
     <>
       {/* ================= APP BAR ================= */}
       <div
-        className={`relative bg-opacity-70 backdrop-blur-xl rounded-2xl p-6 text-white shadow-lg ${className}`}
+        className={`relative bg-opacity-70 backdrop-blur-xl rounded-2xl p-6 mx-2 text-white shadow-lg ${className}`}
         style={{
           backgroundImage: `linear-gradient(to right, ${colors.primary.blue600}, ${colors.text.dark})`
         }}

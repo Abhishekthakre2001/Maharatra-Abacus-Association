@@ -32,6 +32,8 @@ const formatTime = (seconds) => {
 /* ---------- Component ---------- */
 
 export default function ExamPage() {
+    const [submitting, setSubmitting] = useState(false);
+
     const [modal, setModal] = useState({
         open: false,
         type: "",
@@ -68,7 +70,7 @@ export default function ExamPage() {
 
         // Check if exam state exists in localStorage
         const savedExamState = localStorage.getItem("examState");
-        
+
         if (savedExamState) {
             // Restore from localStorage
             const { currentQ, answers: savedAnswers, timeRemaining: savedTime, visited: savedVisited } = JSON.parse(savedExamState);
@@ -79,25 +81,32 @@ export default function ExamPage() {
         } else {
             // First time - initialize exam
             setQuestions(PaperQuestion);
-            const seconds = timeToSeconds(PaperQuestion[0].set_time);
+            const seconds = Math.max(
+                0,
+                timeToSeconds(PaperQuestion[0]?.set_time || "00:00:00")
+            );
+
+            setTimeRemaining(seconds);
+            setTotalExamTime(seconds);
+
             setTimeRemaining(seconds);
             setTotalExamTime(seconds);
         }
-        
+
         setQuestions(PaperQuestion);
     }, [PaperQuestion]);
 
     // Save exam state to localStorage whenever it changes
     useEffect(() => {
         if (questions.length === 0) return;
-        
+
         const examState = {
             currentQ: currentQuestion,
             answers,
             timeRemaining,
             visited: Array.from(visited)
         };
-        
+
         localStorage.setItem("examState", JSON.stringify(examState));
     }, [currentQuestion, answers, timeRemaining, visited, questions.length]);
 
@@ -160,8 +169,10 @@ export default function ExamPage() {
     const { create, loading: createLoading } = useCreate(
         ResultApi.create,
         (response, payload) => {
+
             const isMockTest = examType === "mock";
 
+            setSubmitting(false);
             // ✅ show success modal
             setModal({
                 open: true,
@@ -188,9 +199,10 @@ export default function ExamPage() {
                     // For live exam - navigate back to dashboard
                     navigate('/student-dashboard');
                 }
-            }, 3000);
+            }, 2000);
         },
         (error) => {
+            setSubmitting(false);
             setModal({
                 open: true,
                 type: "error",
@@ -209,33 +221,91 @@ export default function ExamPage() {
         });
     }
 
+    const safeFormatTime = (seconds) => {
+        if (!seconds || seconds < 0) seconds = 0;
+        return formatTime(seconds);
+    };
+
+
+    // const handleSubmitExam = async () => {
+    //     const total_question = questions.length;
+    //     const usedTime = Math.max(0, totalExamTime - timeRemaining);
+
+    //     const answeredIndexes = Object.keys(answers).map(Number);
+    //     const total_answer = answeredIndexes.length;
+
+    //     let total_correct = 0;
+
+    //     answeredIndexes.forEach((qIndex) => {
+    //         const selected = answers[qIndex];
+    //         const correct = questions[qIndex].correctoption - 1; // DB is 1-based
+
+    //         if (selected === correct) {
+    //             total_correct++;
+    //         }
+    //     });
+
+    //     const total_unsolve = total_question - total_answer;
+
+    //     const now = new Date();
+
+    //     const mysqlDate = now.toISOString().split('T')[0];
+    //     const mysqlDateTime = now.toISOString().slice(0, 19).replace('T', ' ');
+
+
+    //     const user = JSON.parse(localStorage.getItem("user") || "{}");
+    //     const resultfor = localStorage.getItem("examType") === "mock" ? "Test" : "Exam";
+    //     const examtitle = localStorage.getItem("Exam_Tittle") || "Not Available";
+
+    //     const resultPayload = {
+    //         user_id: user.id,
+    //         total_question,
+    //         total_answer,
+    //         total_correct,
+    //         total_unsolve,
+    //         date: mysqlDate,
+    //         time: mysqlDateTime,
+    //         totaltime: safeFormatTime(totalExamTime),
+    //         time_taken: safeFormatTime(usedTime),
+    //         createdby: user.createdby,
+    //         resultfor: resultfor,
+    //         examtitle: examtitle
+    //     };
+
+    //     console.log("📊 EXAM RESULT:", resultPayload);
+    //     localStorage.setItem("result", JSON.stringify(resultPayload))
+
+    //     // ✅ THIS WILL CALL API
+    //     create(resultPayload);
+
+    //     localStorage.removeItem("examState"); // Clear exam state after submission
+    // };
     const handleSubmitExam = async () => {
+        if (submitting) return; // ⛔ prevent double submit
+
+        setSubmitting(true);    // ✅ SHOW LOADING
+
         const total_question = questions.length;
+        const usedTime = Math.max(0, totalExamTime - timeRemaining);
 
         const answeredIndexes = Object.keys(answers).map(Number);
         const total_answer = answeredIndexes.length;
 
         let total_correct = 0;
-
         answeredIndexes.forEach((qIndex) => {
             const selected = answers[qIndex];
-            const correct = questions[qIndex].correctoption - 1; // DB is 1-based
-
-            if (selected === correct) {
-                total_correct++;
-            }
+            const correct = questions[qIndex].correctoption - 1;
+            if (selected === correct) total_correct++;
         });
 
         const total_unsolve = total_question - total_answer;
 
         const now = new Date();
-
         const mysqlDate = now.toISOString().split('T')[0];
         const mysqlDateTime = now.toISOString().slice(0, 19).replace('T', ' ');
 
-
         const user = JSON.parse(localStorage.getItem("user") || "{}");
-        const resultfor = localStorage.getItem("examType") === "mock" ? "Test" : "Exam";
+        const resultfor = examType === "mock" ? "Test" : "Exam";
         const examtitle = localStorage.getItem("Exam_Tittle") || "Not Available";
 
         const resultPayload = {
@@ -246,21 +316,19 @@ export default function ExamPage() {
             total_unsolve,
             date: mysqlDate,
             time: mysqlDateTime,
-            totaltime: formatTime(totalExamTime),
-            time_taken: formatTime(totalExamTime - timeRemaining),
+            totaltime: safeFormatTime(totalExamTime),
+            time_taken: safeFormatTime(usedTime),
             createdby: user.createdby,
-            resultfor: resultfor,
-            examtitle: examtitle
+            resultfor,
+            examtitle
         };
 
-        console.log("📊 EXAM RESULT:", resultPayload);
-        localStorage.setItem("result", JSON.stringify(resultPayload))
+        localStorage.setItem("result", JSON.stringify(resultPayload));
+        localStorage.removeItem("examState");
 
-        // ✅ THIS WILL CALL API
-        create(resultPayload);
-
-        localStorage.removeItem("examState"); // Clear exam state after submission
+        create(resultPayload); // API call
     };
+
 
 
     /* ---------- UI ---------- */
@@ -290,9 +358,22 @@ export default function ExamPage() {
         handleSubmitExam();
     };
 
+    if (submitting || createLoading) {
+        return (
+            <div className="h-screen flex items-center justify-center bg-blue-100">
+                <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+                    <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <h2 className="text-lg font-bold">Submitting Exam…</h2>
+                    <p className="text-gray-600 text-sm">Please wait</p>
+                </div>
+            </div>
+        );
+    }
+
+
 
     return (
-        <div className="max-w-full h-screen overflow-hidden flex flex-col bg-blue-200">
+        <div className="max-w-full h-screen overflow-hidden flex flex-col bg-blue-50">
             <div className="m-2 mb-0 flex-shrink-0">
                 {/* <StudentAppBar
                     title="Exam Rules & Regulations"
@@ -319,7 +400,7 @@ export default function ExamPage() {
                 {/* Question */}
                 <div className="bg-white rounded-lg shadow-lg p-4">
 
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="sticky top-5 z-50 flex justify-between items-center mb-4">
                         <h2 className="font-bold">
                             Question {currentQuestion + 1} of {questions.length}
                         </h2>
@@ -501,7 +582,7 @@ export default function ExamPage() {
                             <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs text-gray-600 font-medium">Unvisited</span>
-                                    <span className="text-lg font-bold text-gray-600">{(questions.length - visited.size)-1}</span>
+                                    <span className="text-lg font-bold text-gray-600">{(questions.length - visited.size) - 1}</span>
                                 </div>
                             </div>
                         </div>

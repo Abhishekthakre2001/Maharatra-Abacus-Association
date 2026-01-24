@@ -9,21 +9,10 @@ export default function StudentDashboardPage() {
 
     return (
         <>
-            {/* ✅ Sidebar */}
-            {/* <StudentSidebar
-                isCollapsed={isCollapsed}
-                setIsCollapsed={setIsCollapsed}
-            /> */}
-
-            {/* ✅ CONTENT AREA SHIFTS BASED ON COLLAPSE */}
-            {/* <main
-                className={`
-          transition-all duration-500
-          ${isCollapsed ? "md:ml-20" : "md:ml-64"}
-          px-2 md:px-8 py-6 mb-12
-        `}
-            > */}
-            <StudentDashboard />
+            <div className="bg-blue-50">
+  <StudentDashboard />
+            </div>
+          
             {/* </main> */}
         </>
     );
