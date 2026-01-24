@@ -27,7 +27,7 @@ export default function AddStudent() {
         level: "",
         dob: "",
         subscription_end_date: "",
-        status: null,
+        status: 1,
         usertype: "student"
     });
 
@@ -135,7 +135,7 @@ export default function AddStudent() {
             usertype: formData.usertype,
             createdby: user.id,
             password: formData.password,
-            status:formData.status
+            status: formData.status
         };
         if (!id || formData.password) {
             payload.password = formData.password;
@@ -188,7 +188,7 @@ export default function AddStudent() {
             usertype: "student",
             status: 1,
             createdby: "admin",
-            status:null
+            status: null
         });
         setErrors({});
     };
@@ -211,7 +211,7 @@ export default function AddStudent() {
                     dob: u.dob ? u.dob.split('T')[0] : "",
                     subscription_end_date: u.subscription_end_date ? u.subscription_end_date.split('T')[0] : "",
                     usertype: u.usertype || "student",
-                    status:u.status
+                    status: u.status
                 });
             })
             .catch(() => {

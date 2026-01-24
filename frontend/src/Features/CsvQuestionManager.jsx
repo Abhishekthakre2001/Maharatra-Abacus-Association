@@ -106,82 +106,185 @@ export default function CsvQuestionManager() {
   });
 
   // Handle manual question addition
+  // const handleAddQuestion = async () => {
+  //   setButtonLoading(true);
+  //   let newErrors = {};
+
+  //   if (!level) {
+  //     newErrors.level = "Please select level";
+  //   }
+
+  //   if (!set) {
+  //     newErrors.set = "Please select set";
+  //   }
+
+  //   // ❌ If validation fails
+  //   if (Object.keys(newErrors).length > 0) {
+  //     setErrors(newErrors);
+  //     setModal({
+  //       open: true,
+  //       type: "error",
+  //       title: "Error",
+  //       message: "Please fix validation errors"
+  //     });
+  //     setButtonLoading(false);
+  //     return;
+  //   }
+
+  //   if (newQuestion.Question && newQuestion["Correct Option"]) {
+  //     const user = JSON.parse(localStorage.getItem("user") || "{}");
+  //     const payload = {
+  //       question: newQuestion.Question,
+  //       option1: newQuestion["Option 1"] || "",
+  //       option2: newQuestion["Option 2"] || "",
+  //       option3: newQuestion["Option 3"] || "",
+  //       option4: newQuestion["Option 4"] || "",
+  //       correctoption: Number(newQuestion["Correct Option"]),
+  //       level: Number(modalLevelId) || Number(level) || null,
+  //       set_id: String(modalSetId) || String(set) || null,
+  //       ismockset: isMockSet,
+  //       createdby: user.id
+  //     };
+
+  //     try {
+  //       const res = await questionApi.create(payload);
+  //       const newQ = {
+  //         id: res.data && res.data.id ? res.data.id : questions.length + 1,
+  //         Question: newQuestion.Question,
+  //         "Option 1": newQuestion["Option 1"],
+  //         "Option 2": newQuestion["Option 2"],
+  //         "Option 3": newQuestion["Option 3"],
+  //         "Option 4": newQuestion["Option 4"],
+  //         "Correct Option": newQuestion["Correct Option"]
+  //       };
+  //       // setQuestions([...questions, newQ]);
+  //       setNewQuestion({
+  //         Question: "",
+  //         "Option 1": "",
+  //         "Option 2": "",
+  //         "Option 3": "",
+  //         "Option 4": "",
+  //         "Correct Option": ""
+  //       });
+  //       setSet(""); setLevel("");
+  //       // ✅ Clear errors if valid
+  //       setErrors({});
+  //       setIsModalOpen(false);
+  //       setButtonLoading(false);
+  //       setModal({ open: true, type: "success", title: "Success", message: "Questions Added In set." });
+  //     } catch (err) {
+  //       console.error(err.response.data.error);
+  //       if (err.response.data.error == "set_time not found for given level and set_id") {
+  //         setModal({ open: true, type: "error", title: "Error", message: `${level}-${set} Set Are Not Available` });
+  //       }
+  //       setButtonLoading(false);
+
+  //     }
+  //   }
+  // };
+
   const handleAddQuestion = async () => {
-    setButtonLoading(true);
     let newErrors = {};
 
-    if (!level) {
-      newErrors.level = "Please select level";
-    }
+    // 🔴 VALIDATIONS FIRST
+    if (!level) newErrors.level = "Please select level";
+    if (!set) newErrors.set = "Please select set";
 
-    if (!set) {
-      newErrors.set = "Please select set";
-    }
+    if (!newQuestion.Question?.trim())
+      newErrors.Question = "Question is required";
 
-    // ❌ If validation fails
+    if (!newQuestion["Option 1"]?.trim())
+      newErrors["Option 1"] = "Option 1 is required";
+
+    if (!newQuestion["Option 2"]?.trim())
+      newErrors["Option 2"] = "Option 2 is required";
+
+    if (!newQuestion["Option 3"]?.trim())
+      newErrors["Option 3"] = "Option 3 is required";
+
+    if (!newQuestion["Option 4"]?.trim())
+      newErrors["Option 4"] = "Option 4 is required";
+
+    const correctOption = Number(newQuestion["Correct Option"]);
+    if (![1, 2, 3, 4].includes(correctOption))
+      newErrors["Correct Option"] = "Correct option must be between 1 and 4";
+
+    // ❌ STOP if validation fails
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setModal({
         open: true,
         type: "error",
-        title: "Error",
-        message: "Please fix validation errors"
+        title: "Validation Error",
+        message: "All fields are mandatory"
       });
-      setButtonLoading(false);
-      return;
+      return; // 🚫 DO NOT set loading
     }
 
-    if (newQuestion.Question && newQuestion["Correct Option"]) {
+    // ✅ NOW start loading
+    setButtonLoading(true);
+
+    try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
+      if (!user?.id) throw new Error("User not logged in");
+
       const payload = {
-        question: newQuestion.Question,
-        option1: newQuestion["Option 1"] || "",
-        option2: newQuestion["Option 2"] || "",
-        option3: newQuestion["Option 3"] || "",
-        option4: newQuestion["Option 4"] || "",
-        correctoption: Number(newQuestion["Correct Option"]),
-        level: Number(modalLevelId) || Number(level) || null,
-        set_id: String(modalSetId) || String(set) || null,
+        question: newQuestion.Question.trim(),
+        option1: newQuestion["Option 1"].trim(),
+        option2: newQuestion["Option 2"].trim(),
+        option3: newQuestion["Option 3"].trim(),
+        option4: newQuestion["Option 4"].trim(),
+        correctoption: correctOption,
+        level: Number(modalLevelId) || Number(level),
+        set_id: String(modalSetId) || String(set),
         ismockset: isMockSet,
         createdby: user.id
       };
 
-      try {
-        const res = await questionApi.create(payload);
-        const newQ = {
-          id: res.data && res.data.id ? res.data.id : questions.length + 1,
-          Question: newQuestion.Question,
-          "Option 1": newQuestion["Option 1"],
-          "Option 2": newQuestion["Option 2"],
-          "Option 3": newQuestion["Option 3"],
-          "Option 4": newQuestion["Option 4"],
-          "Correct Option": newQuestion["Correct Option"]
-        };
-        // setQuestions([...questions, newQ]);
-        setNewQuestion({
-          Question: "",
-          "Option 1": "",
-          "Option 2": "",
-          "Option 3": "",
-          "Option 4": "",
-          "Correct Option": ""
-        });
-        setSet(""); setLevel("");
-        // ✅ Clear errors if valid
-        setErrors({});
-        setIsModalOpen(false);
-        setButtonLoading(false);
-        setModal({ open: true, type: "success", title: "Success", message: "Questions Added In set." });
-      } catch (err) {
-        console.error(err.response.data.error);
-        if (err.response.data.error == "set_time not found for given level and set_id") {
-          setModal({ open: true, type: "error", title: "Error", message: `${level}-${set} Set Are Not Available` });
-        }
-        setButtonLoading(false);
+      await questionApi.create(payload);
 
-      }
+      // ✅ RESET FORM
+      setNewQuestion({
+        Question: "",
+        "Option 1": "",
+        "Option 2": "",
+        "Option 3": "",
+        "Option 4": "",
+        "Correct Option": ""
+      });
+
+      setSet("");
+      setLevel("");
+      setErrors({});
+      setIsModalOpen(false);
+
+      setModal({
+        open: true,
+        type: "success",
+        title: "Success",
+        message: "Question added successfully"
+      });
+    } catch (err) {
+      console.error(err);
+
+      const msg =
+        err?.response?.data?.error ===
+          "set_time not found for given level and set_id"
+          ? `${level}-${set} Set is not available`
+          : "Failed to add question";
+
+      setModal({
+        open: true,
+        type: "error",
+        title: "Error",
+        message: msg
+      });
+    } finally {
+      // ✅ ALWAYS stop loading
+      setButtonLoading(false);
     }
   };
+
 
   useEffect(() => {
     // load sets for modal selector

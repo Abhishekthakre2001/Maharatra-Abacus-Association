@@ -501,7 +501,7 @@ export default function ExamPage() {
                             <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs text-gray-600 font-medium">Unvisited</span>
-                                    <span className="text-lg font-bold text-gray-600">{questions.length - visited.size}</span>
+                                    <span className="text-lg font-bold text-gray-600">{(questions.length - visited.size)-1}</span>
                                 </div>
                             </div>
                         </div>

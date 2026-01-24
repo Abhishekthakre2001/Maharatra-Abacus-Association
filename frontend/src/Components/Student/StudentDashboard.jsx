@@ -181,7 +181,7 @@ export default function StudentDashboard() {
                       onClick={() => setShowSets(true)}
                       className="w-full"
                     >
-                      Start Mock Exam
+                      Start Test Exam
                     </Button>
                   )}
 
