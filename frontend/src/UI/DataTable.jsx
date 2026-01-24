@@ -13,6 +13,7 @@ import {
   Plus,
   X
 } from 'lucide-react';
+import colors from "../utils/Color";
 
 const DataTable = ({
   columns = [],
@@ -168,7 +169,8 @@ const DataTable = ({
               {onCreate && (
                 <button
                   onClick={onCreate}
-                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
+                  style={{ backgroundColor: colors.button.add }}
+                  className="flex items-center justify-center gap-2 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
                 >
                   <Plus size={16} />
                   <span className="hidden xs:inline">Add New</span>
@@ -179,7 +181,8 @@ const DataTable = ({
               {exportable && (
                 <button
                   onClick={onExport ?? handleExportCSV}
-                  className="flex items-center justify-center gap-2 bg-[#FF7F36] hover:bg-[#e86f2c] text-white px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
+                  style={{ backgroundColor: colors.button.export }}
+                  className="flex items-center justify-center gap-2 hover:bg-[#e86f2c] text-white px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
                 >
                   <Download size={16} />
                   <span className="hidden xs:inline">Export CSV</span>
@@ -198,7 +201,8 @@ const DataTable = ({
                   setSortConfig({ key: null, direction: "asc" });
                   setCurrentPage(1);
                 }}
-                className="flex items-center justify-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
+                style={{ backgroundColor: colors.button.clear, color:colors.text.gray500 }}
+                className="flex items-center justify-center gap-2 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
               >
                 <X size={16} />
                 <span className="hidden xs:inline">Clear Filters</span>

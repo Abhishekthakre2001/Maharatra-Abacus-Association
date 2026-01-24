@@ -542,16 +542,16 @@ export default function Calender() {
                                                                     });
                                                                     setOpenModal(true);
                                                                 }}
-                                                                className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-300 to-green-200 text-green-700 flex items-center justify-center group-hover:scale-110 transition-transform border border-green-200"
+                                                                className="w-8 h-8 rounded-xl bg-gradient-to-br from-orange-300 to-orange-200 text-orange-700 flex items-center justify-center group-hover:scale-110 transition-transform border border-green-200"
                                                                 title="Update Exam"
                                                             >
-                                                                <Pencil size={20} />
+                                                                <Pencil size={15} />
                                                             </button>
                                                             <div onClick={() => handleDelete(exam.id)}
-                                                                className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-300 to-blue-200 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform"
+                                                                className="w-8 h-8 rounded-xl bg-gradient-to-br from-red-300 to-red-200 text-red-600 flex items-center justify-center group-hover:scale-110 transition-transform"
                                                                 title="Delete Exam"
                                                             >
-                                                                <Trash2 size={20} />
+                                                                <Trash2 size={15} />
                                                             </div>
                                                         </div>
                                                     </div>

@@ -49,10 +49,10 @@ const colors = {
     orangeHover: '#e86f2c',
   },
 
-  sidebar:{
-    toggle_bg : '#ffffff',
+  sidebar: {
+    toggle_bg: '#ffffff',
     toggle_color: '#2563eb',
-    active_button : '#ffffff'
+    active_button: '#ffffff'
   },
 
   // Text Colors
@@ -76,7 +76,7 @@ const colors = {
     white: '#ffffff',
     blue50: '#eff6ff',
     blue100: '#dbeafe',
-     // sidebar and appbar color 1
+    // sidebar and appbar color 1
     blue600: '#90cdf4',
     blue700: '#1d4ed8',
     indigo50: '#eef2ff',
@@ -90,6 +90,14 @@ const colors = {
   indigo: {
     indigo50: '#eef2ff',
   },
+
+
+  // buttons color
+  button: {
+    add: '#2563eb',
+    export: '#36afe3',
+    clear: '#dee9f1'
+  }
 };
 
 export default colors;
