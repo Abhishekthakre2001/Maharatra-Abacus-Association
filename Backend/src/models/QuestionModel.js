@@ -206,14 +206,16 @@ const QuestionModel = {
   getPaperset: ({ level, createdby, set }) =>
     pool.query(
       `
-    SELECT 
-     *
+    SELECT *
     FROM questions
     WHERE createdby = ?
-      AND level = ? AND set_id = ?
+      AND level = ?
+      AND set_id = ?
+    ORDER BY RAND()
     `,
       [createdby, level, set]
     ),
+
 };
 
 module.exports = QuestionModel;
