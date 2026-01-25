@@ -95,6 +95,8 @@ export default function InstallApp() {
           )}
         </div>
 
+
+
         {/* Footer */}
         <p className="text-xs text-slate-400 mt-6">
           DevEraa – Abacus Learning Platform
