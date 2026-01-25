@@ -9,7 +9,7 @@ import questionApi from '../../api/questionApi';
 import ResultApi from '../../api/result';
 import { useCreate } from '../../hooks/useCreate';
 import MessageModal from "../../utils/MessageModal";
-import ExamViolationGuard from "../../Features/ExamViolationGuard"
+// import ExamViolationGuard from "../../Features/ExamViolationGuard"
 
 /* ---------- Helpers ---------- */
 
@@ -415,7 +415,7 @@ export default function ExamPage() {
                 /> */}
             </div>
 
-            <ExamViolationGuard onExamEnd={handleExamEnd} />
+            {/* <ExamViolationGuard onExamEnd={handleExamEnd} /> */}
 
             <MessageModal
                 open={modal.open}

@@ -801,7 +801,10 @@ export default function CsvQuestionManager() {
           </div>
         )}
 
-        {/* Add Question Modal */}
+       
+      </div>
+
+       {/* Add Question Modal */}
         <Modal
           open={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -992,7 +995,6 @@ export default function CsvQuestionManager() {
             </div>
           </div>
         </Modal>
-      </div>
     </>
   );
 }
