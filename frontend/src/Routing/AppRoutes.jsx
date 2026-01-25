@@ -19,6 +19,7 @@ import ExamRule from "../Pages/Student/ExamRule";
 import ExamPage from "../Pages/Student/ExamPage";
 import StudentResultPage from "../Pages/Student/ResultPage";
 import RoleProtectedRoute from "./RoleBasedProtectedRoute";
+import InstallApp from "../Pages/InstallApp";
 
 
 
@@ -35,6 +36,9 @@ const AppRoutes = () => {
           </PublicRoute>
         }
       />
+
+      <Route path="/install" element={<InstallApp />} />
+
 
       <Route
         path="/dashboard"
