@@ -70,7 +70,6 @@ export default function QuestionPage() {
         setQuestions(row.questions);
         setQuestionsView(true);
     }
-    console.log("Question View", QuestionsView)
 
     const handleUpdateSubmit = async (updatedQuestion) => {
         // ✅ VALIDATION
@@ -175,6 +174,7 @@ export default function QuestionPage() {
                 setShowDeleteModal(false);
             } else {
                 // setQuestionsView(false);
+                await reload();
                 setShowDeleteModal(false);
             }
             // setQuestionsView(false);

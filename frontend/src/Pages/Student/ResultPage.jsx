@@ -27,10 +27,12 @@ export default function ResultPage() {
   const totalQuestions = storedResult.total_question || 0;
   const correctAnswers = storedResult.total_correct || 0;
   const unsolved = storedResult.total_unsolve || 0;
-  const incorrectAnswers =
-    totalQuestions - correctAnswers - unsolved > 0
-      ? totalQuestions - correctAnswers - unsolved
-      : 0;
+
+  const incorrectAnswers = Math.max(
+    totalQuestions - correctAnswers - unsolved,
+    0
+  );
+
 
   const obtainedMarks = correctAnswers * 1; // adjust if needed
   const totalMarks = totalQuestions * 1;
@@ -56,15 +58,17 @@ export default function ResultPage() {
   const pieData =
     totalQuestions > 0
       ? [
-          { name: "Correct", value: correctAnswers },
-          { name: "Incorrect", value: incorrectAnswers }
-        ]
+        { name: "Correct", value: correctAnswers },
+        { name: "Incorrect", value: incorrectAnswers },
+        { name: "Unattempted", value: unsolved }
+      ]
       : [{ name: "No Data", value: 1 }];
 
   const COLORS =
     totalQuestions > 0
-      ? ["#22c55e", "#ef4444"]
+      ? ["#22c55e", "#ef4444", "#facc15"] // green, red, yellow
       : ["#cbd5e1"];
+
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -90,11 +94,10 @@ export default function ResultPage() {
             </div>
 
             <div
-              className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                percentage >= 60
-                  ? "bg-green-500/20 text-green-100"
-                  : "bg-red-500/20 text-red-100"
-              }`}
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${percentage >= 60
+                ? "bg-green-500/20 text-green-100"
+                : "bg-red-500/20 text-red-100"
+                }`}
             >
               {percentage >= 60 ? "PASS" : "FAIL"}
             </div>
@@ -168,7 +171,9 @@ export default function ResultPage() {
           <div className="flex justify-center gap-6 mt-2 text-xs">
             <LegendDot color="bg-green-500" label="Correct" />
             <LegendDot color="bg-red-500" label="Incorrect" />
+            <LegendDot color="bg-yellow-400" label="Unattempted" />
           </div>
+
         </div>
 
         {/* ================= META INFO ================= */}

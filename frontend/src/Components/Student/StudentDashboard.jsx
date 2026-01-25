@@ -73,15 +73,31 @@ export default function StudentDashboard() {
   };
 
   /* ================= FILTERED EXAMS (🔥 FIX) ================= */
+  const isExamStillActiveOrFuture = (exam) => {
+    const now = new Date();
+
+    // exam date (YYYY-MM-DD)
+    const examDate = new Date(exam.date);
+
+    // build full end datetime
+    const [hh, mm, ss] = exam.end_time.split(":").map(Number);
+    const examEndDateTime = new Date(examDate);
+    examEndDateTime.setHours(hh, mm, ss || 0, 0);
+
+    return examEndDateTime > now;
+  };
+
 
   const filteredUpcomingExams =
     upcomeingexam?.filter(
       exam =>
         isTodayOrFuture(exam.date) &&
+        isExamStillActiveOrFuture(exam) &&
         exam.id !== attemptedExamId
     ) || [];
 
 
+  console.log("upcomeingexam", upcomeingexam)
   /* ================= LIVE EXAM LOGIC ================= */
 
   const isLiveTime = (startTime, endTime) => {
@@ -111,10 +127,10 @@ export default function StudentDashboard() {
     localStorage.removeItem('exam_id');
     localStorage.removeItem('examState');
     const checkExam = async () => {
-      if (!user?.id || !liveExamData?.id){
+      if (!user?.id || !liveExamData?.id) {
         setexamloading(false);
         return;
-      } 
+      }
 
       try {
         const res = await resultapi.examcheck(user.id, liveExamData.id);

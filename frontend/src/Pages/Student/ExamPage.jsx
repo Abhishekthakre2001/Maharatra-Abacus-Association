@@ -226,6 +226,37 @@ export default function ExamPage() {
         return formatTime(seconds);
     };
 
+    const addOneSecond = (time) => {
+        if (!time || !/^\d{2}:\d{2}:\d{2}$/.test(time)) {
+            return "00:00:01";
+        }
+
+        let [hh, mm, ss] = time.split(":").map(Number);
+
+        ss += 1;
+
+        if (ss >= 60) {
+            ss = 0;
+            mm += 1;
+        }
+
+        if (mm >= 60) {
+            mm = 0;
+            hh += 1;
+        }
+
+        if (hh >= 24) {
+            hh = 0; // optional wrap
+        }
+
+        return [
+            String(hh).padStart(2, "0"),
+            String(mm).padStart(2, "0"),
+            String(ss).padStart(2, "0")
+        ].join(":");
+    };
+
+
 
     // const handleSubmitExam = async () => {
     //     const total_question = questions.length;
@@ -318,7 +349,7 @@ export default function ExamPage() {
             date: mysqlDate,
             time: mysqlDateTime,
             totaltime: safeFormatTime(totalExamTime),
-            time_taken: safeFormatTime(usedTime),
+            time_taken: addOneSecond(safeFormatTime(usedTime)),
             createdby: user.createdby,
             resultfor,
             examtitle,
@@ -481,25 +512,28 @@ export default function ExamPage() {
                         )}
                     </div>
 
-                    <div className="flex justify-between items-center border-t border-gray-400 pt-4">
-                        <Button
-                            variant="secondary"
-                            onClick={handlePrevious}
-                            disabled={currentQuestion === 0}
-                        >
-                            <ChevronLeft /> Previous
-                        </Button>
+                    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 px-4 py-3 z-50">
+                        <div className="max-w-5xl mx-auto flex justify-between items-center">
+                            <Button
+                                variant="secondary"
+                                onClick={handlePrevious}
+                                disabled={currentQuestion === 0}
+                            >
+                                <ChevronLeft /> Previous
+                            </Button>
 
-                        {currentQuestion < questions.length - 1 ? (
-                            <Button variant="primary" onClick={handleNext}>
-                                Next <ChevronRight />
-                            </Button>
-                        ) : (
-                            <Button variant="primary" onClick={Endexamwarning}>
-                                Submit Exam
-                            </Button>
-                        )}
+                            {currentQuestion < questions.length - 1 ? (
+                                <Button variant="primary" onClick={handleNext}>
+                                    Next <ChevronRight />
+                                </Button>
+                            ) : (
+                                <Button variant="primary" onClick={Endexamwarning}>
+                                    Submit Exam
+                                </Button>
+                            )}
+                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -513,7 +547,7 @@ export default function ExamPage() {
 
             {/* Drawer */}
             <div
-                className={`fixed right-0 top-0 h-full w-100 bg-gradient-to-b from-slate-50 to-slate-100 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${drawerOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed right-0 top-0 h-full w-80 bg-gradient-to-b from-slate-50 to-slate-100 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${drawerOpen ? 'translate-x-0' : 'translate-x-full'
                     }`}
             >
                 <div className="h-full flex flex-col p-5">

@@ -201,7 +201,7 @@ const DataTable = ({
                   setSortConfig({ key: null, direction: "asc" });
                   setCurrentPage(1);
                 }}
-                style={{ backgroundColor: colors.button.clear, color:colors.text.gray500 }}
+                style={{ backgroundColor: colors.button.clear, color: colors.text.gray500 }}
                 className="flex items-center justify-center gap-2 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
               >
                 <X size={16} />
