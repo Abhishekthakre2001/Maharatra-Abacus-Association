@@ -170,7 +170,9 @@ export default function StudentDashboard() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-[#F0F7FF] via-[#E6F2FF] to-[#D9EBFF]">
+      <div className="min-h-screen bg-slate-100 flex flex-col">
+
+        {/* <div className="min-h-screen bg-gradient-to-br from-[#F0F7FF] via-[#E6F2FF] to-[#D9EBFF]"> */}
 
         {/* ================= APP BAR ================= */}
         <StudentAppBar
@@ -182,51 +184,55 @@ export default function StudentDashboard() {
           onLogout={handleLogout}
         />
 
-        <div className="max-w-6xl mx-auto px-4 pb-10">
+        {/* <div className="max-w-6xl mx-auto px-4 pb-10"> */}
+        <div className="flex-1 w-full max-w-md mx-auto px-4 pb-28">
+
 
           {/* ================= UPCOMING EXAMS ================= */}
-          <div className="my-8">
-            <TopAutoCarousel
-              items={
-                filteredUpcomingExams.length > 0
-                  ? filteredUpcomingExams.map((exam) => (
-                    <CreamCarouselCard
-                      key={exam.id}
-                      title={`Abacus Level ${exam.exam_level} Examination`}
-                      subtitle={exam.exam_title}
-                      examDate={formatDate(exam.date)}
-                      startTime={formatTime(exam.start_time)}
-                      endTime={formatTime(exam.end_time)}
-                      image={examImg}
-                    />
-                  ))
-                  : [
-                    <CreamCarouselCard
-                      key="no-exam"
-                      title="No Upcoming Exams"
-                      subtitle="Please check back later"
-                      examDate="—"
-                      startTime="—"
-                      endTime="—"
-                      image={examImg}
-                    />
-                  ]
-              }
-            />
+          <div className="mt-4">
+            <div className="bg-white rounded-2xl shadow-sm p-3">
+              <TopAutoCarousel
+                items={
+                  filteredUpcomingExams.length > 0
+                    ? filteredUpcomingExams.map((exam) => (
+                      <CreamCarouselCard
+                        key={exam.id}
+                        title={`Abacus Level ${exam.exam_level} Examination`}
+                        subtitle={exam.exam_title}
+                        examDate={formatDate(exam.date)}
+                        startTime={formatTime(exam.start_time)}
+                        endTime={formatTime(exam.end_time)}
+                        image={examImg}
+                      />
+                    ))
+                    : [
+                      <CreamCarouselCard
+                        key="no-exam"
+                        title="No Upcoming Exams"
+                        subtitle="Please check back later"
+                        examDate="—"
+                        startTime="—"
+                        endTime="—"
+                        image={examImg}
+                      />
+                    ]
+                }
+              />
+            </div>
           </div>
 
           {/* ================= ACTION SECTION ================= */}
-          <div className="bg-white rounded-2xl shadow-md border border-blue-100 p-6">
-            <h3 className="text-lg font-semibold text-slate-800 mb-2">
+          <div className="mt-6 bg-white rounded-2xl shadow-sm p-5">
+            <h3 className="text-base font-semibold text-slate-800">
               Your Exams
             </h3>
-            <p className="text-sm text-slate-500 mb-5">
+            <p className="text-xs text-slate-500 mb-4">
               Test exams anytime • Live exams only during scheduled time
             </p>
 
             {examloading ? <>
-              <p>Loading...</p></> : <>
-              <div className="flex flex-col sm:flex-row gap-4 max-w-md">
+              <p className="text-sm text-slate-500">Loading…</p></> : <>
+              <div className="space-y-3">
                 {levelwise_set.length === 0 ? <>
                   <p className="text-sm text-center text-slate-500 mb-5">
                     Sorry Practice Question Sets Not Available,<br /> Please Contact Your Admin
@@ -261,19 +267,19 @@ export default function StudentDashboard() {
 
 
             {showSets && (
-              <div className="mt-6 bg-white rounded-2xl">
-                <p className="text-sm text-left text-slate-500 mb-5">Select Set For Test</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="mt-6 bg-white rounded-2xl shadow-sm p-4">
+                <p className="text-xs text-slate-500 mb-3">Select Set For Test</p>
+                <div className="grid grid-cols-3 gap-3">
                   {levelwise_set?.map((item) => (
                     <button
                       key={`${item.level}-${item.set_id}`}
                       onClick={() => handleSetSelect(item.level, item.set_id)}
                       className="
-                        border-2 border-blue-600 text-blue-600
-                        rounded-xl py-3 font-semibold text-sm
-                        hover:bg-blue-600 hover:text-white
-                        transition-all active:scale-95
-                      "
+            h-12 rounded-xl font-semibold text-sm
+            border border-blue-500 text-blue-600
+            active:scale-95
+            transition
+          "
                     >
                       Set {item.level}{item.set_id}
                     </button>
