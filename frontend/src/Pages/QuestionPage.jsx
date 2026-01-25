@@ -167,9 +167,18 @@ export default function QuestionPage() {
                 await questionApi.removeSet(selectedQuestion.level, selectedQuestion.set);
             }
 
-            await reload();
+
+            if (QuestionsView) {
+                await reload();
+                console.log("Question", QuestionsView)
+                setQuestionsView(false);
+                setShowDeleteModal(false);
+            } else {
+                // setQuestionsView(false);
+                setShowDeleteModal(false);
+            }
             // setQuestionsView(false);
-            setShowDeleteModal(false);
+            // setShowDeleteModal(false);
             setSelectedQuestion(null);
             console.log('Deleted question:', selectedQuestion);
         } catch (err) {

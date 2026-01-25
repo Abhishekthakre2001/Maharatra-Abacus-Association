@@ -270,7 +270,7 @@ export default function CsvQuestionManager() {
       const msg =
         err?.response?.data?.error ===
           "set_time not found for given level and set_id"
-          ? `${level}-${set} Set is not available`
+          ? `${level}${set} Question Set is not available`
           : "Failed to add question";
 
       setModal({

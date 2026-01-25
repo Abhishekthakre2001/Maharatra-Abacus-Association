@@ -111,7 +111,10 @@ export default function StudentDashboard() {
     localStorage.removeItem('exam_id');
     localStorage.removeItem('examState');
     const checkExam = async () => {
-      if (!user?.id || !liveExamData?.id) return;
+      if (!user?.id || !liveExamData?.id){
+        setexamloading(false);
+        return;
+      } 
 
       try {
         const res = await resultapi.examcheck(user.id, liveExamData.id);
