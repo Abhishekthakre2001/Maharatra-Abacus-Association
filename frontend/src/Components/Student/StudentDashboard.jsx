@@ -9,9 +9,10 @@ import { useFetchData } from '../../hooks/useFetchData';
 import TopAutoCarousel from './LightDashboardCard';
 import CreamCarouselCard from './CreamCarouselCard';
 import examImg from "../../assets/exam.png";
+import Modal from '../../UI/Modal';
 
 export default function StudentDashboard() {
-
+  const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
   const [showSets, setShowSets] = useState(false);
   const [attemptedExamId, setAttemptedExamId] = useState(null);
@@ -167,7 +168,6 @@ export default function StudentDashboard() {
 
   console.log("isexam", filteredUpcomingExams);
 
-
   return (
     <>
       <div className="min-h-screen bg-slate-100 flex flex-col">
@@ -243,7 +243,8 @@ export default function StudentDashboard() {
                       <Button
                         variant="primary"
                         size="lg"
-                        onClick={() => setShowSets(true)}
+                        // onClick={() => setShowSets(true)}
+                        onClick={() => setModalOpen(true)}
                         className="w-full"
                       >
                         Start Test Exam
@@ -264,29 +265,53 @@ export default function StudentDashboard() {
                 )}
               </div>
             </>}
+            <Modal
+              open={modalOpen}
+              onClose={() => setModalOpen(false)}
+              title="Select Practice Set"
+              width="max-w-md"
+            >
+              {levelwise_set.length === 0 ? (
+                <p className="text-sm text-center text-slate-500 py-6">
+                  Practice Question Sets Not Available.<br />
+                  Please contact your admin.
+                </p>
+              ) : (
+                <>
+                  <p className="text-xs text-slate-500 mb-4">
+                    Choose a set to start your test
+                  </p>
 
+                  <div className="grid grid-cols-3 gap-3">
+                    {levelwise_set.map(item => (
+                      <button
+                        key={`${item.level}-${item.set_id}`}
+                        onClick={() => handleSetSelect(item.level, item.set_id)}
+                        className="
+              h-12 rounded-xl font-semibold text-sm
+              border border-blue-500 text-blue-600
+              hover:bg-blue-600 hover:text-white
+              active:scale-95 transition
+            "
+                      >
+                        {item.level}{item.set_id}
+                      </button>
+                    ))}
+                  </div>
 
-            {showSets && (
-              <div className="mt-6 bg-white rounded-2xl shadow-sm p-4">
-                <p className="text-xs text-slate-500 mb-3">Select Set For Test</p>
-                <div className="grid grid-cols-3 gap-3">
-                  {levelwise_set?.map((item) => (
-                    <button
-                      key={`${item.level}-${item.set_id}`}
-                      onClick={() => handleSetSelect(item.level, item.set_id)}
-                      className="
-            h-12 rounded-xl font-semibold text-sm
-            border border-blue-500 text-blue-600
-            active:scale-95
-            transition
-          "
+                  <div className="mt-6">
+                    <Button
+                      variant="secondary"
+                      onClick={() => setModalOpen(false)}
+                      className="w-full"
                     >
-                      Set {item.level}{item.set_id}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+                      Cancel
+                    </Button>
+                  </div>
+                </>
+              )}
+            </Modal>
+
           </div>
 
         </div>
