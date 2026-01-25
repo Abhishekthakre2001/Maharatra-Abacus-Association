@@ -465,10 +465,23 @@ export default function CsvQuestionManager() {
       setQuestions([]);
 
     } catch (err) {
-      console.error(err);
-      setButtonLoading(false);
-      setModal({ open: true, type: "error", title: "Error", message: "Failed to save questions." });
-    } finally {
+      if (err.response?.status === 409) {
+        setModal({
+          open: true,
+          type: "error",
+          title: "Set Already Exists",
+          message: err.response.data.message
+        });
+      } else {
+        setModal({
+          open: true,
+          type: "error",
+          title: "Error",
+          message: "Failed to upload questions"
+        });
+      }
+    }
+    finally {
       setIsUploading(false);
       setButtonLoading(false);
       setUploadProgress(0);

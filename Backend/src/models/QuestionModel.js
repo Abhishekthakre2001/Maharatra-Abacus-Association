@@ -163,14 +163,36 @@ const QuestionModel = {
   },
 
   bulkCreate: async (questions, level, set_id, createdby, time, ismockset) => {
-    // questions: array of objects with keys: question, option1..option4, correctoption (number or string)
+
+    // 🔴 CHECK IF SET ALREADY EXISTS
+    const [existing] = await pool.query(
+      `
+    SELECT 1
+    FROM questions
+    WHERE level = ?
+      AND set_id = ?
+      AND createdby = ?
+    LIMIT 1
+    `,
+      [level, set_id, createdby]
+    );
+
+    if (existing.length > 0) {
+      const error = new Error(
+        "Set already exists. Please choose another set."
+      );
+      error.code = "SET_EXISTS";
+      throw error;
+    }
+
+    // ✅ PROCEED WITH INSERT
     const values = questions.map((q) => [
       q.question || q.Question || "",
       q.option1 || q["Option 1"] || "",
       q.option2 || q["Option 2"] || "",
       q.option3 || q["Option 3"] || "",
       q.option4 || q["Option 4"] || "",
-      Number(q.correctoption ?? q["Correct Option"] ?? 0) || 0,
+      Number(q.correctoption ?? q["Correct Option"] ?? 0),
       level,
       set_id,
       time,
@@ -179,14 +201,32 @@ const QuestionModel = {
     ]);
 
     const sql = `
-      INSERT INTO questions
-      (question, option1, option2, option3, option4, correctoption, level, set_id, set_time, createdby, ismockset)
-      VALUES ?
-    `;
+    INSERT INTO questions
+    (question, option1, option2, option3, option4, correctoption,
+     level, set_id, set_time, createdby, ismockset)
+    VALUES ?
+  `;
 
     const [result] = await pool.query(sql, [values]);
     return result;
   },
+
+
+  checkSetExists: async ({ level, set_id, createdby }) => {
+    const [rows] = await pool.query(
+      `
+    SELECT COUNT(*) AS count
+    FROM questions
+    WHERE level = ?
+      AND set_id = ?
+      AND createdby = ?
+    `,
+      [level, set_id, createdby]
+    );
+
+    return rows[0].count > 0;
+  },
+
 
   // models/QuestionModel.js
   getSetsByLevelAndCreator: ({ level, createdby }) =>

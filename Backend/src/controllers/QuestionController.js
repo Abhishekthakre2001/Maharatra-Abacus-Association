@@ -8,26 +8,49 @@ exports.createQuestion = async (req, res) => {
 
 // Bulk create questions from CSV/array
 exports.bulkCreateQuestions = async (req, res) => {
-  const { questions, level, set, time, ismockset } = req.body;
+  try {
+    const { questions, level, set, time, ismockset } = req.body;
 
-  if (!questions || !Array.isArray(questions) || questions.length < 1) {
-    return res.status(400).json({ success: false, message: "Questions array is required" });
+    if (!questions || !Array.isArray(questions) || questions.length < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Questions array is required"
+      });
+    }
+
+    const createdby = req.body.createdby;
+
+    const result = await QuestionService.bulkCreateQuestions(
+      questions,
+      level,
+      set,
+      createdby,
+      time,
+      ismockset
+    );
+
+    res.status(201).json({
+      success: true,
+      insertedRows: result.affectedRows
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    if (err.code === "SET_EXISTS") {
+      return res.status(409).json({
+        success: false,
+        message: "Set already exists. Please choose another set."
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to upload questions"
+    });
   }
-
-  if (!level || !set) {
-    return res.status(400).json({ success: false, message: "level and set are required" });
-  }
-
-  if (!time) {
-    return res.status(400).json({ success: false, message: "time is required" });
-  }
-
-  // use createdby from client if provided, otherwise default to 3
-  const createdby = req.body.createdby;
-
-  const result = await QuestionService.bulkCreateQuestions(questions, level, set, createdby, time, ismockset);
-  res.status(201).json({ success: true, insertedRows: result.affectedRows });
 };
+
 
 exports.getQuestionsByAdmin = async (req, res) => {
   const rows = await QuestionService.getQuestionsByAdmin(req.params.id);

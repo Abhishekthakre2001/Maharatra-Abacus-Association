@@ -179,6 +179,7 @@ export default function QuestionPage() {
             }
             // setQuestionsView(false);
             // setShowDeleteModal(false);
+            //  await reload();
             setSelectedQuestion(null);
             console.log('Deleted question:', selectedQuestion);
         } catch (err) {

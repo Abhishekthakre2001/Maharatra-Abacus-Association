@@ -138,6 +138,19 @@ const DataTable = ({
   };
 
 
+  useEffect(() => {
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+
+    if (totalPages === 0) {
+      setCurrentPage(1);
+    }
+  }, [sortedData.length, itemsPerPage, currentPage]);
+
+
   return (
     <>
       <div className="bg-white rounded-lg sm:rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
