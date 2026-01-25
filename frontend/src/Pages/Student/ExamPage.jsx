@@ -407,7 +407,7 @@ export default function ExamPage() {
 
 
     return (
-        <div className="max-w-full h-screen overflow-hidden flex flex-col bg-blue-50">
+        <div className="max-w-full h-screen overflow-hidden flex flex-col bg-blue-50 mb-8">
             <div className="m-2 mb-0 flex-shrink-0">
                 {/* <StudentAppBar
                     title="Exam Rules & Regulations"
@@ -434,7 +434,7 @@ export default function ExamPage() {
                 {/* Question */}
                 <div className="bg-white rounded-lg shadow-lg p-4">
 
-                    <div className="sticky top-5 z-50 flex justify-between items-center mb-4">
+                    <div className="bg-white sticky top-0 p-2 z-50 flex justify-between items-center mb-4">
                         <h2 className="font-bold">
                             Question {currentQuestion + 1} of {questions.length}
                         </h2>

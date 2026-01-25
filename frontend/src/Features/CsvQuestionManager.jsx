@@ -39,7 +39,8 @@ export default function CsvQuestionManager() {
   const [isMockSet, setIsMockSet] = useState(0); // default No
   const [availableLevels, setAvailableLevels] = useState([]);
   const [modalLevelId, setModalLevelId] = useState("");
-  const [ButtonLoading, setButtonLoading] = useState(false)
+  const [ButtonLoading, setButtonLoading] = useState(false);
+  const [iserror, setiserror] = useState(false);
 
   // Handle CSV file
   // const parseCSV = (file) => {
@@ -224,7 +225,6 @@ export default function CsvQuestionManager() {
   //         setModal({ open: true, type: "error", title: "Error", message: `${level}-${set} Set Are Not Available` });
   //       }
   //       setButtonLoading(false);
-
   //     }
   //   }
   // };
@@ -310,8 +310,11 @@ export default function CsvQuestionManager() {
         title: "Success",
         message: "Question added successfully"
       });
+      setiserror(false);
     } catch (err) {
       console.error(err);
+      setiserror(true);
+      setIsModalOpen(false);
 
       const msg =
         err?.response?.data?.error ===
@@ -328,6 +331,7 @@ export default function CsvQuestionManager() {
     } finally {
       // ✅ ALWAYS stop loading
       setButtonLoading(false);
+      // setiserror(false);
     }
   };
 
@@ -496,7 +500,7 @@ export default function CsvQuestionManager() {
 
   const [errors, setErrors] = useState({});
 
-  console.log("questions", questions)
+  console.log("iserror", iserror)
 
 
   return (
@@ -506,7 +510,14 @@ export default function CsvQuestionManager() {
         type={modal.type}
         title={modal.title}
         message={modal.message}
-        onClose={() => setModal((prev) => ({ ...prev, open: false }))}
+        onClose={() => {
+          setModal(prev => ({ ...prev, open: false }));
+
+          if (iserror) {
+            setIsModalOpen(true);
+          }
+        }}
+
       />
       <div className="max-w-7xl mx-auto p-4 sm:p-6 sticky top-0 ">
         {/* Input Fields Section */}
@@ -801,98 +812,98 @@ export default function CsvQuestionManager() {
           </div>
         )}
 
-       
+
       </div>
 
-       {/* Add Question Modal */}
-        <Modal
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          title="Add New Question"
-          width="max-w-3xl"
-        >
-          <div className="space-y-4">
+      {/* Add Question Modal */}
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Add New Question"
+        width="max-w-3xl"
+      >
+        <div className="space-y-4">
+          <InputField
+            label="Question"
+            value={newQuestion.Question}
+            onChange={(e) => setNewQuestion({ ...newQuestion, Question: e.target.value })}
+            placeholder="Enter your question"
+            required
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InputField
-              label="Question"
-              value={newQuestion.Question}
-              onChange={(e) => setNewQuestion({ ...newQuestion, Question: e.target.value })}
-              placeholder="Enter your question"
+              label="Option 1"
+              value={newQuestion["Option 1"]}
+              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 1": e.target.value })}
+              placeholder="Enter option 1"
+            />
+            <InputField
+              label="Option 2"
+              value={newQuestion["Option 2"]}
+              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 2": e.target.value })}
+              placeholder="Enter option 2"
+            />
+            <InputField
+              label="Option 3"
+              value={newQuestion["Option 3"]}
+              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 3": e.target.value })}
+              placeholder="Enter option 3"
+            />
+            <InputField
+              label="Option 4"
+              value={newQuestion["Option 4"]}
+              onChange={(e) => setNewQuestion({ ...newQuestion, "Option 4": e.target.value })}
+              placeholder="Enter option 4"
+            />
+          </div>
+
+
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <SelectField
+              label="Correct Option"
+              value={newQuestion["Correct Option"]}
+              onChange={e => setNewQuestion({ ...newQuestion, "Correct Option": e.target.value })}
+              options={[
+                { value: "1", label: "Option 1" },
+                { value: "2", label: "Option 2" },
+                { value: "3", label: "Option 3" },
+                { value: "4", label: "Option 4" }
+              ]}
+              placeholder="Select correct option"
               required
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InputField
-                label="Option 1"
-                value={newQuestion["Option 1"]}
-                onChange={(e) => setNewQuestion({ ...newQuestion, "Option 1": e.target.value })}
-                placeholder="Enter option 1"
-              />
-              <InputField
-                label="Option 2"
-                value={newQuestion["Option 2"]}
-                onChange={(e) => setNewQuestion({ ...newQuestion, "Option 2": e.target.value })}
-                placeholder="Enter option 2"
-              />
-              <InputField
-                label="Option 3"
-                value={newQuestion["Option 3"]}
-                onChange={(e) => setNewQuestion({ ...newQuestion, "Option 3": e.target.value })}
-                placeholder="Enter option 3"
-              />
-              <InputField
-                label="Option 4"
-                value={newQuestion["Option 4"]}
-                onChange={(e) => setNewQuestion({ ...newQuestion, "Option 4": e.target.value })}
-                placeholder="Enter option 4"
-              />
-            </div>
-
-
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              <SelectField
-                label="Correct Option"
-                value={newQuestion["Correct Option"]}
-                onChange={e => setNewQuestion({ ...newQuestion, "Correct Option": e.target.value })}
-                options={[
-                  { value: "1", label: "Option 1" },
-                  { value: "2", label: "Option 2" },
-                  { value: "3", label: "Option 3" },
-                  { value: "4", label: "Option 4" }
-                ]}
-                placeholder="Select correct option"
-                required
-              />
-
-              <SelectField
-                label="Level"
-                value={level}
-                onChange={(e) => {
-                  setLevel(e.target.value);
-                  setErrors(prev => ({ ...prev, level: "" })); // ✅ clear error
-                }}
-                options={availableLevels.map(lv => ({
-                  value: lv.level,
-                  label: lv.level || lv.name || `Level ${lv.id}`
-                }))}
-                placeholder="-- Select Level --"
-                error={errors.level} showError={!!errors.level}
-              />
-              <SelectField
-                label="Set"
-                value={set}
-                onChange={(e) => {
-                  setSet(e.target.value);
-                  setErrors(prev => ({ ...prev, set: "" })); // ✅ clear error
-                }}
-                options={availableSets.map(s => ({
-                  value: s.set_name,
-                  label: s.set_name || s.name || `Set ${s.id}`
-                }))}
-                placeholder="-- Select Set --"
-                error={errors.set} showError={!!errors.set}
-              />
-              {/* <div>
+            <SelectField
+              label="Level"
+              value={level}
+              onChange={(e) => {
+                setLevel(e.target.value);
+                setErrors(prev => ({ ...prev, level: "" })); // ✅ clear error
+              }}
+              options={availableLevels.map(lv => ({
+                value: lv.level,
+                label: lv.level || lv.name || `Level ${lv.id}`
+              }))}
+              placeholder="-- Select Level --"
+              error={errors.level} showError={!!errors.level}
+            />
+            <SelectField
+              label="Set"
+              value={set}
+              onChange={(e) => {
+                setSet(e.target.value);
+                setErrors(prev => ({ ...prev, set: "" })); // ✅ clear error
+              }}
+              options={availableSets.map(s => ({
+                value: s.set_name,
+                label: s.set_name || s.name || `Set ${s.id}`
+              }))}
+              placeholder="-- Select Set --"
+              error={errors.set} showError={!!errors.set}
+            />
+            {/* <div>
                 <InputField
                   label="Time (HH:MM:SS)"
                   type="text"
@@ -907,8 +918,8 @@ export default function CsvQuestionManager() {
                 />
               </div> */}
 
-              <div>
-                {/* <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div>
+              {/* <label className="block text-sm font-medium text-gray-700 mb-1">
                 Mock Set
               </label>
 
@@ -922,7 +933,7 @@ export default function CsvQuestionManager() {
                 <option value={1}>Yes</option>
                 <option value={0}>No</option>
               </select> */}
-                {/* <SelectField
+              {/* <SelectField
                   label="Mock Set"
                   value={isMockSet}
                   onChange={(e) => setIsMockSet(Number(e.target.value))}
@@ -932,11 +943,11 @@ export default function CsvQuestionManager() {
                   }))}
                   placeholder="-- Select --"
                 /> */}
-              </div>
-
             </div>
 
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          </div>
+
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Set</label>
                 <select
@@ -966,35 +977,35 @@ export default function CsvQuestionManager() {
               </div>
             </div> */}
 
-            <div className="flex justify-end gap-3 my-8">
-              <Button
-                onClick={() => {
-                  setIsModalOpen(false); setSet(""); setTime(""); setLevel(""); setErrors({}); setNewQuestion({
-                    Question: "",
-                    "Option 1": "",
-                    "Option 2": "",
-                    "Option 3": "",
-                    "Option 4": "",
-                    "Correct Option": ""
-                  });
-                }}
-                variant="outline"
-              >
-                Cancel
-              </Button>
-              <Button
-                disabled={ButtonLoading}
-                onClick={() => {
-                  handleAddQuestion();
-                }}
-                variant="primary"
-              >
-                {ButtonLoading ? "Saveing..." : "Add Question"}
-              </Button>
+          <div className="flex justify-end gap-3 my-8">
+            <Button
+              onClick={() => {
+                setIsModalOpen(false); setSet(""); setTime(""); setLevel(""); setErrors({}); setNewQuestion({
+                  Question: "",
+                  "Option 1": "",
+                  "Option 2": "",
+                  "Option 3": "",
+                  "Option 4": "",
+                  "Correct Option": ""
+                });
+              }}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={ButtonLoading}
+              onClick={() => {
+                handleAddQuestion();
+              }}
+              variant="primary"
+            >
+              {ButtonLoading ? "Saveing..." : "Add Question"}
+            </Button>
 
-            </div>
           </div>
-        </Modal>
+        </div>
+      </Modal>
     </>
   );
 }
