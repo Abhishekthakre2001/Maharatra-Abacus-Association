@@ -15,10 +15,12 @@ function NfcReader() {
             await ndef.scan();
 
             ndef.onreading = (event) => {
+                alert("NFC -", event)
                 console.log("NFC read:", event);
             };
 
         } catch (err) {
+            alert("NFC ERROR-", err)
             console.error("NFC error:", err);
         }
     };
