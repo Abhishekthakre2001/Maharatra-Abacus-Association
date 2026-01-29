@@ -11,6 +11,24 @@ function formatTime12hr(timeStr) {
     return `${hour}:${minute} ${ampm}`;
 }
 
+function isExamLive(startTime, endTime) {
+    if (!startTime || !endTime) return false;
+
+    const now = new Date();
+
+    const [sh, sm] = startTime.split(":").map(Number);
+    const [eh, em] = endTime.split(":").map(Number);
+
+    const start = new Date(now);
+    start.setHours(sh, sm, 0, 0);
+
+    const end = new Date(now);
+    end.setHours(eh, em, 0, 0);
+
+    return now >= start && now <= end;
+}
+
+
 const CreamCarouselCard = ({
     title,
     subtitle,
@@ -19,6 +37,8 @@ const CreamCarouselCard = ({
     endTime,
     image
 }) => {
+    const examLive = isExamLive(startTime, endTime);
+
     return (
         <div
             className="
@@ -41,15 +61,22 @@ const CreamCarouselCard = ({
             <div className="relative z-10 flex items-center px-5 py-8 pr-28">
                 <div className="space-y-3">
                     {/* BADGE */}
-                    <span className="
-            inline-flex items-center gap-2
-            text-xs font-semibold
-            text-blue-600
-            bg-white/70 backdrop-blur-lg border border-blue-100 rounded-2xl shadow-lg
-            px-3 py-1 
-          ">
-                        Upcoming Exam
-                    </span>
+                  <span
+    className={`
+        inline-flex items-center gap-2
+        text-xs font-semibold
+        px-3 py-1 rounded-2xl shadow-lg
+        backdrop-blur-lg border
+        ${
+            examLive
+                ? "text-red-600 bg-red-50 border-red-200 animate-pulse"
+                : "text-blue-600 bg-white/70 border-blue-100"
+        }
+    `}
+>
+    {examLive ? "Exam is Live Now " : "Upcoming Exam"}
+</span>
+
 
                     {/* TITLE */}
                     <h2 className="text-xl md:text-2xl font-bold text-blue-600 leading-snug">
