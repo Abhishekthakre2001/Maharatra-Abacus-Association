@@ -85,10 +85,10 @@ const DataTable = ({
   // Pagination
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return sortedData.slice(startIndex, startIndex + itemsPerPage);
+    return sortedData?.slice(startIndex, startIndex + itemsPerPage);
   }, [sortedData, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedData?.length / itemsPerPage);
 
   // Reset page when filters change
   useEffect(() => {
@@ -139,7 +139,7 @@ const DataTable = ({
 
 
   useEffect(() => {
-    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+    const totalPages = Math.ceil(sortedData?.length / itemsPerPage);
 
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(totalPages);
@@ -148,7 +148,7 @@ const DataTable = ({
     if (totalPages === 0) {
       setCurrentPage(1);
     }
-  }, [sortedData.length, itemsPerPage, currentPage]);
+  }, [sortedData?.length, itemsPerPage, currentPage]);
 
 
   return (

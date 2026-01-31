@@ -61,21 +61,20 @@ const CreamCarouselCard = ({
             <div className="relative z-10 flex items-center px-5 py-8 pr-28">
                 <div className="space-y-3">
                     {/* BADGE */}
-                  <span
-    className={`
+                    <span
+                        className={`
         inline-flex items-center gap-2
         text-xs font-semibold
         px-3 py-1 rounded-2xl shadow-lg
         backdrop-blur-lg border
-        ${
-            examLive
-                ? "text-red-600 bg-red-50 border-red-200 animate-pulse"
-                : "text-blue-600 bg-white/70 border-blue-100"
-        }
+        ${examLive
+                                ? "text-red-600 bg-red-50 border-red-200 animate-pulse"
+                                : "text-blue-600 bg-white/70 border-blue-100"
+                            }
     `}
->
-    {examLive ? "Exam is Live Now " : "Upcoming Exam"}
-</span>
+                    >
+                        {examLive ? "Exam is Live Now " : "Upcoming Exam"}
+                    </span>
 
 
                     {/* TITLE */}
@@ -93,35 +92,35 @@ const CreamCarouselCard = ({
 
                     {/* DATE & TIME */}
                     {examDate === "—" ?
-                    <>
-                       <div className="flex flex-col gap-2 text-sm text-gray-700">
-                      
-                    </div>
-                    </> : <>
-                       <div className="flex flex-col gap-2 text-sm text-gray-700">
-                        {examDate && (
-                            <div className="flex items-center gap-2">
-                                <Calendar size={15} className="text-gray-600" />
-                                <span>
-                                    {new Date(examDate).toLocaleDateString("en-IN", {
-                                        day: "numeric",
-                                        month: "short",
-                                        year: "numeric"
-                                    })}
-                                </span>
-                            </div>
-                        )}
+                        <>
+                            <div className="flex flex-col gap-2 text-sm text-gray-700">
 
-                        {startTime && endTime && (
-                            <div className="flex items-center gap-2">
-                                <Clock size={15} className="text-gray-600" />
-                                <span>{formatTime12hr(startTime)} – {formatTime12hr(endTime)}</span>
                             </div>
-                        )}
-                    </div>
-                    </> 
+                        </> : <>
+                            <div className="flex flex-col gap-2 text-sm text-gray-700">
+                                {examDate && (
+                                    <div className="flex items-center gap-2">
+                                        <Calendar size={15} className="text-gray-600" />
+                                        <span>
+                                            {new Date(examDate).toLocaleDateString("en-IN", {
+                                                day: "numeric",
+                                                month: "short",
+                                                year: "numeric"
+                                            })}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {startTime && endTime && (
+                                    <div className="flex items-center gap-2">
+                                        <Clock size={15} className="text-gray-600" />
+                                        <span>{formatTime12hr(startTime)} – {formatTime12hr(endTime)}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </>
                     }
-                 
+
                 </div>
             </div>
 

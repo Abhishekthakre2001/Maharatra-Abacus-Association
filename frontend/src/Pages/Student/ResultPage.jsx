@@ -16,6 +16,11 @@ import {
   Cell,
   ResponsiveContainer
 } from "recharts";
+import Fail_emoji from '../../assets/Emoji/Fail.png';
+import good_emoji from '../../assets/Emoji/good.png';
+import Supperb_emoji from '../../assets/Emoji/Supperb.png';
+import very_good_emoji from '../../assets/Emoji/very-good.png';
+import Excellent from '../../assets/Emoji/Excellent.png'
 
 export default function ResultPage() {
   const navigate = useNavigate();
@@ -70,6 +75,51 @@ export default function ResultPage() {
       : ["#cbd5e1"];
 
 
+
+
+
+  const getResultBadge = (percentage) => {
+    if (percentage === 100) {
+      return {
+        label: "Excellent",
+        img: Excellent,
+        className: "bg-green-700",
+      };
+    }
+
+    if (percentage >= 61) {
+      return {
+        label: "Superb",
+        img: Supperb_emoji,
+        className: "bg-green-500",
+      };
+    }
+
+    if (percentage >= 41) {
+      return {
+        label: "Very Good",
+        img: very_good_emoji,
+        className: "bg-yellow-600",
+      };
+    }
+
+    if (percentage === 40) {
+      return {
+        label: "Good",
+        img: good_emoji,
+        className: "bg-orange-400",
+      };
+    }
+
+    return {
+      label: "Keep Going",
+      img: Fail_emoji,
+      className: "text-red-500",
+    };
+  };
+
+  const badge = getResultBadge(percentage);
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <StudentAppBar
@@ -93,14 +143,9 @@ export default function ResultPage() {
               </p>
             </div>
 
-            <div
-              className={`px-3 py-1 rounded-full text-xs font-semibold ${percentage >= 60
-                ? "bg-green-500/20 text-green-100"
-                : "bg-red-500/20 text-red-100"
-                }`}
-            >
-              {percentage >= 60 ? "PASS" : "FAIL"}
-            </div>
+
+
+
           </div>
         </div>
 
@@ -134,9 +179,30 @@ export default function ResultPage() {
 
         {/* ================= PIE CHART ================= */}
         <div className="bg-white rounded-2xl shadow-md p-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">
-            Answer Distribution
-          </h3>
+
+
+          <div className="flex justify-between">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">
+              Answer Distribution
+            </h3>
+
+            {/* <div
+              className={`text-center py-2 px-4 rounded-full text-xs font-semibold ${percentage >= 35
+                ? "bg-green-600 text-white"
+                : "bg-red-600 text-white"
+                }`}
+            >
+              {percentage >= 35 ? "PASS" : "FAIL"}
+            </div> */}
+
+            <div
+              className={`text-center px-3 py-2 rounded-full text-xs font-semibold  ${badge.className} text-white`}
+            >
+              {badge.label}
+            </div>
+
+          </div>
+
 
           <div className="relative h-56">
             <ResponsiveContainer width="100%" height="100%">
@@ -181,7 +247,12 @@ export default function ResultPage() {
           <InfoRow
             icon={Calendar}
             label="Exam Date"
-            value={resultData.date}
+            value={
+              resultData?.date
+                ? resultData.date.split("-").reverse().join("-")
+                : ""
+            }
+
           />
           <InfoRow
             icon={Award}
@@ -194,7 +265,7 @@ export default function ResultPage() {
         <Button
           icon={Home}
           className="w-full"
-          variant="secondary"
+          variant="primary"
           onClick={() => navigate("/student-dashboard")}
         >
           Back to Dashboard

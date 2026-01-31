@@ -7,7 +7,8 @@ const MessageModal = ({
   title,
   message,
   onClose,
-  onConfirm, // ✅ NEW (used for warning yes)
+  onConfirm,
+  showOkButton = true,
 }) => {
   if (!open) return null;
 
@@ -46,10 +47,10 @@ const MessageModal = ({
         {/* Title */}
         <h2
           className={`text-xl font-semibold text-center ${isSuccess
-              ? "text-green-600"
-              : isWarning
-                ? "text-red-600"
-                : "text-red-600"
+            ? "text-green-600"
+            : isWarning
+              ? "text-red-600"
+              : "text-red-600"
             }`}
         >
           {title}
@@ -80,12 +81,14 @@ const MessageModal = ({
               </button>
             </>
           ) : (
-            <button
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
-              onClick={onClose}
-            >
-              OK
-            </button>
+            showOkButton && (
+              <button
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+                onClick={onClose}
+              >
+                OK
+              </button>
+            )
           )}
         </div>
       </div>

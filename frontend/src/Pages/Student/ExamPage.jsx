@@ -418,6 +418,7 @@ export default function ExamPage() {
             {/* <ExamViolationGuard onExamEnd={handleExamEnd} /> */}
 
             <MessageModal
+                showOkButton={false}
                 open={modal.open}
                 type={modal.type}
                 title={modal.title}

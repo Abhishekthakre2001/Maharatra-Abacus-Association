@@ -219,8 +219,8 @@ export default function QuestionPage() {
             label: 'Is Test Set',
             render: (value) => (
                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${value === 'Advanced' ? 'bg-purple-100 text-purple-700' :
-                    value === 'Intermediate' ? 'bg-blue-100 text-blue-700' :
-                        'bg-green-100 text-green-700'
+                    value === 1 ? 'bg-green-100 text-green-700' :
+                        'bg-orange-100 text-orange-700'
                     }`}>
                     {value === 1 ? "Yes" : "No"}
                 </span>

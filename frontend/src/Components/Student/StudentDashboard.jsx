@@ -17,7 +17,6 @@ export default function StudentDashboard() {
   const [showSets, setShowSets] = useState(false);
   const [attemptedExamId, setAttemptedExamId] = useState(null);
 
-
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const userName =
     user?.name ||
@@ -39,11 +38,11 @@ export default function StudentDashboard() {
     navigate("/");
   };
 
-  const { data: upcomeingexam } = useFetchData(() =>
+  const { data: upcomeingexam, examscheduleloading } = useFetchData(() =>
     examScheduleApi.getstudnetupcomeingexam(user.level, user.createdby)
   );
 
-  const { data: levelwise_set } = useFetchData(() =>
+  const { data: levelwise_set, levelsetloading } = useFetchData(() =>
     questionApi.getset(user.level, user.createdby)
   );
 
@@ -89,12 +88,19 @@ export default function StudentDashboard() {
   };
 
 
+  // const filteredUpcomingExams =
+  //   upcomeingexam?.filter(
+  //     exam =>
+  //       isTodayOrFuture(exam.date) &&
+  //       isExamStillActiveOrFuture(exam) &&
+  //       exam.id !== attemptedExamId
+  //   ) || [];
+
   const filteredUpcomingExams =
     upcomeingexam?.filter(
       exam =>
         isTodayOrFuture(exam.date) &&
-        isExamStillActiveOrFuture(exam) &&
-        exam.id !== attemptedExamId
+        isExamStillActiveOrFuture(exam)
     ) || [];
 
 
@@ -166,7 +172,7 @@ export default function StudentDashboard() {
   };
 
 
-  console.log("isexam", filteredUpcomingExams);
+  console.log("liveExamData", liveExamData);
 
   return (
     <>
@@ -230,48 +236,67 @@ export default function StudentDashboard() {
               Test exams anytime • Live exams only during scheduled time
             </p>
 
-            {examloading ? <>
-              <p className="text-sm text-slate-500">Loading…</p></> : <>
+            {/* {examloading ? <> */}
+            {levelsetloading || examscheduleloading || examloading || levelwise_set === null ? (
+              <p className="text-sm text-slate-500">Loading…</p>
+            ) : levelwise_set.length === 0 ? (
+              <p className="text-sm text-center text-slate-500 mb-5">
+                Sorry Practice Question Sets Not Available,<br />
+                Please Contact Your Admin
+              </p>
+            ) : (
               <div className="space-y-3">
-                {levelwise_set.length === 0 ? <>
-                  <p className="text-sm text-center text-slate-500 mb-5">
-                    Sorry Practice Question Sets Not Available,<br /> Please Contact Your Admin
-                  </p>
-                </> :
-                  <>
-                    {!showSets && (
-                      <Button
-                        variant="primary"
-                        size="lg"
-                        // onClick={() => setShowSets(true)}
-                        onClick={() => setModalOpen(true)}
-                        className="w-full"
-                      >
-                        Start Test Exam
-                      </Button>
-                    )}
-
-
-                  </>}
-                {liveExamData && !isexam && (
+                {!showSets && (
                   <Button
                     variant="primary"
                     size="lg"
-                    onClick={liveExam}
+                    onClick={() => setModalOpen(true)}
                     className="w-full"
                   >
-                    Start Live Exam
+                    Start Test Exam
                   </Button>
                 )}
+
+                {liveExamData && (
+                  <div className="relative group w-full">
+                    <Button
+                      variant="green"
+                      size="lg"
+                      disabled={isexam}
+                      onClick={liveExam}
+                      className={`w-full ${!isexam ? "cursor-pointer" : "cursor-not-allowed"}`}
+
+                    >
+                      Start Live Exam
+                    </Button>
+                    {isexam && (
+                      <div
+                        className="
+          absolute -top-10 left-1/2 -translate-x-1/2
+          whitespace-nowrap
+          bg-gray-800 text-white text-xs
+          px-3 py-1 rounded-md
+          opacity-0 group-hover:opacity-100
+          transition-opacity duration-200
+          pointer-events-none
+        "
+                      >
+                        Exam already submitted
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            </>}
+            )}
+
+
             <Modal
               open={modalOpen}
               onClose={() => setModalOpen(false)}
               title="Select Practice Set"
               width="max-w-md"
             >
-              {levelwise_set.length === 0 ? (
+              {levelwise_set?.length === 0 ? (
                 <p className="text-sm text-center text-slate-500 py-6">
                   Practice Question Sets Not Available.<br />
                   Please contact your admin.
@@ -283,7 +308,7 @@ export default function StudentDashboard() {
                   </p>
 
                   <div className="grid grid-cols-3 gap-3">
-                    {levelwise_set.map(item => (
+                    {levelwise_set?.map(item => (
                       <button
                         key={`${item.level}-${item.set_id}`}
                         onClick={() => handleSetSelect(item.level, item.set_id)}
