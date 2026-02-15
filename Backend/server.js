@@ -12,7 +12,8 @@ const examschedule = require("./src/routes/ExamScheduleRoutes");
 const setRoutes = require("./src/routes/SetRoutes");
 const resultRoutes = require("./src/routes/ResultRoutes");
 const adminsetting = require("./src/routes/AdminSettingRoutes");
-const summary = require("./src/routes/summaryroute")
+const summary = require("./src/routes/summaryroute");
+const Exam_registartion = require("./src/routes/Exam_registartion");
 const errorHandler = require("./src/utils/errorHandler");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
@@ -58,6 +59,7 @@ if (cluster.isMaster) {
     app.use("/results", resultRoutes);
     app.use("/admin-settings", adminsetting);
     app.use("/summary", summary);
+    app.use("/exam-registration", Exam_registartion);
 
 
 
