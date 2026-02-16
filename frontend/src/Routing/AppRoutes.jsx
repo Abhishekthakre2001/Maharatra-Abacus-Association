@@ -22,6 +22,7 @@ import RoleProtectedRoute from "./RoleBasedProtectedRoute";
 import InstallApp from "../Pages/InstallApp";
 import NfcReader from "../Components/NfcReader";
 import Registration from "../Registration/Registartion";
+import ExamStudent from "../Pages/ExamStudent";
 
 
 
@@ -49,6 +50,15 @@ const AppRoutes = () => {
         element={
           <RoleProtectedRoute allowedRoles={["Admin"]}>
             <Dashboard />
+          </RoleProtectedRoute>
+        }
+      />
+
+       <Route
+        path="/exam-student"
+        element={
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
+            <ExamStudent />
           </RoleProtectedRoute>
         }
       />

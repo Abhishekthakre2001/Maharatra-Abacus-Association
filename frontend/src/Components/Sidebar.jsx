@@ -8,7 +8,8 @@ import {
   FileQuestionMark,
   FileClock,
   List,
-  Users
+  Users,
+  BookCheck
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/logo.png";
@@ -19,6 +20,11 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(false);
+
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : {};
+
+  console.log("User", user.id);
 
   // ✅ NEW STATE FOR MODAL
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -43,7 +49,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     { id: "questions", label: "Questions", icon: FileQuestionMark, path: "/questions" },
     { id: "result", label: "Result", icon: FileUser, path: "/results" },
     { id: "exam-schedule", label: "Exam Schedule", icon: FileClock, path: "/exam-schedule" },
-    { id: "masters", label: "Masters", icon: Settings, path: "/masters" },
+    // ✅ Only visible for admin id 55
+    ...(user?.id === 55
+      ? [{ id: "exam-student", label: "Exam Registration", icon: BookCheck, path: "/exam-student" }]
+      : []),
   ];
 
   const isActive = (path) => {

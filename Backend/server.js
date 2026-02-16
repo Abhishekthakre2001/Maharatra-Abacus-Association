@@ -61,9 +61,6 @@ if (cluster.isMaster) {
     app.use("/summary", summary);
     app.use("/exam-registration", Exam_registartion);
 
-
-
-
     // ✅ Error Handling
     app.use(errorHandler);
 
@@ -72,5 +69,4 @@ if (cluster.isMaster) {
         console.log(`✅ Server running on http://localhost:${PORT} `);
         console.log(`📘 Swagger → http://localhost:${PORT}/swagger`);
     });
-
 }
