@@ -4,6 +4,7 @@ import SelectField from "../UI/SelectField";
 import { useCreate } from "../hooks/useCreate";
 import examRegistartionApi from '../api/exam_registartion';
 import MessageModal from "../utils/MessageModal";
+import Logo from "../assets/logo.png";
 
 export default function Registration() {
   const [formData, setFormData] = useState({
@@ -161,13 +162,25 @@ export default function Registration() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateAll()) {
-      create(formData); // 🔥 THIS SAVES DATA TO API
+    if (!validateAll()) return;
+
+    try {
+      await create(formData);
+    } catch (error) {
+      setModal({
+        open: true,
+        type: "error",
+        title: "Error",
+        message:
+          error?.response?.data?.message ||
+          "Something went wrong. Please try again.",
+      });
     }
   };
+
 
 
   const { create, loading: createLoading } = useCreate(
@@ -199,7 +212,8 @@ export default function Registration() {
         <div className="bg-gradient-to-r from-blue-700 to-cyan-600 text-white py-4 shadow-lg">
           <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
             <h1 className="text-2xl md:text-3xl font-bold">
-              🧮 Abacus Learning Center
+              <img src={Logo} alt="DevEraa Logo" className="h-10 w-10 inline mr-2 rounded" />
+              DevEraa
             </h1>
             <span>Exam Registration Form</span>
           </div>
