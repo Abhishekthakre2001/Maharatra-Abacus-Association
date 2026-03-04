@@ -186,7 +186,7 @@ export default function AddStudent() {
             dob: "",
             subscription_end_date: "",
             usertype: "student",
-            status: 1,
+           
             createdby: "admin",
             status: null
         });
