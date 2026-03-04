@@ -15,33 +15,26 @@ const StudentAppBar = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
-
-  // ✅ NEW: logout confirmation modal state
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-
   const navigate = useNavigate();
 
-  // 🔹 Load user from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
   if (!user) return null;
 
-  const getUserInitial = (userObj) =>
-    userObj?.name ? userObj.name.trim().charAt(0).toUpperCase() : "U";
+  const getUserInitial = (u) =>
+    u?.name ? u.name.trim().charAt(0).toUpperCase() : "U";
 
   const formatDate = (date) =>
     date ? new Date(date).toLocaleDateString("en-IN") : "—";
 
-  // ✅ ACTUAL LOGOUT LOGIC
   const logout = () => {
     localStorage.clear();
     document.cookie = "token=; Max-Age=0; path=/";
-    onLogout && onLogout(); // optional external handler
+    onLogout && onLogout();
     navigate("/");
   };
 
@@ -49,9 +42,14 @@ const StudentAppBar = ({
     <>
       {/* ================= APP BAR ================= */}
       <div
-        className={`relative bg-opacity-70 backdrop-blur-xl rounded-2xl p-6 mx-2 text-white shadow-lg ${className}`}
+        className={`relative backdrop-blur-xl rounded-2xl p-6 mx-2 shadow-lg ${className}`}
         style={{
-          backgroundImage: `linear-gradient(to right, ${colors.primary.blue600}, ${colors.text.dark})`
+          backgroundImage: `linear-gradient(
+            to right,
+            ${colors.appbar.bg.gradientFrom},
+            ${colors.appbar.bg.gradientTo}
+          )`,
+          color: colors.appbar.text.title,
         }}
       >
         <button
@@ -67,15 +65,22 @@ const StudentAppBar = ({
           ) : (
             <div
               className="w-12 h-12 rounded-full flex items-center justify-center font-bold border-2 border-white"
-              style={{ backgroundColor: colors.primary.blue500 }}
+              style={{ backgroundColor: colors.appbar.user.avatar_bg }}
             >
               {getUserInitial(user)}
             </div>
           )}
 
           <div className="text-left">
-            <h2 className="text-lg font-semibold">{user.name}</h2>
-            <p className="text-sm opacity-90">{subtitle}</p>
+            <h2 className="text-lg font-semibold">
+              {user.name}
+            </h2>
+            <p
+              className="text-sm"
+              style={{ color: colors.appbar.text.subtitle }}
+            >
+              {subtitle}
+            </p>
           </div>
         </button>
       </div>
@@ -84,9 +89,10 @@ const StudentAppBar = ({
       {open &&
         createPortal(
           <div className="fixed inset-0 z-[99999] bg-black/40 flex items-center justify-center p-4">
-            <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 relative">
-
-              {/* Close */}
+            <div
+              className="w-full max-w-md rounded-3xl shadow-2xl p-6 relative"
+              style={{ backgroundColor: colors.common.white }}
+            >
               <button
                 onClick={() => setOpen(false)}
                 className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl"
@@ -105,20 +111,28 @@ const StudentAppBar = ({
                 ) : (
                   <div
                     className="w-24 h-24 rounded-full flex items-center justify-center text-2xl font-bold text-white"
-                    style={{ backgroundColor: colors.primary.blue500 }}
+                    style={{ backgroundColor: colors.appbar.user.avatar_bg }}
                   >
                     {getUserInitial(user)}
                   </div>
                 )}
 
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3
+                  className="text-xl font-semibold"
+                  style={{ color: colors.text.gray800 }}
+                >
                   {user.name}
                 </h3>
-                <p className="text-sm text-gray-500">@{user.username}</p>
+                <p
+                  className="text-sm"
+                  style={{ color: colors.text.gray500 }}
+                >
+                  @{user.username}
+                </p>
               </div>
 
               {/* DETAILS */}
-              <div className="mt-6 space-y-4 text-sm text-gray-700">
+              <div className="mt-6 space-y-4 text-sm">
                 <ProfileRow icon={User} label="Username" value={user.username} />
                 <ProfileRow icon={MapPin} label="Address" value={user.address} />
                 <ProfileRow icon={Phone} label="Mobile" value={user.mobilenumber} />
@@ -137,7 +151,7 @@ const StudentAppBar = ({
                   className="w-full"
                   onClick={() => {
                     setOpen(false);
-                    setShowLogoutConfirm(true); // ✅ OPEN WARNING
+                    setShowLogoutConfirm(true);
                   }}
                 >
                   Logout
@@ -148,7 +162,7 @@ const StudentAppBar = ({
           document.body
         )}
 
-      {/* ================= LOGOUT CONFIRMATION ================= */}
+      {/* ================= LOGOUT CONFIRM ================= */}
       <MessageModal
         open={showLogoutConfirm}
         type="warning"
@@ -161,7 +175,6 @@ const StudentAppBar = ({
   );
 };
 
-/* 🔹 Reusable Row */
 const ProfileRow = ({ icon: Icon, label, value }) => (
   <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
     <Icon size={18} className="text-gray-500" />

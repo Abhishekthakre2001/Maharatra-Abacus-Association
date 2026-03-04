@@ -182,8 +182,11 @@ const DataTable = ({
               {onCreate && (
                 <button
                   onClick={onCreate}
-                  style={{ backgroundColor: colors.button.add }}
-                  className="flex items-center justify-center gap-2 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
+                  style={{
+                    backgroundColor: colors.button.add.bg,
+                    color: colors.button.add.text,
+                  }}
+                  className="flex items-center justify-center gap-2 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
                 >
                   <Plus size={16} />
                   <span className="hidden xs:inline">Add New</span>
@@ -194,7 +197,11 @@ const DataTable = ({
               {exportable && (
                 <button
                   onClick={onExport ?? handleExportCSV}
-                  style={{ backgroundColor: colors.button.export }}
+
+                  style={{
+                    backgroundColor: colors.button.export.bg,
+                    color: colors.button.export.text,
+                  }}
                   className="flex items-center justify-center gap-2 hover:bg-[#e86f2c] text-white px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
                 >
                   <Download size={16} />
@@ -214,7 +221,10 @@ const DataTable = ({
                   setSortConfig({ key: null, direction: "asc" });
                   setCurrentPage(1);
                 }}
-                style={{ backgroundColor: colors.button.clear, color: colors.text.gray500 }}
+                style={{
+                  backgroundColor: colors.button.clear.bg,
+                  color: colors.button.clear.text,
+                }}
                 className="flex items-center justify-center gap-2 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
               >
                 <X size={16} />

@@ -66,24 +66,37 @@ const AppBar = ({
       <div
         className={`z-50 bg-opacity-70 backdrop-blur-xl rounded-2xl p-6 md:p-8 text-white shadow-lg ${className}`}
         style={{
-          backgroundImage: `linear-gradient(to right, ${colors.primary.blue600}, ${colors.text.dark})`
+          backgroundImage: `linear-gradient(
+    to right,
+    ${colors.appbar.bg.gradientFrom},
+    ${colors.appbar.bg.gradientTo}
+  )`
         }}
+
       >
         <div className="flex items-center justify-between">
+          <div className="md:hidden w-12 h-12 rounded-2xl overflow-hidden bg-white/10">
+            <img src={colors.Client.logo_url} alt="Logo" className="w-full h-full object-cover" />
+          </div>
           {/* LEFT */}
-          <div>
-            <h1 className="text-2xl lg:text-3xl font-bold">{title}</h1>
-            {subtitle && <p className="text-sm md:text-lg">{subtitle}</p>}
+          <div className="md:hidden">
+            <h1 className="text-2xl lg:text-3xl font-bold" style={{ color: colors.appbar.text.title }}>{colors.Client.brand_name}</h1>
+            {subtitle && <p className="text-sm md:text-lg" style={{ color: colors.appbar.text.subtitle }}>{colors.Client.brand_sub_title}</p>}
+          </div>
+          <div className="hidden md:block">
+            <h1 className="text-2xl lg:text-3xl font-bold" style={{ color: colors.appbar.text.title }}>{title}</h1>
+            {subtitle && <p className="text-sm md:text-lg" style={{ color: colors.appbar.text.subtitle }}>{subtitle}</p>}
           </div>
 
           {/* RIGHT – MOBILE MENU BUTTON */}
           <button
             onClick={() => setOpen(!open)}
             className="md:hidden p-2 rounded-xl"
-             style={{
-              backgroundColor: colors.sidebar.toggle_bg,
-              color: colors.sidebar.toggle_color
+            style={{
+              backgroundColor: colors.appbar.toggle.background,
+              color: colors.appbar.toggle.icon,
             }}
+
           >
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -113,7 +126,11 @@ const AppBar = ({
         <div
           className="md:hidden absolute top-full left-0 w-full mt-3 rounded-2xl shadow-xl backdrop-blur-xl bg-opacity-80 z-40 h-[75vh]"
           style={{
-            backgroundImage: `linear-gradient(to bottom, ${colors.primary.blue600}, ${colors.text.dark})`
+            backgroundImage: `linear-gradient(
+    to bottom,
+    ${colors.appbar.bg.gradientFrom},
+    ${colors.appbar.bg.gradientTo}
+  )`
           }}
         >
           <div className="p-3 space-y-2">
@@ -128,9 +145,14 @@ const AppBar = ({
                     onClick={() => handleNavigate(item.path)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition`}
                     style={{
-                      backgroundColor: active ? colors.accent.orange : "transparent",
-                      color: active ? colors.text.white : colors.text.gray300
+                      backgroundColor: active
+                        ? colors.appbar.menu.active_bg
+                        : "transparent",
+                      color: active
+                        ? colors.appbar.menu.active_text
+                        : colors.appbar.menu.default_text,
                     }}
+
                   >
                     <Icon size={18} />
                     <span>{item.label}</span>
@@ -149,9 +171,10 @@ const AppBar = ({
                               "justify-center"}
                             `}
               style={{
-                backgroundColor: colors.sidebar.toggle_bg,
-                color: colors.sidebar.toggle_color
+                backgroundColor: colors.appbar.logout.bg,
+                color: colors.appbar.logout.text,
               }}
+
             >
               <LogOut size={20} />
               {<span>Logout</span>}

@@ -79,7 +79,11 @@ const Login = () => {
         onClose={() => setModal({ ...modal, open: false })}
       />
 
-      <div className="h-screen flex overflow-hidden relative" style={{ background: `linear-gradient(135deg, ${colors.background.blue50} 0%, ${colors.primary.blue100} 100%)` }}>
+      <div className="h-screen flex overflow-hidden relative"
+        style={{
+          background: `linear-gradient(135deg, ${colors.background.pageGradientFrom}, ${colors.background.pageGradientTo})`
+        }}
+      >
         {/* Floating animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -132,8 +136,6 @@ const Login = () => {
                   <div className="absolute top-1/2 -right-6 lg:-right-8 w-8 h-8 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-60 animate-bounce shadow-lg animation-delay-2000"></div>
                 </div>
               </div>
-
-
             </div>
           </div>
         </div>
@@ -253,8 +255,6 @@ const Login = () => {
                 </p>
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
