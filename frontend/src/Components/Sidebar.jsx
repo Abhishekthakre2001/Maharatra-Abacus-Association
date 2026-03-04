@@ -43,7 +43,11 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     { id: "questions", label: "Questions", icon: FileQuestionMark, path: "/questions" },
     { id: "result", label: "Result", icon: FileUser, path: "/results" },
     { id: "exam-schedule", label: "Exam Schedule", icon: FileClock, path: "/exam-schedule" },
-    { id: "masters", label: "Masters", icon: Settings, path: "/masters" },
+    { id: "master", label: "Master", icon: Settings, path: "/masters" },
+    // ✅ Only visible for admin id 55
+    ...(user?.id === 55
+      ? [{ id: "exam-student", label: "Exam Registration", icon: BookCheck, path: "/exam-student" }]
+      : []),
   ];
 
   const isActive = (path) => {

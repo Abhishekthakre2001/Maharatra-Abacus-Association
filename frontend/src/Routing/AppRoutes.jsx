@@ -21,6 +21,7 @@ import StudentResultPage from "../Pages/Student/ResultPage";
 import RoleProtectedRoute from "./RoleBasedProtectedRoute";
 import InstallApp from "../Pages/InstallApp";
 import NfcReader from "../Components/NfcReader";
+import Registration from "../Registration/Registartion";
 
 
 
@@ -40,7 +41,7 @@ const AppRoutes = () => {
 
       <Route path="/install" element={<InstallApp />} />
 
-       <Route path="/nfc" element={<NfcReader />} />
+      <Route path="/registration" element={<Registration />} />
 
 
       <Route
