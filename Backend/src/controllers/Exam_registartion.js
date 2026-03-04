@@ -36,34 +36,4 @@ exports.examRegistration = async (req, res) => {
             message: "Internal server error"
         });
     }
-},
-
-    exports.getByCreatedBy = async (req, res) => {
-        try {
-
-            const { createdby } = req.params;
-
-            if (!createdby) {
-                return res.status(400).json({
-                    success: false,
-                    message: "createdby is required"
-                });
-            }
-
-            const data = await ExamRegistration.getByCreatedBy(createdby);
-
-            return res.status(200).json({
-                success: true,
-                data
-            });
-
-        } catch (error) {
-            console.error("Fetch By CreatedBy Error:", error);
-            return res.status(500).json({
-                success: false,
-                message: "Failed to fetch registrations"
-            });
-        }
-    };
-
-
+};

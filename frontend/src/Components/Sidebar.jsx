@@ -8,8 +8,7 @@ import {
   FileQuestionMark,
   FileClock,
   List,
-  Users,
-  BookCheck
+  Users
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/logo.png";
@@ -20,11 +19,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(false);
-
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : {};
-
-  console.log("User", user.id);
 
   // ✅ NEW STATE FOR MODAL
   const [showLogoutModal, setShowLogoutModal] = useState(false);
