@@ -71,12 +71,52 @@ const ExamRegistration = {
   },
 
     // ✅ FIXED — now inside same object
+  // getByCreatedBy: async (createdby) => {
+  //   const connection = await pool.getConnection();
+
+  //   try {
+
+  //     const [rows] = await connection.query(`
+  //     SELECT 
+  //       u.id AS user_id,
+  //       u.name,
+  //       u.class,
+  //       u.address,
+  //       u.mobilenumber,
+  //       u.username,
+  //       u.level,
+  //       u.dob,
+  //       u.subscription_end_date,
+  //       u.usertype,
+  //       u.status,
+
+  //       s.learning_center_name,
+  //       s.city,
+  //       s.parent_name,
+  //       s.whatsapp_number,
+  //       s.registration_date
+
+  //     FROM users u
+  //     INNER JOIN student_registration s
+  //     ON u.id = s.user_id, 
+
+  //     WHERE u.createdby = ?
+  //     ORDER BY s.registration_date DESC
+  //   `, [createdby]);
+
+  //     return rows;
+
+  //   } finally {
+  //     connection.release();
+  //   }
+  // }
+
   getByCreatedBy: async (createdby) => {
-    const connection = await pool.getConnection();
+  const connection = await pool.getConnection();
 
-    try {
-
-      const [rows] = await connection.query(`
+  try {
+    const [rows] = await connection.query(
+      `
       SELECT 
         u.id AS user_id,
         u.name,
@@ -90,6 +130,7 @@ const ExamRegistration = {
         u.usertype,
         u.status,
 
+        s.age,
         s.learning_center_name,
         s.city,
         s.parent_name,
@@ -98,18 +139,18 @@ const ExamRegistration = {
 
       FROM users u
       INNER JOIN student_registration s
-      ON u.id = s.user_id
-
+        ON u.id = s.user_id
       WHERE u.createdby = ?
       ORDER BY s.registration_date DESC
-    `, [createdby]);
+      `,
+      [createdby]
+    );
 
-      return rows;
-
-    } finally {
-      connection.release();
-    }
+    return rows;
+  } finally {
+    connection.release();
   }
+}
 
 };
 

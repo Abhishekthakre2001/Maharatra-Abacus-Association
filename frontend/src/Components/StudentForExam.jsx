@@ -15,6 +15,20 @@ export default function StudentForExam() {
         return userApi.getregistredstudentbyadminid(user.id);
     });
 
+    const levelMap = {
+        0: "Bud level",
+        9: "New commer",
+        10: "A level",
+        1: "1st level",
+        2: "2nd level",
+        3: "3rd level",
+        4: "4th level",
+        5: "5th level",
+        6: "6th level",
+        7: "7th level",
+        8: "8th level",
+    };
+
     const columns = [
         {
             key: "name",
@@ -27,15 +41,21 @@ export default function StudentForExam() {
             )
         },
         {
+            key: "age",
+            label: "Age",
+            sortable: true
+        },
+        {
             key: "class",
             label: "Class",
             sortable: true
         },
-        {
-            key: "level",
-            label: "Level",
-            sortable: true
-        },
+       {
+  key: "level",
+  label: "Level",
+  sortable: true,
+  render: (value) => `${levelMap[value] || "Unknown"} (${value})`
+},
         {
             key: "mobilenumber",
             label: "Mobile Number",
