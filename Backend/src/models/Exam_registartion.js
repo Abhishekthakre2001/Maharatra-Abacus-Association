@@ -41,8 +41,8 @@ const ExamRegistration = {
         (user_id, student_name, date_of_birth,
          learning_center_name, city, address,
          level, registration_date,
-         parent_name, whatsapp_number)
-         VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE(), ?, ?)`,
+         parent_name, whatsapp_number, age)
+         VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE(), ?, ?, ?)`,
         [
           userId,
           fullName,
@@ -52,7 +52,8 @@ const ExamRegistration = {
           data.address,
           data.level,
           data.parentName,
-          data.whatsapp
+          data.whatsapp,
+          data.age
         ]
       );
 

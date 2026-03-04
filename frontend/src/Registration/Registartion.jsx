@@ -4,10 +4,11 @@ import SelectField from "../UI/SelectField";
 import { useCreate } from "../hooks/useCreate";
 import examRegistartionApi from '../api/exam_registartion';
 import MessageModal from "../utils/MessageModal";
-import Logo from "../assets/logo.png";
+import Logo from "../assets/Maharashtra_Abacus_Association.jpg";
 
 export default function Registration() {
   const [formData, setFormData] = useState({
+    age: 0,
     firstName: "",
     middleName: "",
     lastName: "",
@@ -105,19 +106,28 @@ export default function Registration() {
   };
 
   const classOptions = [
-    { label: "class 1 - Beginner", value: 1 },
-    { label: "class 2 - Basic", value: 2 },
-    { label: "class 3 - Intermediate", value: 3 },
-    { label: "class 4 - Advanced", value: 4 },
+    { label: "class 1", value: 1 },
+    { label: "class 2", value: 2 },
+    { label: "class 3", value: 3 },
+    { label: "class 4", value: 4 },
     { label: "class 5", value: 5 },
+    { label: "class 6", value: 6 },
+    { label: "class 7", value: 7 },
+    { label: "class 8", value: 8 },
   ];
 
   const levelOptions = [
-    { label: "Level 1 - Beginner", value: 1 },
-    { label: "Level 2 - Basic", value: 2 },
-    { label: "Level 3 - Intermediate", value: 3 },
-    { label: "Level 4 - Advanced", value: 4 },
-    { label: "Grand Level", value: 5 },
+    { label: "Bud level ", value: 0 },
+    { label: "New commer ", value: 9 },
+    { label: "A level", value: 10 },
+    { label: "1st level", value: 1 },
+    { label: "2nd level", value: 2 },
+    { label: "3rd level", value: 3 },
+    { label: "4th level", value: 4 },
+    { label: "5th level", value: 5 },
+    { label: "6th level", value: 6 },
+    { label: "7th level", value: 7 },
+    { label: "8th level", value: 8 },
   ];
 
 
@@ -125,10 +135,21 @@ export default function Registration() {
   const handleChange = (field) => (e) => {
     const value = e.target.value;
 
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    // setFormData((prev) => ({
+    //   ...prev,
+    //   [field]: value,
+    // }));
+
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+
+      // ✅ Auto-calc age from DOB
+      if (field === "dob") {
+        updated.age = calculateAgeFromDob(value);
+      }
+
+      return updated;
+    });
 
     const error = validateField(field, value);
 
@@ -145,6 +166,16 @@ export default function Registration() {
           value !== formData.confirmPassword
             ? "Passwords do not match"
             : "",
+      }));
+    }
+
+    // ✅ Validate DOB & Age together (optional)
+    if (field === "dob") {
+      const age = calculateAgeFromDob(value);
+      setErrors((prev) => ({
+        ...prev,
+        dob: !value ? "Date of birth required" : "",
+        age: age <= 0 ? "Invalid DOB" : "",
       }));
     }
   };
@@ -196,6 +227,23 @@ export default function Registration() {
     }
   );
 
+  const calculateAgeFromDob = (dob) => {
+    if (!dob) return 0;
+
+    const birth = new Date(dob);
+    if (Number.isNaN(birth.getTime())) return 0;
+
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age < 0 ? 0 : age;
+  };
+
 
   return (
     <>
@@ -211,11 +259,11 @@ export default function Registration() {
         {/* TOP BAR */}
         <div className="bg-gradient-to-r from-blue-700 to-cyan-600 text-white py-4 shadow-lg">
           <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-            <h1 className="text-2xl md:text-3xl font-bold">
+            <h1 className="text-md md:text-3xl font-bold">
               <img src={Logo} alt="DevEraa Logo" className="h-10 w-10 inline mr-2 rounded" />
-              DevEraa
+              Maharashtra Abacus Association
             </h1>
-            <span>Exam Registration Form</span>
+            <span className="hidden md:block">Exam Registration Form</span>
           </div>
         </div>
 
@@ -250,6 +298,7 @@ export default function Registration() {
                   showError={!!errors.level}
                   required
                 />
+                <InputField label="Age" disabled type="number" value={formData.age} onChange={handleChange("age")} error={errors.age} showError={!!errors.age} required />
 
               </div>
 
