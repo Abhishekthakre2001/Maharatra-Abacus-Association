@@ -25,6 +25,7 @@ import DeleteConfirmModal from "../UI/DeleteConfirmModal";
 import MessageModal from "../utils/MessageModal";
 import levelApi from "../api/LevelApi";
 import setsApi from "../api/SetsApi";
+import colors from "../utils/Color";
 
 
 export default function Calender() {
@@ -527,15 +528,19 @@ export default function Calender() {
 
 
                                                 <div key={exam.id}
+                                                    style={{
+                                                        backgroundColor: colors.examScheduleCard.card.bg,
+                                                        borderColor: colors.examScheduleCard.card.border,
+                                                    }}
                                                     className="
-    group
-    bg-gradient-to-br from-blue-50 to-indigo-100
-    rounded-2xl
-    shadow-md hover:shadow-md hover:shadow-blue-300/40
-    transition-all duration-300
-    p-6 border border-blue-100
-    hover:-translate-y-1
-  "
+                                                                group
+                                                               
+                                                                rounded-2xl
+                                                                shadow-md hover:shadow-md hover:shadow-blue-300/40
+                                                                transition-all duration-300
+                                                                p-6 border border-blue-100
+                                                                hover:-translate-y-1
+                                                            "
                                                 >
                                                     <div className="flex items-center justify-between">
                                                         <div>

@@ -98,11 +98,11 @@ export default function StudentList() {
             label: "Level",
             sortable: true,
             render: (value) => (
-                <span 
+                <span
                     className="px-2 py-1 rounded-full text-xs"
                     style={{
-                        backgroundColor: colors.background.blue100,
-                        color: colors.text.blue700
+                        backgroundColor: colors.common.blue100,
+                        color: colors.common.blue700
                     }}
                 >
                     {value}
@@ -114,7 +114,7 @@ export default function StudentList() {
             label: "Username",
             sortable: true,
             render: (value) => (
-                <span className="font-medium" style={{ color: colors.text.gray600 }}>{value}</span>
+                <span className="font-medium" style={{ color: colors.common.gray600 }}>{value}</span>
             )
         },
         {
@@ -122,7 +122,7 @@ export default function StudentList() {
             label: "Password",
             sortable: true,
             render: (value) => (
-                <span className="font-medium" style={{ color: colors.text.gray600 }}>{value}</span>
+                <span className="font-medium" style={{ color: colors.common.gray600 }}>{value}</span>
             )
         }
     ];

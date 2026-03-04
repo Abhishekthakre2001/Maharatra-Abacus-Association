@@ -1,36 +1,54 @@
 // ✅ src/components/DashboardCard.jsx
 import React from "react";
+import colors from "../utils/Color";
 
 const DashboardCard = ({ title, value, icon: Icon }) => {
   return (
     <div
       className="
         group
-        bg-gradient-to-br from-blue-50 to-indigo-100
+       
         rounded-2xl
         shadow-md hover:shadow-xl hover:shadow-blue-300/40
         transition-all duration-300
-        p-6 border border-blue-100
+        p-6 
         hover:-translate-y-1
       "
+      style={{
+        backgroundImage: `linear-gradient(
+      to bottom right,
+      ${colors.dashboard.card.bg.gradientFrom},
+      ${colors.dashboard.card.bg.gradientTo}
+    )`,
+        border: `1px solid ${colors.dashboard.card.bg.border}`,
+        boxShadow: `0 10px 20px ${colors.dashboard.card.shadow.normal}`,
+      }}
     >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-gray-500 font-medium text-[18px]">{title}</p>
-          <h2 className="text-4xl font-bold text-slate-800 mt-2">{value}</h2>
+          <p className="font-medium text-[18px]" style={{ color: colors.dashboard.card.text.title }}>{title}</p>
+          <h2 className="text-4xl font-bold mt-2" style={{ color: colors.dashboard.card.text.value }}>{value}</h2>
         </div>
 
         <div
           className="
-            w-14 h-14 rounded-xl
-            bg-gradient-to-br from-blue-300 to-blue-200
-            text-blue-600 shadow-lg
-            flex items-center justify-center
-            group-hover:scale-110 transition-transform
-          "
+    w-14 h-14 rounded-xl
+    flex items-center justify-center
+    group-hover:scale-110 transition-transform
+  "
+          style={{
+            backgroundImage: `linear-gradient(
+      to bottom right,
+      ${colors.dashboard.card.icon.bgGradientFrom},
+      ${colors.dashboard.card.icon.bgGradientTo}
+    )`,
+            color: colors.dashboard.card.icon.color,
+            boxShadow: "0 10px 15px rgba(0,0,0,0.15)",
+          }}
         >
           <Icon size={26} />
         </div>
+
       </div>
     </div>
   );

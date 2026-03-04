@@ -82,20 +82,25 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
           flex flex-col justify-between z-50
         `}
         style={{
-          backgroundImage: `linear-gradient(to bottom, ${colors.primary.blue600}, ${colors.text.dark})`
+          backgroundImage: `linear-gradient(
+    to bottom,
+    ${colors.sidebar.bg.gradientFrom},
+    ${colors.sidebar.bg.gradientTo}
+  )`
         }}
+
       >
         {/* HEADER */}
         <div className="flex justify-between items-center p-5">
           <div className="flex items-center gap-3 px-2">
             <div className="w-10 h-10 rounded-2xl overflow-hidden bg-white/10">
-              <img src={logo} alt="Logo" className="w-full h-full object-cover" />
+              <img src={colors.Client.logo_url} alt="Logo" className="w-full h-full object-cover" />
             </div>
 
             {!isCollapsed && (
               <div>
-                <p className="text-white font-semibold text-lg">DevEraa</p>
-                <p className="text-[14px] text-gray-300">Grow with Deveraa</p>
+                <p className=" font-semibold text-md" style={{ color: `${colors.sidebar.text.deveraa}`}}>WonderTezzDimag</p>
+                <p className="text-[14px]" style={{ color: `${colors.sidebar.text.grow_with_deveraa}`}}>बनिए खुद के सम्राट Abacus Classes</p>
               </div>
             )}
           </div>
@@ -104,9 +109,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="p-1 rounded-full"
             style={{
-              backgroundColor: colors.sidebar.toggle_bg,
-              color: colors.sidebar.toggle_color
+              backgroundColor: colors.sidebar.toggle.background,
+              color: colors.sidebar.toggle.text,
             }}
+
           >
             <ChevronLeft
               size={20}
@@ -133,12 +139,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                 `}
                   style={{
                     backgroundColor: isActive(item.path)
-                      ? colors.sidebar.active_button
+                      ? colors.sidebar.menu.active_bg
                       : "transparent",
                     color: isActive(item.path)
-                      ? colors.text.white
-                      : colors.text.gray300,
+                      ? colors.sidebar.menu.active_text
+                      : colors.sidebar.menu.default_text,
                   }}
+
                 >
                   <Icon size={20} />
                   {!isCollapsed && <span>{item.label}</span>}
@@ -159,9 +166,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               ${isCollapsed && "justify-center"}
             `}
               style={{
-                backgroundColor: colors.accent.orange,
-                color: colors.text.white
+                backgroundColor: colors.sidebar.logout.logout_Bg,
+                color: colors.sidebar.logout.logout_Text,
               }}
+
             >
               <LogOut size={20} />
               {!isCollapsed && <span>Logout</span>}
