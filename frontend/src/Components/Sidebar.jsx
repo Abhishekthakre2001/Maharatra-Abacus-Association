@@ -99,8 +99,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
             {!isCollapsed && (
               <div>
-                <p className=" font-semibold text-md" style={{ color: `${colors.sidebar.text.deveraa}`}}>WonderTezzDimag</p>
-                <p className="text-[14px]" style={{ color: `${colors.sidebar.text.grow_with_deveraa}`}}>बनिए खुद के सम्राट Abacus Classes</p>
+                <p className=" font-semibold text-md" style={{ color: `${colors.sidebar.text.deveraa}`}}>{colors.Client.brand_name}</p>
+                <p className="text-[14px]" style={{ color: `${colors.sidebar.text.grow_with_deveraa}`}}>{colors.Client.brand_sub_title}</p>
               </div>
             )}
           </div>

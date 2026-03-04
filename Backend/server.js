@@ -17,7 +17,8 @@ const Exam_registartion = require("./src/routes/Exam_registartion");
 const errorHandler = require("./src/utils/errorHandler");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
-const theme = require("./src/routes/ThemeRoutes")
+const theme = require("./src/routes/ThemeRoutes");
+
 
 const app = express();
 const PORT = process.env.PORT || 4001;
@@ -61,7 +62,7 @@ if (cluster.isMaster) {
     app.use("/admin-settings", adminsetting);
     app.use("/summary", summary);
     app.use("/theme", theme)
-
+    app.use("/exam-registration", Exam_registartion);
 
 
 
