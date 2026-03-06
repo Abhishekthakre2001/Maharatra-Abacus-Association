@@ -6,6 +6,30 @@ import examRegistartionApi from '../api/exam_registartion';
 import MessageModal from "../utils/MessageModal";
 import Logo from "../assets/Maharashtra_Abacus_Association.jpg";
 
+const initialFormData = {
+  age: 0,
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  class: "",
+  address: "",
+  city: "",
+  pincode: "",
+  parentName: "",
+  whatsapp: "",
+  mobile: "",
+  username: "",
+  password: "",
+  confirmPassword: "",
+  level: "",
+  dob: "",
+  learningCenter: "",
+  subscription_end_date: "2024-12-31",
+  usertype: "student",
+  createdby: 55,
+  status: 0,
+};
+
 export default function Registration() {
   const [formData, setFormData] = useState({
     age: 0,
@@ -91,11 +115,15 @@ export default function Registration() {
         break;
 
       case "class":
-        if (!value) error = "Select class";
+        if (value === "" || value === null || value === undefined) {
+          error = "Select class";
+        }
         break;
 
       case "level":
-        if (!value) error = "Select level";
+        if (value === "" || value === null || value === undefined) {
+          error = "Select level";
+        }
         break;
 
       default:
@@ -224,6 +252,8 @@ export default function Registration() {
         title: "Success",
         message: "Student Registration successfully 🎉"
       });
+      setFormData(initialFormData);
+      setErrors({});
     }
   );
 
@@ -243,6 +273,8 @@ export default function Registration() {
 
     return age < 0 ? 0 : age;
   };
+
+  console.log("formData", formData)
 
 
   return (
