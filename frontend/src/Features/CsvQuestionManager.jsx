@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import * as XLSX from "xlsx";
 import Papa from "papaparse";
 import Button from "../UI/Button";
 import InputField from "../UI/InputField";
@@ -48,74 +49,164 @@ export default function CsvQuestionManager() {
   //     header: true,
   //     skipEmptyLines: true,
   //     complete: (result) => {
-  //       const formatted = result.data.map((q, index) => ({
+  //       const data = result.data;
+
+  //       // 🔴 VALIDATE Correct Option
+  //       const invalidRow = data.find((q, index) => {
+  //         const val = Number(q["Correct Option"]);
+  //         return ![1, 2, 3, 4].includes(val);
+  //       });
+
+  //       if (invalidRow) {
+  //         setQuestions([]); // ❌ do not load questions
+
+  //         setModal({
+  //           open: true,
+  //           type: "error",
+  //           title: "Invalid File Format",
+  //           message:
+  //             "Correct Option must be only 1, 2, 3 or 4.\nPlease download and use the sample file."
+  //         });
+
+  //         return; // 🚫 STOP further processing
+  //       }
+
+  //       // ✅ IF VALID → format and load
+  //       const formatted = data.map((q, index) => ({
   //         id: index + 1,
   //         ...q,
   //       }));
+
   //       setQuestions(formatted);
   //     },
+  //     error: () => {
+  //       setModal({
+  //         open: true,
+  //         type: "error",
+  //         title: "File Error",
+  //         message: "Unable to read file. Please upload a valid CSV/Excel file."
+  //       });
+  //     }
   //   });
   // };
-  const parseCSV = (file) => {
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (result) => {
-        const data = result.data;
 
-        // 🔴 VALIDATE Correct Option
-        const invalidRow = data.find((q, index) => {
-          const val = Number(q["Correct Option"]);
-          return ![1, 2, 3, 4].includes(val);
-        });
+  const parseFile = async (file) => {
+    const fileName = file.name.toLowerCase();
 
-        if (invalidRow) {
-          setQuestions([]); // ❌ do not load questions
-
+    // CSV
+    if (fileName.endsWith(".csv")) {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (result) => {
+          validateAndSetQuestions(result.data);
+        },
+        error: () => {
           setModal({
             open: true,
             type: "error",
-            title: "Invalid File Format",
-            message:
-              "Correct Option must be only 1, 2, 3 or 4.\nPlease download and use the sample file."
+            title: "File Error",
+            message: "Unable to read CSV file."
           });
-
-          return; // 🚫 STOP further processing
         }
+      });
+      return;
+    }
 
-        // ✅ IF VALID → format and load
-        const formatted = data.map((q, index) => ({
-          id: index + 1,
-          ...q,
-        }));
+    // Excel
+    if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+      try {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
 
-        setQuestions(formatted);
-      },
-      error: () => {
+        const jsonData = XLSX.utils.sheet_to_json(sheet, {
+          defval: "",
+          raw: false
+        });
+
+        validateAndSetQuestions(jsonData);
+      } catch (error) {
         setModal({
           open: true,
           type: "error",
           title: "File Error",
-          message: "Unable to read file. Please upload a valid CSV/Excel file."
+          message: "Unable to read Excel file."
         });
       }
+      return;
+    }
+
+    setModal({
+      open: true,
+      type: "error",
+      title: "Unsupported File",
+      message: "Please upload only CSV, XLSX or XLS file."
     });
   };
 
+  const validateAndSetQuestions = (data) => {
+    const normalizedData = data.map((row) => ({
+      Question: row["Question"]?.toString().trim() || "",
+      "Option 1": row["Option 1"]?.toString().trim() || "",
+      "Option 2": row["Option 2"]?.toString().trim() || "",
+      "Option 3": row["Option 3"]?.toString().trim() || "",
+      "Option 4": row["Option 4"]?.toString().trim() || "",
+      "Correct Option": row["Correct Option"]?.toString().trim() || "",
+    }));
+
+    const invalidRow = normalizedData.find((q) => {
+      const val = Number(q["Correct Option"]);
+      return ![1, 2, 3, 4].includes(val);
+    });
+
+    if (invalidRow) {
+      setQuestions([]);
+      setModal({
+        open: true,
+        type: "error",
+        title: "Invalid File Format",
+        message:
+          "Correct Option must be only 1, 2, 3 or 4. Please download and use the sample file."
+      });
+      return;
+    }
+
+    const formatted = normalizedData.map((q, index) => ({
+      id: index + 1,
+      ...q,
+    }));
+
+    setQuestions(formatted);
+  };
 
   // File input
+  // const handleFileChange = (e) => {
+  //   if (e.target.files[0]) {
+  //     parseCSV(e.target.files[0]);
+  //   }
+  // };
+
+  // // Drag & Drop
+  // const handleDrop = (e) => {
+  //   e.preventDefault();
+  //   setDragActive(false);
+  //   if (e.dataTransfer.files[0]) {
+  //     parseCSV(e.dataTransfer.files[0]);
+  //   }
+  // };
   const handleFileChange = (e) => {
     if (e.target.files[0]) {
-      parseCSV(e.target.files[0]);
+      parseFile(e.target.files[0]);
     }
   };
 
-  // Drag & Drop
   const handleDrop = (e) => {
     e.preventDefault();
     setDragActive(false);
     if (e.dataTransfer.files[0]) {
-      parseCSV(e.dataTransfer.files[0]);
+      parseFile(e.dataTransfer.files[0]);
     }
   };
 
