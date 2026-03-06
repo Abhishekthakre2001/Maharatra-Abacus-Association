@@ -457,7 +457,7 @@ export default function ExamPage() {
                     </div>
 
                     {/* Vertical Number Display */}
-                    <div className="mb-4 flex justify-center">
+                    {/* <div className="mb-4 flex justify-center">
                         <div className="text-center">
                             {(() => {
                                 // Parse the question like "1+9" or "15-7"
@@ -490,7 +490,50 @@ export default function ExamPage() {
                                 );
                             })()}
                         </div>
-                    </div>
+                    </div> */}
+                    <div className="mb-4 flex justify-center">
+  <div className="text-center">
+    {(() => {
+      const questionStr = String(currentQ.question).replace(/\s+/g, "");
+
+      // split into signed parts: ["4", "+6", "+8", "-2", "+9"]
+      const terms = questionStr.match(/[+\-]?\d+/g) || [questionStr];
+
+      return (
+        <div className="inline-block text-right font-mono">
+          {terms.map((term, i) => {
+            let operator = "";
+            let number = term;
+
+            if (i === 0) {
+              number = term.replace(/^[+]/, ""); // first number without +
+            } else {
+              operator = term.startsWith("-") ? "−" : "+";
+              number = term.replace(/^[+\-]/, "");
+            }
+
+            return (
+              <div
+                key={i}
+                className="grid grid-cols-[20px_auto] items-center text-2xl mb-1"
+              >
+                <span className="text-center">{operator}</span>
+                <span>{number}</span>
+              </div>
+            );
+          })}
+
+          <div className="border-t-2 border-black my-1"></div>
+
+          <div className="grid grid-cols-[20px_auto] items-center text-2xl">
+            <span></span>
+            <span>?</span>
+          </div>
+        </div>
+      );
+    })()}
+  </div>
+</div>
 
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         {[currentQ.option1, currentQ.option2, currentQ.option3, currentQ.option4].map(
