@@ -73,3 +73,31 @@
     -moz-appearance: textfield;
   }
 }
+
+
+/* ===== Very Light Gray Thin Scrollbar ===== */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+
+/* Chrome / Edge / Safari */
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #e5e7eb;   /* very light gray */
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;   /* slightly darker on hover */
+}

@@ -238,9 +238,9 @@ const DataTable = ({
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-max">
-            <thead>
+        <div className="overflow-x-auto overflow-y-auto max-h-[50vh]">
+          <table className="w-full min-w-max border-separate border-spacing-0">
+            <thead className="sticky top-0 z-20 bg-slate-50">
               <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="px-3 sm:px-6 py-3 sm:py-4 text-left font-semibold text-slate-700 text-xs sm:text-sm w-20">
                   Sr. No.
