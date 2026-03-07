@@ -494,10 +494,16 @@ export default function ExamPage() {
                     <div className="mb-4 flex justify-center">
                         <div className="text-center">
                             {(() => {
-                                const questionStr = String(currentQ.question).replace(/\s+/g, "");
+                                const rawQuestion = String(currentQ.question || "");
 
-                                // split into signed parts: ["4", "+6", "+8", "-2", "+9"]
-                                const terms = questionStr.match(/[+\-]?\d+/g) || [questionStr];
+                                const questionStr = rawQuestion
+                                    .replace(/\s+/g, "")
+                                    .replace(/[xX*]/g, "×")
+                                    .replace(/\//g, "÷");
+
+                                // decimal support added
+                                const terms =
+                                    questionStr.match(/[+\-×÷]?\d+(?:\.\d+)?/g) || [questionStr];
 
                                 return (
                                     <div className="inline-block text-right font-mono">
@@ -506,16 +512,20 @@ export default function ExamPage() {
                                             let number = term;
 
                                             if (i === 0) {
-                                                number = term.replace(/^[+]/, ""); // first number without +
+                                                number = term.replace(/^[+\-×÷]/, "");
                                             } else {
-                                                operator = term.startsWith("-") ? "−" : "+";
-                                                number = term.replace(/^[+\-]/, "");
+                                                if (term.startsWith("-")) operator = "−";
+                                                else if (term.startsWith("+")) operator = "+";
+                                                else if (term.startsWith("×")) operator = "×";
+                                                else if (term.startsWith("÷")) operator = "÷";
+
+                                                number = term.replace(/^[+\-×÷]/, "");
                                             }
 
                                             return (
                                                 <div
                                                     key={i}
-                                                    className="grid grid-cols-[20px_auto] items-center text-2xl mb-1"
+                                                    className="grid grid-cols-[24px_auto] items-center text-2xl mb-1"
                                                 >
                                                     <span className="text-center">{operator}</span>
                                                     <span>{number}</span>
@@ -525,16 +535,15 @@ export default function ExamPage() {
 
                                         <div className="border-t-2 border-black my-1"></div>
 
-                                        <div className="grid grid-cols-[20px_auto] items-center text-2xl">
+                                        <div className="grid grid-cols-[24px_auto] items-center text-2xl">
                                             <span></span>
-                                            <span>?</span>
+                                            {/* <span>?</span> */}
                                         </div>
                                     </div>
                                 );
                             })()}
                         </div>
                     </div>
-
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         {[currentQ.option1, currentQ.option2, currentQ.option3, currentQ.option4].map(
                             (opt, i) => (
