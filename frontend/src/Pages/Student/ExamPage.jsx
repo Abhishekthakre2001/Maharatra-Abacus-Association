@@ -494,38 +494,58 @@ export default function ExamPage() {
                     <div className="mb-4 flex justify-center">
                         <div className="text-center">
                             {(() => {
-                                const rawQuestion = String(currentQ.question || "");
+                                const rawQuestion = String(currentQ.question || "").trim();
 
                                 const questionStr = rawQuestion
-                                    .replace(/\s+/g, "")
                                     .replace(/[xX*]/g, "×")
-                                    .replace(/\//g, "÷");
+                                    .replace(/\//g, "÷")
+                                    .replace(/\s+/g, "");
 
-                                // decimal support added
+                                // two-number expression: 392×42, 460÷4.20, 6%6078
+                                const twoTermMatch = questionStr.match(
+                                    /^(\d+(?:\.\d+)?)([+\-×÷%])(\d+(?:\.\d+)?)$/
+                                );
+
+                                if (twoTermMatch) {
+                                    const [, firstNum, operator, secondNum] = twoTermMatch;
+
+                                    return (
+                                        <div className="inline-block text-right font-mono text-2xl leading-tight">
+                                            <div>{firstNum}</div>
+
+                                            <div className="flex justify-end items-center gap-3">
+                                                <span>{operator === "-" ? "−" : operator}</span>
+                                                <span>{secondNum}</span>
+                                            </div>
+
+                                            <div className="border-t-2 border-black my-1"></div>
+                                        </div>
+                                    );
+                                }
+
+                                // multi-term expression: 82.42-32.47+43.96-33.29
                                 const terms =
-                                    questionStr.match(/[+\-×÷]?\d+(?:\.\d+)?/g) || [questionStr];
+                                    questionStr.match(/[+\-]?\d+(?:\.\d+)?/g) || [questionStr];
 
                                 return (
-                                    <div className="inline-block text-right font-mono">
+                                    <div className="inline-block text-right font-mono text-2xl leading-tight">
                                         {terms.map((term, i) => {
                                             let operator = "";
                                             let number = term;
 
                                             if (i === 0) {
-                                                number = term.replace(/^[+\-×÷]/, "");
+                                                number = term.replace(/^[+\-]/, "");
                                             } else {
                                                 if (term.startsWith("-")) operator = "−";
                                                 else if (term.startsWith("+")) operator = "+";
-                                                else if (term.startsWith("×")) operator = "×";
-                                                else if (term.startsWith("÷")) operator = "÷";
 
-                                                number = term.replace(/^[+\-×÷]/, "");
+                                                number = term.replace(/^[+\-]/, "");
                                             }
 
                                             return (
                                                 <div
                                                     key={i}
-                                                    className="grid grid-cols-[24px_auto] items-center text-2xl mb-1"
+                                                    className="grid grid-cols-[24px_auto] items-center mb-1"
                                                 >
                                                     <span className="text-center">{operator}</span>
                                                     <span>{number}</span>
@@ -534,11 +554,6 @@ export default function ExamPage() {
                                         })}
 
                                         <div className="border-t-2 border-black my-1"></div>
-
-                                        <div className="grid grid-cols-[24px_auto] items-center text-2xl">
-                                            <span></span>
-                                            {/* <span>?</span> */}
-                                        </div>
                                     </div>
                                 );
                             })()}
