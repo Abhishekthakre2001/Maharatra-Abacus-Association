@@ -26,7 +26,7 @@ const initialFormData = {
   learningCenter: "",
   subscription_end_date: "2024-12-31",
   usertype: "student",
-  createdby: 55,
+  createdby: 50,
   status: 0,
 };
 
@@ -51,7 +51,7 @@ export default function Registration() {
     learningCenter: "",
     subscription_end_date: "2024-12-31",
     usertype: "student",
-    createdby: 55,
+    createdby: 50,
     status: 0,
   });
 
@@ -146,8 +146,8 @@ export default function Registration() {
 
   const levelOptions = [
     { label: "Bud level ", value: 0 },
-    { label: "New commer ", value: 9 },
-    { label: "A level", value: 10 },
+    { label: "New commer ", value: 10 },
+    { label: "A level", value: 11 },
     { label: "1st level", value: 1 },
     { label: "2nd level", value: 2 },
     { label: "3rd level", value: 3 },
