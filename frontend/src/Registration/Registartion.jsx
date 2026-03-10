@@ -49,7 +49,7 @@ export default function Registration() {
     level: "",
     dob: "",
     learningCenter: "",
-    subscription_end_date: "2024-12-31",
+    subscription_end_date: "2026-04-30",
     usertype: "student",
     createdby: 50,
     status: 0,
