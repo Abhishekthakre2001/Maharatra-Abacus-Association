@@ -10,8 +10,8 @@ export const themeReady = new Promise((resolve) => {
 
 const colors = {
   Client: {
-    brand_name: "DevEraa",
-    brand_sub_title: "Grow with Deveraa",
+    brand_name: "",
+    brand_sub_title: "Maharashtra Abacus Association",
     logo_url: "https://abacus.deveraa.com/assets/Maharashtra_Abacus_Association-_YsT9YHO.jpg"
   },
 
