@@ -36,8 +36,21 @@ const UserModel = {
     return rows[0];
   },
 
+  // findByadminId: async (id) => {
+  //   const [rows] = await pool.query("SELECT * FROM users WHERE createdby = ? && usertype= 'student'", [id]);
+  //   return rows;
+  // },
   findByadminId: async (id) => {
-    const [rows] = await pool.query("SELECT * FROM users WHERE createdby = ? && usertype= 'student'", [id]);
+    const [rows] = await pool.query(
+      `SELECT 
+        u.*, 
+        l.level_name
+     FROM users u
+     LEFT JOIN levels l ON u.level = l.level
+     WHERE u.createdby = ? AND u.usertype = 'student'`,
+      [id]
+    );
+
     return rows;
   },
 

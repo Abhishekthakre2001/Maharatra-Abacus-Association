@@ -93,21 +93,43 @@ export default function StudentList() {
                 value ? new Date(value).toLocaleDateString("en-GB") : ""
         },
 
+        // {
+        //     key: "level",
+        //     label: "Level",
+        //     sortable: true,
+        //     render: (value) => (
+        //         <span
+        //             className="px-2 py-1 rounded-full text-xs"
+        //             style={{
+        //                 backgroundColor: colors.common.blue100,
+        //                 color: colors.common.blue700
+        //             }}
+        //         >
+        //             {value}
+        //         </span>
+        //     )
+        // },
         {
             key: "level",
             label: "Level",
             sortable: true,
-            render: (value) => (
-                <span
-                    className="px-2 py-1 rounded-full text-xs"
-                    style={{
-                        backgroundColor: colors.common.blue100,
-                        color: colors.common.blue700
-                    }}
-                >
-                    {value}
-                </span>
-            )
+            render: (value, row) => {
+                const levelText = row.level_name
+                    ? `${value} - ${row.level_name}`
+                    : value;
+
+                return (
+                    <span
+                        className="px-2 py-1 rounded-full text-xs"
+                        style={{
+                            backgroundColor: colors.common.blue100,
+                            color: colors.common.blue700
+                        }}
+                    >
+                        {levelText}
+                    </span>
+                );
+            }
         },
         {
             key: "username",

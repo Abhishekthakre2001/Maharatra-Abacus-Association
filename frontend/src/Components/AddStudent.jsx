@@ -186,7 +186,7 @@ export default function AddStudent() {
             dob: "",
             subscription_end_date: "",
             usertype: "student",
-           
+
             createdby: "admin",
             status: null
         });
@@ -262,13 +262,28 @@ export default function AddStudent() {
                             <Input label="Mobile Number" type="number" value={formData.mobileNumber} onChange={handleChange("mobileNumber")} required error={errors.mobileNumber} showError={!!errors.mobileNumber} />
                             <Input label="Date of Birth" type="date" value={formData.dob} onChange={handleChange("dob")} required error={errors.dob} showError={!!errors.dob} />
                             <Input label="Subscription End Date" type="date" value={formData.subscription_end_date} onChange={handleChange("subscription_end_date")} required error={errors.subscription_end_date} showError={!!errors.subscription_end_date} />
-                            <SelectField
+                            {/* <SelectField
                                 label="Level"
                                 value={formData.level}
                                 onChange={handleChange("level")}
                                 options={levels.map(lv => ({
                                     value: lv.level,
                                     label: lv.level || lv.name || `Level ${lv.id}`
+                                }))}
+                                placeholder="-- Select Level --"
+                                required
+                                error={errors.level}
+                                showError={!!errors.level}
+                            /> */}
+                            <SelectField
+                                label="Level"
+                                value={formData.level}
+                                onChange={handleChange("level")}
+                                options={levels.map(lv => ({
+                                    value: lv.level,
+                                    label: lv.level_name
+                                        ? `${lv.level} - ${lv.level_name}`
+                                        : `${lv.level}`
                                 }))}
                                 placeholder="-- Select Level --"
                                 required
