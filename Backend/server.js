@@ -21,7 +21,7 @@ const theme = require("./src/routes/ThemeRoutes");
 
 
 const app = express();
-const PORT = process.env.PORT || 4001;
+const PORT = 6000;
 
 if (cluster.isMaster) {
     // 🌟 Master process (manages workers)
