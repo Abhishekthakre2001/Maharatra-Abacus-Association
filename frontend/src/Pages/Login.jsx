@@ -8,7 +8,8 @@ import InputField from "../UI/InputField";
 
 const Login = () => {
   const navigate = useNavigate();
-
+  const logoUrl =
+    "https://raw.githubusercontent.com/Abhishekthakre2001/The_Wonder_TezzDimag_Abacus_Claasess/refs/heads/main/frontend/public/Maharashtra%20Abacus%20Association.jpg";
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -98,12 +99,12 @@ const Login = () => {
               <div className="flex items-center gap-3 mb-3 lg:mb-4">
                 {/* <Sparkles className="text-yellow-500 animate-pulse" size={32} /> */}
                 <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight" style={{ color: colors.text.gray800 }}>
-                  Welcome to our
+                  Welcome to
                 </h1>
               </div>
               <h1 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 lg:mb-4 leading-tight">
                 <span className="bg-gradient-to-r bg-clip-text text-transparent animate-gradient" style={{ backgroundImage: `linear-gradient(90deg, ${colors.primary.blue600}, ${colors.primary.blue500}, ${colors.primary.blue700}, ${colors.primary.blue600})`, backgroundSize: '200% auto' }}>
-                  Premium Community
+                  Maharashtra Abacus Association
                 </span>
               </h1>
 
@@ -114,23 +115,18 @@ const Login = () => {
               {/* Illustration */}
               <div className="mb-8 lg:mb-12 flex justify-center">
                 <div className="relative group">
-                  {/* Animated gradient border */}
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-full opacity-75 group-hover:opacity-100 blur-md transition-opacity duration-300 animate-spin-slow"></div>
 
-                  {/* Placeholder for illustration - you can replace with actual image */}
-                  <div className="relative w-56 h-56 lg:w-72 lg:h-72 xl:w-80 xl:h-80 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-xl border-4 border-white/50 hover:scale-105 transition-transform duration-500" style={{ background: `linear-gradient(135deg, ${colors.primary.blue200}, ${colors.primary.blue100}, ${colors.background.blue50})` }}>
-                    <div className="text-center relative z-10">
-                      <div className="text-4xl lg:text-5xl xl:text-6xl mb-3 lg:mb-4 animate-bounce-slow">🎓</div>
-                      <p className="text-xl lg:text-2xl font-bold mb-1" style={{ color: colors.text.gray700 }}>Abacus</p>
-                      <p className="text-base lg:text-lg" style={{ color: colors.text.gray600 }}>Learning Platform</p>
-                      <div className="mt-4 flex items-center justify-center gap-2">
-                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                        <span className="text-sm font-medium" style={{ color: colors.text.gray600 }}>Premium Access</span>
-                      </div>
-                    </div>
+                  <div
+                    className="relative w-56 h-56 lg:w-72 lg:h-72 xl:w-80 xl:h-80 rounded-full flex items-center justify-center shadow-2xl backdrop-blur-xl border-4 border-white/50 hover:scale-105 transition-transform duration-500 overflow-hidden bg-white"
+                  >
+                    <img
+                      src={logoUrl}
+                      alt="Maharashtra Abacus Association"
+                      className="w-60 h-40  "
+                    />
                   </div>
 
-                  {/* Enhanced decorative elements */}
                   <div className="absolute -top-3 -right-3 lg:-top-4 lg:-right-4 w-14 h-14 lg:w-20 lg:h-20 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full opacity-70 animate-pulse shadow-lg"></div>
                   <div className="absolute -bottom-3 -left-3 lg:-bottom-4 lg:-left-4 w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-pink-300 to-purple-400 rounded-full opacity-70 animate-pulse shadow-lg animation-delay-1000"></div>
                   <div className="absolute top-1/2 -right-6 lg:-right-8 w-8 h-8 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-60 animate-bounce shadow-lg animation-delay-2000"></div>
@@ -144,10 +140,24 @@ const Login = () => {
         <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto">
           <div className="w-full max-w-md">
             {/* Mobile Logo */}
-            <div className="lg:hidden mb-6 sm:mb-8 text-center">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2" style={{ color: colors.text.gray800 }}>
-                Welcome to <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">Abacus</span>
+            <div className="lg:hidden mb-6 sm:mb-8 text-center flex flex-col items-center">
+              <img
+                src={logoUrl}
+                alt="Maharashtra Abacus Association"
+                className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-full shadow-lg border-4 border-white mb-3"
+              />
+              <h1
+                className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1"
+                style={{ color: colors.text.gray800 }}
+              >
+                Welcome to
               </h1>
+              <h2
+                className="text-lg sm:text-xl md:text-2xl font-semibold"
+                style={{ color: colors.primary.blue600 }}
+              >
+                Maharashtra Abacus Association
+              </h2>
             </div>
 
             <div className="bg-white/90 backdrop-blur-2xl p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-3xl shadow-[0_20px_70px_-15px_rgba(0,0,0,0.3)] border border-white/60 hover:shadow-[0_25px_80px_-15px_rgba(0,0,0,0.35)] transition-shadow duration-300 relative overflow-hidden">
