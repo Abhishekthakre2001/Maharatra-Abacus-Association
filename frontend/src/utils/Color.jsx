@@ -6,129 +6,124 @@ export const themeReady = new Promise((resolve) => {
   resolveThemeReady = resolve;
 });
 
-
 /* ================= DEFAULT COLORS (Fallback) ================= */
 
 const colors = {
   Client: {
     brand_name: "DevEraa",
     brand_sub_title: "Grow with Deveraa",
-    logo_url: "https://deveraa.com/assets/logo.jpg"
+    logo_url: "https://deveraa.com/assets/favicon.png"
   },
+
   examScheduleCard: {
-    card: { bg: "#e6f1fb", border: "#cfe3f7" },
+    card: { bg: "#eff6ff", border: "#dbeafe" },
     text: {
-      title: "#5f6f7f",
-      value: "#1f2f3f",
-      time: "#4b5f73",
+      title: "#6b7280",
+      value: "#1e293b",
+      time: "#475569",
     },
     action: {
-      edit: { text: "#2b7bbf", bgHover: "#dbeafe" },
-      delete: { text: "#c2410c", bgHover: "#fee2e2" },
+      edit: { text: "#ea580c", bgHover: "#ffedd5" },
+      delete: { text: "#dc2626", bgHover: "#fee2e2" },
     },
   },
 
   button: {
-    add: { bg: "#2b7bbf", text: "#ffffff" },
-    export: { bg: "#7cb342", text: "#ffffff" },
-    clear: { bg: "#e8f0f7", text: "#334155" },
+    add: { bg: "#2563eb", text: "#ffffff" },
+    export: { bg: "#36afe3", text: "#ffffff" },
+    clear: { bg: "#dee9f1", text: "#374151" },
   },
 
   dashboard: {
     card: {
       bg: {
-        gradientFrom: "#e6f1fb",
-        gradientTo: "#eef6ff",
-        border: "#cfe3f7",
+        gradientFrom: "#eff6ff",
+        gradientTo: "#e0e7ff",
+        border: "#dbeafe",
       },
       shadow: {
-        normal: "rgba(43,123,191,0.15)",
-        hover: "rgba(43,123,191,0.35)",
+        normal: "rgba(0,0,0,0.08)",
+        hover: "rgba(59,130,246,0.4)",
       },
       text: {
-        title: "#5f6f7f",
-        value: "#1f2f3f",
+        title: "#6b7280",
+        value: "#1e293b",
       },
       icon: {
         bgGradientFrom: "#93c5fd",
         bgGradientTo: "#bfdbfe",
-        color: "#2b7bbf",
+        color: "#2563eb",
       },
     },
   },
 
   appbar: {
-    bg: { gradientFrom: "#2b7bbf", gradientTo: "#7cb342" },
-    text: { title: "#ffffff", subtitle: "#e0f2fe" },
-    toggle: { background: "#ffffff", icon: "#2b7bbf" },
+    bg: { gradientFrom: "#2563eb", gradientTo: "#90cdf4" },
+    text: { title: "#ffffff", subtitle: "#bfdbfe" },
+    toggle: { background: "#ffffff", icon: "#2563eb" },
     menu: {
       active_bg: "#ffffff",
-      active_text: "#2b7bbf",
-      default_text: "#eaf4ff",
-      hover_bg: "rgba(255,255,255,0.15)",
+      active_text: "#2563eb",
+      default_text: "#efefef",
+      hover_bg: "rgba(255,255,255,0.1)",
     },
     user: {
-      avatar_bg: "#7cb342",
-      welcome_text: "#d9f99d",
+      avatar_bg: "#3b82f6",
+      welcome_text: "#bfdbfe",
       name_text: "#ffffff",
     },
     logout: {
       bg: "#ffffff",
-      text: "#2b7bbf",
-      hover_bg: "#e6f1fb",
+      text: "#2563eb",
+      hover_bg: "#e86f2c",
     },
   },
 
   sidebar: {
-    bg: { gradientFrom: "#2b7bbf", gradientTo: "#7cb342" },
+    bg: { gradientFrom: "#2563eb", gradientTo: "#90cdf4" },
     text: {
       deveraa: "#ffffff",
-      grow_with_deveraa: "#d9f99d",
+      grow_with_deveraa: "#D1D5DB",
     },
-    toggle: { background: "#ffffff", text: "#2b7bbf" },
+    toggle: { background: "#ffffff", text: "#2563eb" },
     menu: {
       active_bg: "#ffffff",
-      active_text: "#2b7bbf",
-      default_text: "#eef6ff",
+      active_text: "#2563eb",
+      default_text: "#efefef",
     },
     logout: {
       logout_Bg: "#ffffff",
-      logout_Text: "#2b7bbf",
+      logout_Text: "#2563eb",
     },
   },
 
   modal: {
-    success: "#7cb342",   // green success
-    warning: "#e5533d",   // soft alert
-    info: "#2b7bbf",
+    success: "#2563eb",
+    warning: "#dc2626",
+    info: "#36afe3",
   },
 
   common: {
     white: "#ffffff",
     black: "#000000",
     gray: "#9ca3af",
-    blue100: "#e6f1fb",
-    blue700: "#2b7bbf",
+    blue100: "#eff6ff",
+    blue700: "#2563eb",
     gray600: "#64748b"
   },
 
-
-  // login page
   /* =====================
-   BACKGROUNDS
-====================== */
+     LOGIN PAGE
+  ====================== */
   background: {
-    pageGradientFrom: "#eff6ff", // blue-50
-    pageGradientTo: "#e0e7ff",   // indigo-100
+    pageGradientFrom: "#eff6ff",
+    pageGradientTo: "#e0e7ff",
     card: "#ffffff",
     glassOverlayFrom: "rgba(239,246,255,0.5)",
     glassOverlayTo: "rgba(233,213,255,0.3)",
     blue50: "#eff6ff",
   },
 
-  /* =====================
-     PRIMARY BRAND COLORS
-  ====================== */
   primary: {
     blue50: "#eff6ff",
     blue100: "#dbeafe",
@@ -138,9 +133,6 @@ const colors = {
     blue700: "#1d4ed8",
   },
 
-  /* =====================
-     TEXT COLORS
-  ====================== */
   text: {
     gray900: "#0f172a",
     gray800: "#1e293b",
@@ -151,37 +143,25 @@ const colors = {
     white: "#ffffff",
   },
 
-  /* =====================
-     LOGIN BUTTON
-  ====================== */
   loginButton: {
-    bgGradientFrom: "#2563eb", // blue-600
-    bgGradientMid: "#1d4ed8",  // blue-700
+    bgGradientFrom: "#2563eb",
+    bgGradientMid: "#1d4ed8",
     bgGradientTo: "#2563eb",
     text: "#ffffff",
     shadow: "rgba(37,99,235,0.6)",
     shadowHover: "rgba(37,99,235,0.8)",
   },
 
-  /* =====================
-     CHECKBOX
-  ====================== */
   checkbox: {
-    border: "#d1d5db", // gray-300
+    border: "#d1d5db",
     active: "#2563eb",
   },
 
-  /* =====================
-     FOOTER / LINKS
-  ====================== */
   link: {
     primary: "#2563eb",
     hover: "#1d4ed8",
   },
 
-  /* =====================
-     FLOATING BLOBS
-  ====================== */
   blob: {
     blue: "#93c5fd",
     purple: "#d8b4fe",
@@ -270,12 +250,14 @@ if (user?.createdby) {
       colors.sidebar.logout.logout_Bg = d.sidebar_logout_logout_Bg;
       colors.sidebar.logout.logout_Text = d.sidebar_logout_logout_Text;
 
-      resolveThemeReady(); // ✅ IMPORTANT
+      resolveThemeReady();
     })
     .catch((err) => {
       console.error("❌ Failed to load theme colors:", err);
-      resolveThemeReady(); // still allow app to load
+      resolveThemeReady();
     });
+} else {
+  resolveThemeReady();
 }
 
 /* ================= EXPORT ================= */

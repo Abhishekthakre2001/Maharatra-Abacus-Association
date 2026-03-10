@@ -93,14 +93,31 @@ const QuestionModel = {
   },
 
 
-  findByAdmin: async (adminId) => {
-    const [rows] = await pool.query(
-      ` SELECT * FROM questions WHERE createdby = ? `,
-      [adminId]
-    );
+  // findByAdmin: async (adminId) => {
+  //   const [rows] = await pool.query(
+  //     ` SELECT * FROM questions WHERE createdby = ? `,
+  //     [adminId]
+  //   );
 
-    return rows;
-  },
+  //   return rows;
+  // },
+findByAdmin: async (adminId) => {
+  const [rows] = await pool.query(
+    `
+    SELECT 
+      q.*,
+      l.level_name
+    FROM questions q
+    LEFT JOIN levels l 
+      ON q.level = l.level 
+      AND q.createdby = l.createdby
+    WHERE q.createdby = ?
+    `,
+    [adminId]
+  );
+
+  return rows;
+},
 
   findById: async (id) => {
     const [rows] = await pool.query(

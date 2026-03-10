@@ -244,14 +244,30 @@ export default function QuestionPage() {
                 </span>
             )
         },
+        // {
+        //     key: 'level',
+        //     label: 'Level',
+        //     render: (value, row) => (
+        //         <span className={`${Number(row.correctoption) === 3 ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+        //             {value}
+        //         </span>
+        //     )
+        // },
         {
             key: 'level',
             label: 'Level',
-            render: (value, row) => (
-                <span className={`${Number(row.correctoption) === 3 ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
-                    {value}
-                </span>
-            )
+            render: (value, row) => {
+                const levelText =
+                    row.level_name && row.level_name.trim() !== ""
+                        ? `${value} - ${row.level_name}`
+                        : value;
+
+                return (
+                    <span className={`${Number(row.correctoption) === 3 ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                        {levelText}
+                    </span>
+                );
+            }
         },
         {
             key: 'set',

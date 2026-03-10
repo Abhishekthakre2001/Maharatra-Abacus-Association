@@ -614,7 +614,7 @@ export default function CsvQuestionManager() {
         {/* Input Fields Section */}
         <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <SelectField
+            {/* <SelectField
               label="Level"
               value={level}
               onChange={(e) => {
@@ -627,6 +627,23 @@ export default function CsvQuestionManager() {
               }))}
               placeholder="-- Select Level --"
               error={errors.level} showError={!!errors.level}
+            /> */}
+            <SelectField
+              label="Level"
+              value={level}
+              onChange={(e) => {
+                setLevel(e.target.value);
+                setErrors(prev => ({ ...prev, level: "" })); // clear error
+              }}
+              options={availableLevels.map(lv => ({
+                value: lv.level,
+                label: lv.level_name && lv.level_name.trim() !== ""
+                  ? `${lv.level} - ${lv.level_name}`
+                  : `${lv.level}`
+              }))}
+              placeholder="-- Select Level --"
+              error={errors.level}
+              showError={!!errors.level}
             />
             <SelectField
               label="Set"

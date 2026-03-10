@@ -65,6 +65,7 @@ exports.getQuestionsByAdmin = async (req, res) => {
       grouped[key] = {
         set: q.set_id,
         level: q.level,
+        level_name: q.level_name || null,
         ismock: q.ismockset,
         paper_set: `${q.level}-${q.set_id}`,
         total_question: 0,

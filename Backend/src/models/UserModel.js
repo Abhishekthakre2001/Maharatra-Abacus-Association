@@ -43,17 +43,20 @@ const UserModel = {
   findByadminId: async (id) => {
     const [rows] = await pool.query(
       `SELECT 
-        u.*, 
-        l.level_name
-     FROM users u
-     LEFT JOIN levels l ON u.level = l.level
-     WHERE u.createdby = ? AND u.usertype = 'student'`,
+      u.*, 
+      l.level_name
+    FROM users u
+    LEFT JOIN levels l 
+      ON u.level = l.level 
+      AND u.createdby = l.createdby
+    WHERE u.createdby = ? 
+      AND u.usertype = 'student'`,
       [id]
     );
 
     return rows;
   },
-
+  
   update: async (id, data) => {
     const sql = `
       UPDATE users SET
