@@ -9,7 +9,11 @@ exports.create = async (req, res) => {
     }
     
     const [result] = await LevelModel.create(req.body);
-    res.status(201).json({ id: result.insertId });
+    res.status(201).json({ 
+      id: result.insertId, 
+      level: req.body.level,
+      level_name: req.body.level_name
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

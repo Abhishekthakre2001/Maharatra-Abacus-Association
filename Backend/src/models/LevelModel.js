@@ -3,8 +3,8 @@ const pool = require("../config/db");
 module.exports = {
   create: (data) =>
     pool.query(
-      "INSERT INTO levels (level, createdby) VALUES (?, ?)",
-      [data.level, data.createdby]
+      "INSERT INTO levels (level, level_name, createdby) VALUES (?, ?, ?)",
+      [data.level, data.level_name, data.createdby]
     ),
 
   findByLevelAndUser: (level, createdby) =>
@@ -23,8 +23,8 @@ module.exports = {
 
   update: (id, data) =>
     pool.query(
-      "UPDATE levels SET level = ? WHERE id = ?",
-      [data.level, id]
+      "UPDATE levels SET level = ?, level_name = ?  WHERE id = ?",
+      [data.level, data.level_name, id]
     ),
 
   remove: (id) =>
