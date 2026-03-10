@@ -42,7 +42,7 @@ const StudentAppBar = ({
     <>
       {/* ================= APP BAR ================= */}
       <div
-        className={`relative backdrop-blur-xl rounded-2xl p-6 mx-2 shadow-lg ${className}`}
+        className={`relative backdrop-blur-xl flex flex-row justify-between rounded-2xl p-6 mx-2 shadow-lg ${className}`}
         style={{
           backgroundImage: `linear-gradient(
             to right,
@@ -52,6 +52,31 @@ const StudentAppBar = ({
           color: colors.appbar.text.title,
         }}
       >
+        <div className="flex items-center gap-4">
+
+          {/* LOGO */}
+          <img
+            src={colors.Client.logo_url}
+            alt={colors.Client.brand_name}
+            className="w-12 h-12 object-contain rounded-md bg-white p-1 shadow"
+          />
+
+          {/* BRAND TEXT */}
+          <div className="text-left">
+            <h2 className="text-lg font-semibold">
+              {colors.Client.brand_name}
+            </h2>
+
+            <p
+              className="text-sm"
+              style={{ color: colors.appbar.text.subtitle }}
+            >
+              {colors.Client.brand_sub_title}
+            </p>
+          </div>
+
+        </div>
+
         <button
           onClick={() => setOpen(true)}
           className="flex items-center gap-4 bg-transparent border-0"
@@ -71,7 +96,7 @@ const StudentAppBar = ({
             </div>
           )}
 
-          <div className="text-left">
+          {/* <div className="text-left">
             <h2 className="text-lg font-semibold">
               {user.name}
             </h2>
@@ -81,7 +106,7 @@ const StudentAppBar = ({
             >
               {subtitle}
             </p>
-          </div>
+          </div> */}
         </button>
       </div>
 
