@@ -21,11 +21,13 @@ const theme = require("./src/routes/ThemeRoutes");
 
 
 const app = express();
-const PORT = 6000;
+const PORT = 5000;
 
 if (cluster.isMaster) {
     // 🌟 Master process (manages workers)
-    const numCPUs = os.cpus().length;
+    // const numCPUs = os.cpus().length;
+    const numCPUs = Math.min(2, os.cpus().length);
+
     console.log(`🟢 Master ${process.pid} is running`);
     console.log(`⚡ Forking ${numCPUs} workers...`);
 

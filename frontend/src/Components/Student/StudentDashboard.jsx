@@ -43,8 +43,9 @@ export default function StudentDashboard() {
   );
 
   const { data: levelwise_set, levelsetloading } = useFetchData(() =>
-    questionApi.getset(user.level, user.createdby)
+    questionApi.getset(user.level, user.createdby),
   );
+
 
   /* ================= DATE HELPERS ================= */
 
@@ -172,7 +173,7 @@ export default function StudentDashboard() {
   };
 
 
-  console.log("liveExamData", liveExamData);
+  console.log("liveExamData", levelwise_set[0]?.level_name);
 
   return (
     <>
@@ -305,8 +306,10 @@ export default function StudentDashboard() {
                 <>
                   <p className="text-xs text-slate-500 mb-4">
                     Choose a set to start your test
-                  </p>
 
+                  </p>
+                  <p><b>Level : </b>{levelwise_set[0]?.level_name}</p>
+                  <br />
                   <div className="grid grid-cols-3 gap-3">
                     {levelwise_set?.map(item => (
                       <button

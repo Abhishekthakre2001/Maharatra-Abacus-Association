@@ -139,6 +139,7 @@ exports.getLevelWiseSets = async (req, res) => {
 
   res.status(200).json({
     success: true,
+    level: rows.length ? rows[0].level_name : null,
     data: rows,
     formatted: rows.map(r => `${r.level}${r.set_id}`)
   });

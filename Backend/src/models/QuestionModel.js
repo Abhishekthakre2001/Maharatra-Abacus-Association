@@ -101,9 +101,9 @@ const QuestionModel = {
 
   //   return rows;
   // },
-findByAdmin: async (adminId) => {
-  const [rows] = await pool.query(
-    `
+  findByAdmin: async (adminId) => {
+    const [rows] = await pool.query(
+      `
     SELECT 
       q.*,
       l.level_name
@@ -113,11 +113,11 @@ findByAdmin: async (adminId) => {
       AND q.createdby = l.createdby
     WHERE q.createdby = ?
     `,
-    [adminId]
-  );
+      [adminId]
+    );
 
-  return rows;
-},
+    return rows;
+  },
 
   findById: async (id) => {
     const [rows] = await pool.query(
@@ -246,15 +246,32 @@ findByAdmin: async (adminId) => {
 
 
   // models/QuestionModel.js
+  // getSetsByLevelAndCreator: ({ level, createdby }) =>
+  //   pool.query(
+  //     `
+  //   SELECT DISTINCT 
+  //     level,
+  //     TRIM(UPPER(set_id)) AS set_id
+  //   FROM questions
+  //   WHERE createdby = ?
+  //     AND level = ? AND ismockset = 1
+  //   ORDER BY set_id
+  //   `,
+  //     [createdby, level]
+  //   ),
   getSetsByLevelAndCreator: ({ level, createdby }) =>
     pool.query(
       `
     SELECT DISTINCT 
-      level,
-      TRIM(UPPER(set_id)) AS set_id
-    FROM questions
-    WHERE createdby = ?
-      AND level = ? AND ismockset = 1
+      q.level,
+      l.level_name,
+      TRIM(UPPER(q.set_id)) AS set_id
+    FROM questions q
+    LEFT JOIN levels l 
+      ON l.level = q.level AND l.createdby = q.createdby
+    WHERE q.createdby = ?
+      AND q.level = ?
+      AND q.ismockset = 1
     ORDER BY set_id
     `,
       [createdby, level]
