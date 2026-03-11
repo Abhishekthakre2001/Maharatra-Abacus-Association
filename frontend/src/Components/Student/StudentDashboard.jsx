@@ -319,7 +319,8 @@ export default function StudentDashboard() {
               active:scale-95 transition
             "
                       >
-                        {item.level}{item.set_id}
+                        {/* {item.level}{item.set_id} */}
+                        {item.set_id}
                       </button>
                     ))}
                   </div>

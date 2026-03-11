@@ -492,81 +492,81 @@ export default function ExamPage() {
                         </div>
                     </div> */}
 
-                <div className="mb-4 flex justify-center">
-  <div className="text-center">
-    {(() => {
-      const rawQuestion = String(currentQ?.question || "").trim();
+                    <div className="mb-4 flex justify-center">
+                        <div className="text-center">
+                            {(() => {
+                                const rawQuestion = String(currentQ?.question || "").trim();
 
-      const questionStr = rawQuestion
-        .replace(/[xX*]/g, "×")
-        .replace(/\//g, "÷")
-        .replace(/\s+/g, "");
+                                const questionStr = rawQuestion
+                                    .replace(/[xX*]/g, "×")
+                                    .replace(/\//g, "÷")
+                                    .replace(/\s+/g, "");
 
-      // Special percentage case like: 8%7889
-      const percentMatch = questionStr.match(
-        /^(\d+(?:\.\d+)?)%(\d+(?:\.\d+)?)$/
-      );
+                                // Special percentage case like: 8%7889
+                                const percentMatch = questionStr.match(
+                                    /^(\d+(?:\.\d+)?)%(\d+(?:\.\d+)?)$/
+                                );
 
-      if (percentMatch) {
-        const [, firstNum, secondNum] = percentMatch;
+                                if (percentMatch) {
+                                    const [, firstNum, secondNum] = percentMatch;
 
-        return (
-          <div className="inline-block text-right font-mono tabular-nums text-2xl leading-tight">
-            <div className="flex justify-end gap-1">
-              <span>{firstNum}</span>
-              <span>%</span>
-            </div>
-            <div>{secondNum}</div>
-            <div className="border-t-2 border-black my-1"></div>
-          </div>
-        );
-      }
+                                    return (
+                                        <div className="inline-block text-right font-mono tabular-nums text-2xl leading-tight">
+                                            <div className="flex justify-end gap-1">
+                                                <span>{firstNum}</span>
+                                                <span>%</span>
+                                            </div>
+                                            <div>{secondNum}</div>
+                                            <div className="border-t-2 border-black my-1"></div>
+                                        </div>
+                                    );
+                                }
 
-      const terms =
-        questionStr.match(/[+\-×÷]?\d+(?:\.\d+)?/g) || [];
+                                const terms =
+                                    questionStr.match(/[+\-×÷]?\d+(?:\.\d+)?/g) || [];
 
-      if (!terms.length) {
-        return (
-          <div className="text-2xl font-mono tabular-nums">
-            {rawQuestion}
-          </div>
-        );
-      }
+                                if (!terms.length) {
+                                    return (
+                                        <div className="text-2xl font-mono tabular-nums">
+                                            {rawQuestion}
+                                        </div>
+                                    );
+                                }
 
-      return (
-        <div className="inline-block text-right font-mono tabular-nums text-2xl leading-tight">
-          {terms.map((term, i) => {
-            let operator = "";
-            let number = term;
+                                return (
+                                    <div className="inline-block text-right font-mono tabular-nums text-2xl leading-tight">
+                                        {terms.map((term, i) => {
+                                            let operator = "";
+                                            let number = term;
 
-            if (i === 0) {
-              number = term.replace(/^[+\-×÷]/, "");
-            } else {
-              const firstChar = term.charAt(0);
+                                            if (i === 0) {
+                                                number = term.replace(/^[+\-×÷]/, "");
+                                            } else {
+                                                const firstChar = term.charAt(0);
 
-              if (["+", "-", "×", "÷"].includes(firstChar)) {
-                operator = firstChar === "-" ? "−" : firstChar;
-                number = term.slice(1);
-              }
-            }
+                                                if (["+", "-", "×", "÷"].includes(firstChar)) {
+                                                    operator = firstChar === "-" ? "−" : firstChar;
+                                                    number = term.slice(1);
+                                                }
+                                            }
 
-            return (
-              <div
-                key={i}
-                className="grid grid-cols-[40px_auto] justify-end items-center mb-1"
-              >
-                <span className="text-center">{operator}</span>
-                <span>{number}</span>
-              </div>
-            );
-          })}
+                                            return (
+                                                <div
+                                                    key={i}
+                                                    className="grid grid-cols-[40px_auto] justify-end items-center mb-1"
+                                                >
+                                                    <span className="text-center">{operator}</span>
+                                                    <span>{number}</span>
+                                                </div>
+                                            );
+                                        })}
 
-          <div className="border-t-2 border-black my-1"></div>
-        </div>
-      );
-    })()}
-  </div>
-</div>
+                                        <div className="border-t-2 border-black my-1"></div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    </div>
 
 
                     <div className="grid grid-cols-2 gap-3 mb-6">
