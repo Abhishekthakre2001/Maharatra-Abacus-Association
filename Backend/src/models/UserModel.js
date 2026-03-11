@@ -56,7 +56,7 @@ const UserModel = {
 
     return rows;
   },
-  
+
   update: async (id, data) => {
     const sql = `
       UPDATE users SET
@@ -92,7 +92,13 @@ const UserModel = {
         [id]
       );
 
-      // 2️⃣ Delete parent record
+      // 2) Delete student registration records
+      await connection.query(
+        "DELETE FROM student_registration WHERE user_id = ?",
+        [id]
+      );
+
+      // 3 Delete parent record
       const [userResult] = await connection.query(
         "DELETE FROM users WHERE id = ?",
         [id]

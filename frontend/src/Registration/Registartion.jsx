@@ -36,7 +36,7 @@ export default function Registration() {
     firstName: "",
     middleName: "",
     lastName: "",
-    class: "",
+    class: "0",
     address: "",
     city: "",
     pincode: "",

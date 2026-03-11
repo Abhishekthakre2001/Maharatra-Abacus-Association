@@ -55,6 +55,7 @@ export default function ExamPage() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     const paperset = localStorage.getItem("paperset");
     const examType = localStorage.getItem("examType"); // "mock" or "live"
+    const UserLevel = localStorage.getItem("Userlevl");
 
     /* ---------- Fetch Questions ---------- */
 
@@ -436,9 +437,13 @@ export default function ExamPage() {
                 <div className="bg-white rounded-lg shadow-lg p-4">
 
                     <div className="bg-white sticky top-0 p-2 z-50 flex justify-between items-center mb-4">
-                        <h2 className="font-bold">
-                            Question {currentQuestion + 1} of {questions.length}
-                        </h2>
+                        <div className="flex flex-col gap-2">
+                            <h2 className="font-bold">
+                                Question {currentQuestion + 1} of {questions.length}
+                            </h2>
+                            <p><b>Level : </b>{UserLevel}</p>
+                        </div>
+
                         <div className="flex items-center gap-3">
                             <Info
                                 icon={Clock}

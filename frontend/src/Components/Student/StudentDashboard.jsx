@@ -46,6 +46,12 @@ export default function StudentDashboard() {
     questionApi.getset(user.level, user.createdby),
   );
 
+  useEffect(() => {
+  if (levelwise_set?.length > 0 && levelwise_set[0]?.level_name) {
+    localStorage.setItem("Userlevl", levelwise_set[0].level_name);
+  }
+}, [levelwise_set]);
+
 
   /* ================= DATE HELPERS ================= */
 
