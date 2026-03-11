@@ -114,11 +114,11 @@ export default function Registration() {
         if (!value) error = "Date of birth required";
         break;
 
-      case "class":
-        if (value === "" || value === null || value === undefined) {
-          error = "Select class";
-        }
-        break;
+      // case "class":
+      //   if (value === "" || value === null || value === undefined) {
+      //     error = "Select class";
+      //   }
+      //   break;
 
       case "level":
         if (value === "" || value === null || value === undefined) {
@@ -311,7 +311,7 @@ export default function Registration() {
                 <InputField label="Middle Name" value={formData.middleName} onChange={handleChange("middleName")} error={errors.middleName} showError={!!errors.middleName} required />
                 <InputField label="Last Name" value={formData.lastName} onChange={handleChange("lastName")} error={errors.lastName} showError={!!errors.lastName} required />
                 <InputField label="Date of Birth" type="date" value={formData.dob} onChange={handleChange("dob")} error={errors.dob} showError={!!errors.dob} required />
-                <SelectField
+                {/* <SelectField
                   label="Class"
                   options={classOptions}
                   value={formData.class}
@@ -319,7 +319,7 @@ export default function Registration() {
                   error={errors.class}
                   showError={!!errors.class}
                   required
-                />
+                /> */}
 
                 <SelectField
                   label="Level"
