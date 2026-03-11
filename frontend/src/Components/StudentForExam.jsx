@@ -48,14 +48,15 @@ export default function StudentForExam() {
         {
             key: "class",
             label: "Class",
-            sortable: true
+            sortable: true,
+            render: (value) => value || "N/A"
         },
-       {
-  key: "level",
-  label: "Level",
-  sortable: true,
-  render: (value) => `${levelMap[value] || "Unknown"} (${value})`
-},
+        {
+            key: "level",
+            label: "Level",
+            sortable: true,
+            render: (value) => `${levelMap[value] || "Unknown"} (${value})`
+        },
         {
             key: "mobilenumber",
             label: "Mobile Number",

@@ -59,10 +59,16 @@ export default function StudentList() {
             sortable: true,
             render: (value) => <span className="font-medium">{value}</span>
         },
+        // {
+        //     key: "class",
+        //     label: "Class",
+        //     sortable: true
+        // },
         {
             key: "class",
             label: "Class",
-            sortable: true
+            sortable: true,
+            render: (value) => value || "N/A"
         },
         {
             key: "address",
