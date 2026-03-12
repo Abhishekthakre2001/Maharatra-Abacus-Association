@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StudentAppBar from "../../Components/Student/StudentAppBar";
 import Button from "../../UI/Button";
@@ -37,6 +37,19 @@ export default function ResultPage() {
     totalQuestions - correctAnswers - unsolved,
     0
   );
+
+   const [userLevel, setUserLevel] = useState("");
+   const [PaperSet, setPaperSet] = useState("")
+
+  useEffect(() => {
+    const level = localStorage.getItem("Userlevl");
+    const Set = localStorage.getItem("paperset");
+    if (level) {
+      setUserLevel(level);
+      setPaperSet(Set);
+    }
+  }, []);
+
 
 
   const obtainedMarks = correctAnswers * 1; // adjust if needed
@@ -143,7 +156,10 @@ export default function ResultPage() {
               </p>
             </div>
 
-
+            <div>
+              <p>Level : {userLevel}</p>
+              <p>Set {PaperSet}</p>
+            </div>
 
 
           </div>

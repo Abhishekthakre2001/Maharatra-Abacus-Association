@@ -184,7 +184,7 @@ export default function ExamPage() {
 
             localStorage.removeItem("examType");
             localStorage.removeItem("paperlevel");
-            localStorage.removeItem("paperset");
+            // localStorage.removeItem("paperset");
             localStorage.removeItem("examState");
             localStorage.removeItem("Exam_Tittle");
             console.log("isMockTest", isMockTest)
