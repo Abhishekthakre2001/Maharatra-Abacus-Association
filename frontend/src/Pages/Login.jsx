@@ -93,7 +93,7 @@ const Login = () => {
         </div>
 
         {/* LEFT SIDE - WELCOME */}
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-y-auto z-10" style={{ color: colors.text.gray800 }}>
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-y-auto z-10 overflow-hidden" style={{ color: colors.text.gray800 }}>
           <div className="flex flex-col justify-center items-start w-full px-8 lg:px-12 xl:px-16 py-8 lg:py-12">
             <div className="max-w-lg mx-auto w-full">
               <div className="flex items-center gap-3 mb-3 lg:mb-4">
