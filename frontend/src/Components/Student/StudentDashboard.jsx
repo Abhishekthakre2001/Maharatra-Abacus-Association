@@ -31,7 +31,7 @@ export default function StudentDashboard() {
       .map(n => n[0])
       .slice(0, 2)
       .join("")
-      .toUpperCase() || "AT";
+      .toUpperCase() ;
 
   const handleLogout = () => {
     localStorage.removeItem("user");

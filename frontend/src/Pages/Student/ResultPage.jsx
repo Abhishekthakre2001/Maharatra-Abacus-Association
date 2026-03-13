@@ -38,8 +38,8 @@ export default function ResultPage() {
     0
   );
 
-   const [userLevel, setUserLevel] = useState("");
-   const [PaperSet, setPaperSet] = useState("")
+  const [userLevel, setUserLevel] = useState("");
+  const [PaperSet, setPaperSet] = useState("")
 
   useEffect(() => {
     const level = localStorage.getItem("Userlevl");
@@ -49,6 +49,41 @@ export default function ResultPage() {
       setPaperSet(Set);
     }
   }, []);
+
+  useEffect(() => {
+    const preventBackNavigation = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    // push initial state
+    window.history.pushState(null, "", window.location.href);
+
+    // listen for back/forward
+    window.addEventListener("popstate", preventBackNavigation);
+
+    return () => {
+      window.removeEventListener("popstate", preventBackNavigation);
+    };
+  }, []);
+  useEffect(() => {
+
+  // remove exam session
+  localStorage.removeItem("examState");
+  localStorage.removeItem("paperset");
+  localStorage.removeItem("exam_id");
+
+  const preventBackNavigation = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+
+  window.history.pushState(null, "", window.location.href);
+  window.addEventListener("popstate", preventBackNavigation);
+
+  return () => {
+    window.removeEventListener("popstate", preventBackNavigation);
+  };
+
+}, []);
 
 
 

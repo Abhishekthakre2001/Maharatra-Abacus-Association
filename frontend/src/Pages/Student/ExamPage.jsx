@@ -285,6 +285,67 @@ export default function ExamPage() {
     };
 
 
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (submitting || createLoading) return;
+
+            e.preventDefault();
+            e.returnValue = "Your exam will be submitted if you leave.";
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [submitting, createLoading]);
+
+    useEffect(() => {
+        const handleBackButton = () => {
+
+            if (submitting || createLoading) return;
+
+            const confirmLeave = window.confirm(
+                "Leaving the exam will submit your answers. Do you want to continue?"
+            );
+
+            if (confirmLeave) {
+                handleSubmitExam(); // submit result
+            } else {
+                window.history.pushState(null, "", window.location.href);
+            }
+        };
+
+        window.history.pushState(null, "", window.location.href);
+        window.addEventListener("popstate", handleBackButton);
+
+        return () => {
+            window.removeEventListener("popstate", handleBackButton);
+        };
+    }, [submitting, createLoading, answers]);
+
+    // useEffect(() => {
+    //     const handleNavigation = (e) => {
+    //         if (submitting || createLoading) return;
+
+    //         const confirmLeave = window.confirm(
+    //             "Your exam will be submitted if you leave this page."
+    //         );
+
+    //         if (confirmLeave) {
+    //             handleSubmitExam();
+    //         } else {
+    //             e.preventDefault();
+    //         }
+    //     };
+
+    //     window.addEventListener("click", handleNavigation);
+
+    //     return () => {
+    //         window.removeEventListener("click", handleNavigation);
+    //     };
+    // }, [submitting, createLoading]);
+
 
     // const handleSubmitExam = async () => {
     //     const total_question = questions.length;

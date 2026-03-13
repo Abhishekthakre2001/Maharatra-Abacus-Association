@@ -161,11 +161,11 @@ const StudentAppBar = ({
                 <ProfileRow icon={User} label="Username" value={user.username} />
                 <ProfileRow icon={MapPin} label="Address" value={user.address} />
                 <ProfileRow icon={Phone} label="Mobile" value={user.mobilenumber} />
-                <ProfileRow
+                {/* <ProfileRow
                   icon={Calendar}
                   label="Subscription Ends"
                   value={formatDate(user.subscription_end_date)}
-                />
+                /> */}
               </div>
 
               {/* Logout */}
