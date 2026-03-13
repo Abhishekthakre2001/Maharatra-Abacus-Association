@@ -15,6 +15,12 @@ import AppBar from "../UI/AppBar";
 
 export default function AddStudent() {
 
+    const storedUser = localStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : {};
+
+    console.log("User", user.id);
+
+
 
     const [formData, setFormData] = useState({
         name: "",
@@ -65,7 +71,12 @@ export default function AddStudent() {
             message: "Student updated successfully"
         });
         setTimeout(() => {
-            navigate('/students-list');
+            if (user.id === 50) {
+                navigate('/exam-student');
+            } else {
+                navigate('/students-list');
+            }
+
         }, 1200);
     });
 
