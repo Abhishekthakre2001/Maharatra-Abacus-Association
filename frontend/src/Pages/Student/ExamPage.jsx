@@ -146,6 +146,33 @@ export default function ExamPage() {
         }));
     };
 
+
+    // onclick the enter show next question 
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (e.key !== "Enter") return;
+
+            e.preventDefault();
+
+            // optional: avoid Enter action when modal is open
+            if (modal.open) return;
+
+            if (currentQuestion < questions.length - 1) {
+                handleNext();
+            } else if (questions.length > 0) {
+                Endexamwarning();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyPress);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyPress);
+        };
+    }, [currentQuestion, questions.length, modal.open]);
+
+
+
     const handleNext = () => {
         if (currentQuestion < questions.length - 1) {
             setVisited(prev => new Set(prev).add(currentQuestion + 1));
@@ -393,6 +420,8 @@ export default function ExamPage() {
         handleSubmitExam();
     };
 
+
+
     if (submitting || createLoading) {
         return (
             <div className="h-screen flex items-center justify-center bg-blue-100">
@@ -404,6 +433,7 @@ export default function ExamPage() {
             </div>
         );
     }
+
 
 
 
