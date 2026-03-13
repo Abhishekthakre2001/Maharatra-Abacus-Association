@@ -67,23 +67,23 @@ export default function ResultPage() {
   }, []);
   useEffect(() => {
 
-  // remove exam session
-  localStorage.removeItem("examState");
-  localStorage.removeItem("paperset");
-  localStorage.removeItem("exam_id");
+    // remove exam session
+    localStorage.removeItem("examState");
+    localStorage.removeItem("paperset");
+    localStorage.removeItem("exam_id");
 
-  const preventBackNavigation = () => {
+    const preventBackNavigation = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+
     window.history.pushState(null, "", window.location.href);
-  };
+    window.addEventListener("popstate", preventBackNavigation);
 
-  window.history.pushState(null, "", window.location.href);
-  window.addEventListener("popstate", preventBackNavigation);
+    return () => {
+      window.removeEventListener("popstate", preventBackNavigation);
+    };
 
-  return () => {
-    window.removeEventListener("popstate", preventBackNavigation);
-  };
-
-}, []);
+  }, []);
 
 
 
