@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import * as XLSX from "xlsx";
 import {
   Search,
   ChevronLeft,
@@ -96,33 +97,34 @@ const DataTable = ({
   }, [searchTerm, itemsPerPage, fromDate, toDate]);
 
   // CSV Export
-  const handleExportCSV = () => {
-    // Filter out any existing serial number columns to avoid duplication
+  const handleExportExcel = () => {
     const serialNumberPatterns = /^(sr\.?\s*no\.?|serial\s*number|s\.?\s*no\.?|sn|#)$/i;
-    const exportColumns = columns.filter(col =>
-      !serialNumberPatterns.test(col.label || '') &&
-      !serialNumberPatterns.test(col.key || '')
+
+    const exportColumns = columns.filter(
+      (col) =>
+        !serialNumberPatterns.test(col.label || "") &&
+        !serialNumberPatterns.test(col.key || "")
     );
 
-    const headers = ['Sr. No', ...exportColumns.map(col => col.label)];
-    const rows = sortedData.map((row, index) => [
-      index + 1,  // Serial number starting from 1
-      ...exportColumns.map(col => {
-        const val = row[col.key];
-        return typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val;
-      })
-    ]);
+    const exportData = sortedData.map((row, index) => {
+      const newRow = {
+        "Sr. No": index + 1
+      };
 
-    const csvContent = [headers, ...rows].map(r => r.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
+      exportColumns.forEach((col) => {
+        newRow[col.label] = row[col.key] ?? "";
+      });
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${title.replace(/\s+/g, "_")}.csv`;
-    a.click();
+      return newRow;
+    });
 
-    URL.revokeObjectURL(url);
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+    XLSX.writeFile(workbook, `${title.replace(/\s+/g, "_")}.xlsx`);
   };
 
   const handleSort = (columnKey) => {
@@ -196,7 +198,7 @@ const DataTable = ({
 
               {exportable && (
                 <button
-                  onClick={onExport ?? handleExportCSV}
+                  onClick={onExport ?? handleExportExcel}
 
                   style={{
                     backgroundColor: colors.button.export.bg,
@@ -205,7 +207,7 @@ const DataTable = ({
                   className="flex items-center justify-center gap-2 hover:bg-[#e86f2c] text-white px-4 py-2 rounded-lg text-sm sm:text-base whitespace-nowrap"
                 >
                   <Download size={16} />
-                  <span className="hidden xs:inline">Export CSV</span>
+                  <span className="hidden xs:inline">Export Excel</span>
                   <span className="xs:hidden">Export</span>
                 </button>
               )}
