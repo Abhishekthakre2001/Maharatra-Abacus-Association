@@ -1,121 +1,130 @@
-import React, { useState, useEffect } from 'react'
-import { useFetchData } from '../hooks/useFetchData';
+import React, { useMemo } from "react";
+import { useFetchData } from "../hooks/useFetchData";
 import DataTable from "../UI/DataTable";
-import ResultApi from '../api/result';
-import AppBar from '../UI/AppBar';
+import ResultApi from "../api/result";
+import AppBar from "../UI/AppBar";
+import Tabs from "../UI/Tabs";
 import { useParams } from "react-router-dom";
 
 export default function ResultDetails() {
 
     const { id } = useParams();
 
-
-    const { data: result, loading, reload } = useFetchData(() => {
+    const { data: result = [], loading } = useFetchData(() => {
         if (!id) return Promise.resolve([]);
         return ResultApi.getresult(id);
     });
 
-
-
-
-    const columns = [
-        // {
-        //     key: "resultfor",
-        //     label: "Exam Type",
-        //     sortable: true,
-        //     render: (value) => <span className="font-medium">{value}</span>
-        // },
-        {
-            key: "examtitle",
-            label: "Exam Title",
-            sortable: true,
-            render: (value) => <span className="font-medium">{value}</span>
-        },
+    /* ---------- MOCK RESULT COLUMNS ---------- */
+    const mockColumns = [
         {
             key: "total_question",
             label: "Total Questions",
             sortable: true,
-            render: (value) => <span className="font-medium">{value}</span>
         },
         {
             key: "total_answer",
             label: "Total Answer",
-            sortable: true
+            sortable: true,
         },
         {
             key: "total_correct",
             label: "Correct Answer",
             sortable: true,
-            render: (value) => <span className="text-sm">{value}</span>
         },
         {
             key: "total_unsolve",
             label: "Total Unsolve Que.",
-            sortable: true
+            sortable: true,
         },
         {
             key: "date",
             label: "Exam Date",
             sortable: true,
-            isDate: true,
             render: (value) =>
-                value ? new Date(value).toLocaleDateString("en-GB") : ""
+                value ? new Date(value).toLocaleDateString("en-GB") : "",
         },
-        // {
-        //     key: "time",
-        //     label: "Exam Time",
-        //     sortable: true,
-        //     isDate: true,
-
-        //     render: (value) =>
-        //         value ? new Date(value).toLocaleDateString("en-GB") : ""
-        // },
-
         {
             key: "totaltime",
             label: "Total Exam Time",
             sortable: true,
-            render: (value) => (
-                <span className="font-medium" >{value}</span>
-            )
         },
-
         {
             key: "time_taken",
-            label: "Total Time taken",
+            label: "Total Time Taken",
             sortable: true,
-            render: (value) => (
-                <span className="font-medium" >{value}</span>
-            )
         }
     ];
 
-    const filteredResult = Array.isArray(result)
-        ? result.filter(item => item.resultfor !== "Test")
-        : [];
+    /* ---------- MAIN EXAM COLUMNS ---------- */
+    const examColumns = [
+        {
+            key: "examtitle",
+            label: "Exam Title",
+            sortable: true,
+            render: (value) => <span className="font-medium">{value || "Not Available"}</span>,
+        },
+        ...mockColumns
+    ];
 
+    /* ---------- FILTER DATA ---------- */
+
+    const mockResults = useMemo(() => {
+        return result.filter(
+            (item) => String(item.resultfor || "").toLowerCase() === "test"
+        );
+    }, [result]);
+
+    const mainExamResults = useMemo(() => {
+        return result.filter(
+            (item) => String(item.resultfor || "").toLowerCase() === "exam"
+        );
+    }, [result]);
 
     return (
         <div className="max-w-7xl mx-auto">
+
             <AppBar
                 title="Performance Results"
                 subtitle="Insights into student achievements"
             />
 
-            {/* Student Table */}
             <div className="p-0 my-8">
-                <DataTable
-                    columns={columns}
-                    data={filteredResult}
-                    title="Exam Result"
-                    // onView={handleView}
-                    searchable
-                    pagination
-                    showActions={false}
-                    loading={loading}
-                />
-            </div>
 
+                <Tabs
+                    tabs={[
+                        {
+                            label: `Mock Result (${mockResults.length})`,
+                            content: (
+                                <DataTable
+                                    columns={mockColumns}
+                                    data={mockResults}
+                                    title="Mock Result"
+                                    searchable
+                                    pagination
+                                    showActions={false}
+                                    loading={loading}
+                                />
+                            ),
+                        },
+                        {
+                            label: `Main Exam Result (${mainExamResults.length})`,
+                            content: (
+                                <DataTable
+                                    columns={examColumns}
+                                    data={mainExamResults}
+                                    title="Main Exam Result"
+                                    searchable
+                                    pagination
+                                    showActions={false}
+                                    loading={loading}
+                                />
+                            ),
+                        },
+                    ]}
+                />
+
+            </div>
         </div>
-    )
+    );
 }

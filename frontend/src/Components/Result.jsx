@@ -106,3 +106,40 @@ export default function Result() {
         </div>
     )
 }
+
+// import React from 'react'
+// import Tabs from '../UI/Tabs';
+// import MockResultTable from './MockResultTable';
+// import MainExamResultTable from './MainExamResultTable';
+// import AppBar from '../UI/AppBar';
+
+// export default function Result() {
+//     return (
+//         <>
+//             <div className="max-w-7xl mx-auto">
+//                  <AppBar
+//                 title="Performance Results"
+//                 subtitle="Insights into student achievements"
+//             />
+
+
+//                 {/* Add Student Button - Responsive */}
+//                 {/* <div className="flex justify-center md:justify-end mt-6">
+//                     <Button icon={Users} variant="primary" onClick={() => window.location.href = "/add-student"}>Add Student</Button>
+//                 </div> */}
+//             </div>
+
+
+//             {/* tabs */}
+//             <div className="p-6">
+//                 <Tabs
+//                     tabs={[
+//                         { label: 'Mock Result', content: <MockResultTable /> },
+//                         { label: 'Main Result', content: <MainExamResultTable /> }
+//                     ]}
+//                 />
+//             </div>
+
+//         </>
+//     )
+// }
