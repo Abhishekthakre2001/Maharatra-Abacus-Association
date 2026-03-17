@@ -43,53 +43,7 @@ export default function CsvQuestionManager() {
   const [ButtonLoading, setButtonLoading] = useState(false);
   const [iserror, setiserror] = useState(false);
 
-  // Handle CSV file
-  // const parseCSV = (file) => {
-  //   Papa.parse(file, {
-  //     header: true,
-  //     skipEmptyLines: true,
-  //     complete: (result) => {
-  //       const data = result.data;
-
-  //       // 🔴 VALIDATE Correct Option
-  //       const invalidRow = data.find((q, index) => {
-  //         const val = Number(q["Correct Option"]);
-  //         return ![1, 2, 3, 4].includes(val);
-  //       });
-
-  //       if (invalidRow) {
-  //         setQuestions([]); // ❌ do not load questions
-
-  //         setModal({
-  //           open: true,
-  //           type: "error",
-  //           title: "Invalid File Format",
-  //           message:
-  //             "Correct Option must be only 1, 2, 3 or 4.\nPlease download and use the sample file."
-  //         });
-
-  //         return; // 🚫 STOP further processing
-  //       }
-
-  //       // ✅ IF VALID → format and load
-  //       const formatted = data.map((q, index) => ({
-  //         id: index + 1,
-  //         ...q,
-  //       }));
-
-  //       setQuestions(formatted);
-  //     },
-  //     error: () => {
-  //       setModal({
-  //         open: true,
-  //         type: "error",
-  //         title: "File Error",
-  //         message: "Unable to read file. Please upload a valid CSV/Excel file."
-  //       });
-  //     }
-  //   });
-  // };
-
+ 
   const parseFile = async (file) => {
     const fileName = file.name.toLowerCase();
 
@@ -181,21 +135,6 @@ export default function CsvQuestionManager() {
     setQuestions(formatted);
   };
 
-  // File input
-  // const handleFileChange = (e) => {
-  //   if (e.target.files[0]) {
-  //     parseCSV(e.target.files[0]);
-  //   }
-  // };
-
-  // // Drag & Drop
-  // const handleDrop = (e) => {
-  //   e.preventDefault();
-  //   setDragActive(false);
-  //   if (e.dataTransfer.files[0]) {
-  //     parseCSV(e.dataTransfer.files[0]);
-  //   }
-  // };
   const handleFileChange = (e) => {
     if (e.target.files[0]) {
       parseFile(e.target.files[0]);
@@ -243,82 +182,7 @@ export default function CsvQuestionManager() {
     );
   });
 
-  // Handle manual question addition
-  // const handleAddQuestion = async () => {
-  //   setButtonLoading(true);
-  //   let newErrors = {};
-
-  //   if (!level) {
-  //     newErrors.level = "Please select level";
-  //   }
-
-  //   if (!set) {
-  //     newErrors.set = "Please select set";
-  //   }
-
-  //   // ❌ If validation fails
-  //   if (Object.keys(newErrors).length > 0) {
-  //     setErrors(newErrors);
-  //     setModal({
-  //       open: true,
-  //       type: "error",
-  //       title: "Error",
-  //       message: "Please fix validation errors"
-  //     });
-  //     setButtonLoading(false);
-  //     return;
-  //   }
-
-  //   if (newQuestion.Question && newQuestion["Correct Option"]) {
-  //     const user = JSON.parse(localStorage.getItem("user") || "{}");
-  //     const payload = {
-  //       question: newQuestion.Question,
-  //       option1: newQuestion["Option 1"] || "",
-  //       option2: newQuestion["Option 2"] || "",
-  //       option3: newQuestion["Option 3"] || "",
-  //       option4: newQuestion["Option 4"] || "",
-  //       correctoption: Number(newQuestion["Correct Option"]),
-  //       level: Number(modalLevelId) || Number(level) || null,
-  //       set_id: String(modalSetId) || String(set) || null,
-  //       ismockset: isMockSet,
-  //       createdby: user.id
-  //     };
-
-  //     try {
-  //       const res = await questionApi.create(payload);
-  //       const newQ = {
-  //         id: res.data && res.data.id ? res.data.id : questions.length + 1,
-  //         Question: newQuestion.Question,
-  //         "Option 1": newQuestion["Option 1"],
-  //         "Option 2": newQuestion["Option 2"],
-  //         "Option 3": newQuestion["Option 3"],
-  //         "Option 4": newQuestion["Option 4"],
-  //         "Correct Option": newQuestion["Correct Option"]
-  //       };
-  //       // setQuestions([...questions, newQ]);
-  //       setNewQuestion({
-  //         Question: "",
-  //         "Option 1": "",
-  //         "Option 2": "",
-  //         "Option 3": "",
-  //         "Option 4": "",
-  //         "Correct Option": ""
-  //       });
-  //       setSet(""); setLevel("");
-  //       // ✅ Clear errors if valid
-  //       setErrors({});
-  //       setIsModalOpen(false);
-  //       setButtonLoading(false);
-  //       setModal({ open: true, type: "success", title: "Success", message: "Questions Added In set." });
-  //     } catch (err) {
-  //       console.error(err.response.data.error);
-  //       if (err.response.data.error == "set_time not found for given level and set_id") {
-  //         setModal({ open: true, type: "error", title: "Error", message: `${level}-${set} Set Are Not Available` });
-  //       }
-  //       setButtonLoading(false);
-  //     }
-  //   }
-  // };
+ 
 
   const handleAddQuestion = async () => {
     let newErrors = {};
@@ -614,20 +478,7 @@ export default function CsvQuestionManager() {
         {/* Input Fields Section */}
         <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {/* <SelectField
-              label="Level"
-              value={level}
-              onChange={(e) => {
-                setLevel(e.target.value);
-                setErrors(prev => ({ ...prev, level: "" })); // ✅ clear error
-              }}
-              options={availableLevels.map(lv => ({
-                value: lv.level,
-                label: lv.level || lv.name || `Level ${lv.id}`
-              }))}
-              placeholder="-- Select Level --"
-              error={errors.level} showError={!!errors.level}
-            /> */}
+          
             <SelectField
               label="Level"
               value={level}
@@ -675,20 +526,7 @@ export default function CsvQuestionManager() {
             </div>
 
             <div>
-              {/* <label className="block text-sm font-medium text-gray-700 mb-1">
-                Mock Set
-              </label>
-
-              <select
-                value={isMockSet}
-                onChange={(e) => setIsMockSet(Number(e.target.value))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-               focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">-- Select --</option>
-                <option value={1}>Yes</option>
-                <option value={0}>No</option>
-              </select> */}
+             
               <SelectField
                 label="Is Test Set"
                 value={isMockSet}
@@ -1011,79 +849,14 @@ export default function CsvQuestionManager() {
               placeholder="-- Select Set --"
               error={errors.set} showError={!!errors.set}
             />
-            {/* <div>
-                <InputField
-                  label="Time (HH:MM:SS)"
-                  type="text"
-                  value={time}
-                  onChange={handleTimeChange}
-                  onBlur={handleTimeBlur}
-                  placeholder="HH:MM:SS"
-                  inputMode="numeric"
-                  pattern="^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
-                  error={errors.time}
-                  showError={!!errors.time}
-                />
-              </div> */}
+         
 
             <div>
-              {/* <label className="block text-sm font-medium text-gray-700 mb-1">
-                Mock Set
-              </label>
-
-              <select
-                value={isMockSet}
-                onChange={(e) => setIsMockSet(Number(e.target.value))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-               focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">-- Select --</option>
-                <option value={1}>Yes</option>
-                <option value={0}>No</option>
-              </select> */}
-              {/* <SelectField
-                  label="Mock Set"
-                  value={isMockSet}
-                  onChange={(e) => setIsMockSet(Number(e.target.value))}
-                  options={yesNoOptions.map(opt => ({
-                    value: opt.id,
-                    label: opt.name
-                  }))}
-                  placeholder="-- Select --"
-                /> */}
+            
             </div>
 
           </div>
 
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Set</label>
-                <select
-                  value={modalSetId}
-                  onChange={(e) => setModalSetId(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">-- Select set (or leave to use top Set) --</option>
-                  {availableSets.map((s) => (
-                    <option key={s.id} value={s.set_name}>{s.set_name || s.name || `Set ${s.id}`}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
-                <select
-                  value={modalLevelId}
-                  onChange={(e) => setModalLevelId(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">-- Select level (or leave to use top Level) --</option>
-                  {availableLevels.map((lv) => (
-                    <option key={lv.id} value={lv.level}>{lv.level || lv.name || `Level ${lv.id}`}</option>
-                  ))}
-                </select>
-              </div>
-            </div> */}
 
           <div className="flex justify-end gap-3 my-8">
             <Button
