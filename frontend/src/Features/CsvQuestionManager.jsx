@@ -43,39 +43,14 @@ export default function CsvQuestionManager() {
   const [ButtonLoading, setButtonLoading] = useState(false);
   const [iserror, setiserror] = useState(false);
 
- 
- const parseFile = async (file) => {
-  const fileName = file.name.toLowerCase();
 
-  // CSV
-  if (fileName.endsWith(".csv")) {
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (result) => validateAndSetQuestions(result.data),
-      error: () => {
-        setModal({
-          open: true,
-          type: "error",
-          title: "File Error",
-          message: "Unable to read CSV file."
-        });
-      }
-    });
-    return;
-  }
+  const parseFile = async (file) => {
+    const fileName = file.name.toLowerCase();
 
-  // Fake .xls / text-based file -> parse as TSV
-if (fileName.endsWith(".xls")) {
-  try {
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const text = e.target.result;
-
-      Papa.parse(text, {
+    // CSV
+    if (fileName.endsWith(".csv")) {
+      Papa.parse(file, {
         header: true,
-        delimiter: "\t",
         skipEmptyLines: true,
         complete: (result) => validateAndSetQuestions(result.data),
         error: () => {
@@ -83,59 +58,84 @@ if (fileName.endsWith(".xls")) {
             open: true,
             type: "error",
             title: "File Error",
-            message: "Unable to read XLS file."
+            message: "Unable to read CSV file."
           });
         }
       });
-    };
+      return;
+    }
 
-    // 👇 IMPORTANT: use correct encoding
-    reader.readAsText(file, "ISO-8859-1"); 
-    // try "UTF-8" if file is saved as UTF-8
+    // Fake .xls / text-based file -> parse as TSV
+    if (fileName.endsWith(".xls")) {
+      try {
+        const reader = new FileReader();
 
-  } catch (error) {
+        reader.onload = (e) => {
+          const text = e.target.result;
+
+          Papa.parse(text, {
+            header: true,
+            delimiter: "\t",
+            skipEmptyLines: true,
+            complete: (result) => validateAndSetQuestions(result.data),
+            error: () => {
+              setModal({
+                open: true,
+                type: "error",
+                title: "File Error",
+                message: "Unable to read XLS file."
+              });
+            }
+          });
+        };
+
+        // 👇 IMPORTANT: use correct encoding
+        reader.readAsText(file, "ISO-8859-1");
+        // try "UTF-8" if file is saved as UTF-8
+
+      } catch (error) {
+        setModal({
+          open: true,
+          type: "error",
+          title: "File Error",
+          message: "Unable to read XLS file."
+        });
+      }
+      return;
+    }
+
+    // Real Excel
+    if (fileName.endsWith(".xlsx")) {
+      try {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        const jsonData = XLSX.utils.sheet_to_json(sheet, {
+          defval: "",
+          raw: false
+        });
+
+        validateAndSetQuestions(jsonData);
+      } catch (error) {
+        setModal({
+          open: true,
+          type: "error",
+          title: "File Error",
+          message: "Unable to read Excel file."
+        });
+      }
+      return;
+    }
+
     setModal({
       open: true,
       type: "error",
-      title: "File Error",
-      message: "Unable to read XLS file."
+      title: "Unsupported File",
+      message: "Please upload only CSV, XLSX or XLS file."
     });
-  }
-  return;
-}
-
-  // Real Excel
-  if (fileName.endsWith(".xlsx")) {
-    try {
-      const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-
-      const jsonData = XLSX.utils.sheet_to_json(sheet, {
-        defval: "",
-        raw: false
-      });
-
-      validateAndSetQuestions(jsonData);
-    } catch (error) {
-      setModal({
-        open: true,
-        type: "error",
-        title: "File Error",
-        message: "Unable to read Excel file."
-      });
-    }
-    return;
-  }
-
-  setModal({
-    open: true,
-    type: "error",
-    title: "Unsupported File",
-    message: "Please upload only CSV, XLSX or XLS file."
-  });
-};
+  };
 
   const validateAndSetQuestions = (data) => {
     const normalizedData = data.map((row) => ({
@@ -219,7 +219,7 @@ if (fileName.endsWith(".xls")) {
     );
   });
 
- 
+
 
   const handleAddQuestion = async () => {
     let newErrors = {};
@@ -515,7 +515,7 @@ if (fileName.endsWith(".xls")) {
         {/* Input Fields Section */}
         <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          
+
             <SelectField
               label="Level"
               value={level}
@@ -563,7 +563,7 @@ if (fileName.endsWith(".xls")) {
             </div>
 
             <div>
-             
+
               <SelectField
                 label="Is Test Set"
                 value={isMockSet}
@@ -886,10 +886,10 @@ if (fileName.endsWith(".xls")) {
               placeholder="-- Select Set --"
               error={errors.set} showError={!!errors.set}
             />
-         
+
 
             <div>
-            
+
             </div>
 
           </div>
