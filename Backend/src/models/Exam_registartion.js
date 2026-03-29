@@ -11,6 +11,9 @@ const ExamRegistration = {
       const fullName =
         `${data.firstName} ${data.middleName} ${data.lastName}`.trim();
 
+      const username = data.username?.trim();
+      const password = data.password?.trim();
+
       // 1️⃣ Insert into users table
       const [userResult] = await connection.query(
         `INSERT INTO users
@@ -22,8 +25,8 @@ const ExamRegistration = {
           data.class,
           data.address,
           data.mobile,
-          data.username,
-          data.password,
+          username,
+          password,
           data.level,
           data.dob,
           data.subscription_end_date,
@@ -70,7 +73,7 @@ const ExamRegistration = {
     }
   },
 
-    // ✅ FIXED — now inside same object
+  // ✅ FIXED — now inside same object
   // getByCreatedBy: async (createdby) => {
   //   const connection = await pool.getConnection();
 
@@ -112,11 +115,11 @@ const ExamRegistration = {
   // }
 
   getByCreatedBy: async (createdby) => {
-  const connection = await pool.getConnection();
+    const connection = await pool.getConnection();
 
-  try {
-    const [rows] = await connection.query(
-      `
+    try {
+      const [rows] = await connection.query(
+        `
       SELECT 
         u.id AS user_id,
         u.name,
@@ -143,14 +146,14 @@ const ExamRegistration = {
       WHERE u.createdby = ?
       ORDER BY s.registration_date DESC
       `,
-      [createdby]
-    );
+        [createdby]
+      );
 
-    return rows;
-  } finally {
-    connection.release();
+      return rows;
+    } finally {
+      connection.release();
+    }
   }
-}
 
 };
 

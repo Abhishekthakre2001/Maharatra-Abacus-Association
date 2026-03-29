@@ -9,13 +9,16 @@ const UserModel = {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
+    const username = data.username?.trim();
+    const password = data.password?.trim();
+
     const [result] = await pool.query(sql, [
       data.name,
       data.class,
       data.address,
       data.mobilenumber,
-      data.username,
-      data.password,
+      username,
+      password,
       data.level,
       data.dob,
       data.subscription_end_date,
@@ -63,13 +66,18 @@ const UserModel = {
       name=?, class=?, address=?, mobilenumber=?, username=?, password= ?, level=?, dob=?, subscription_end_date=?, usertype=?, status=?
       WHERE id=?
     `;
+
+    const username = data.username?.trim();
+    const password = data.password?.trim();
+
+
     const [result] = await pool.query(sql, [
       data.name,
       data.class,
       data.address,
       data.mobilenumber,
-      data.username,
-      data.password,
+      username,
+      password,
       data.level,
       data.dob,
       data.subscription_end_date,
