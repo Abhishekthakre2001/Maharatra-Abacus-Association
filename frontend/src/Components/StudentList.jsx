@@ -34,7 +34,7 @@ export default function StudentList() {
 
     const handleEdit = (row) => {
         // Navigate to add-student in update mode with id
-        navigate(`/add-student/${row.id}`);
+        navigate(`/add-student/${row.id}?from=students-list`);
     };
 
     const handleDelete = (row) => {

@@ -7,7 +7,7 @@ import userApi from "../api/userApi";
 import levelApi from "../api/LevelApi";
 import { useCreate } from "../hooks/useCreate";
 import { useUpdate } from "../hooks/useUpdate";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import MessageModal from "../utils/MessageModal";
 import { validateStudent } from "../utils/studentValidator";
 import AppBar from "../UI/AppBar";
@@ -50,6 +50,7 @@ export default function AddStudent() {
 
     const { id } = useParams();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     const { create, loading: createLoading } = useCreate(userApi.create, () => {
         setModal({
@@ -71,12 +72,15 @@ export default function AddStudent() {
             message: "Student updated successfully"
         });
         setTimeout(() => {
-            if (user.id === 50) {
+            const from = searchParams.get('from');
+            if (from === 'exam-student') {
                 navigate('/exam-student');
+            } else if (from === 'students-list') {
+                navigate('/students-list');
             } else {
+                // fallback
                 navigate('/students-list');
             }
-
         }, 1200);
     });
 
@@ -184,7 +188,20 @@ export default function AddStudent() {
 
 
     const handleCancel = () => {
-        navigate("/students-list");
+        if (id) {
+            // Update mode, go back to from page
+            const from = searchParams.get('from');
+            if (from === 'exam-student') {
+                navigate('/exam-student');
+            } else if (from === 'students-list') {
+                navigate('/students-list');
+            } else {
+                navigate('/students-list');
+            }
+        } else {
+            // Add mode, go to students-list
+            navigate("/students-list");
+        }
         setFormData({
             name: "",
             class: "",

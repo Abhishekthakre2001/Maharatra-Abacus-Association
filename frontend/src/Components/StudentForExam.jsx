@@ -40,11 +40,23 @@ export default function StudentForExam() {
                 </span>
             )
         },
+          {
+            key: "username",
+            label: "Username",
+            sortable: true
+        },
+
         {
+            key: "password",
+            label: "Password",
+            sortable: true
+        },
+         {
             key: "age",
             label: "Age",
             sortable: true
         },
+       
         {
             key: "class",
             label: "Class",
@@ -144,7 +156,7 @@ export default function StudentForExam() {
                     columns={columns}
                     data={students}
                     title="Exam Registrations"
-                    onView={(row) => navigate(`/add-student/${row.user_id}`)}
+                    onView={(row) => navigate(`/add-student/${row.user_id}?from=exam-student`)}
                     searchable
                     pagination
                     showActions

@@ -11,7 +11,7 @@ import {
   Users,
   BookCheck
 } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import logo from "../assets/logo.png";
 import colors from "../utils/Color";
 import MessageModal from "../utils/MessageModal";
@@ -19,6 +19,7 @@ import MessageModal from "../utils/MessageModal";
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [isMobile, setIsMobile] = useState(false);
 
   const storedUser = localStorage.getItem("user");
@@ -57,7 +58,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   ];
 
   const isActive = (path) => {
-    if (path === "/students-list" && location.pathname.startsWith("/add-student")) return true;
+    if (path === "/students-list" && location.pathname.startsWith("/add-student") && searchParams.get('from') === 'students-list') return true;
+    if (path === "/exam-student" && location.pathname.startsWith("/add-student") && searchParams.get('from') === 'exam-student') return true;
     if (path === "/questions" && location.pathname.startsWith("/add-question")) return true;
 
     if (

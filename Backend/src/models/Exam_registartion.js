@@ -127,6 +127,7 @@ const ExamRegistration = {
         u.address,
         u.mobilenumber,
         u.username,
+        u.password,
         u.level,
         u.dob,
         u.subscription_end_date,
