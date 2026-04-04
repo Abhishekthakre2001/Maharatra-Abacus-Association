@@ -6,6 +6,7 @@ const userApi = {
   getAll: () => axiosInstance.get("/users"),
   getbyid: (id) => axiosInstance.get(`/users/${id}`),
   getbyadminid: (id) => axiosInstance.get(`/users/admin/${id}`),
+  getresultbyadminid: (id) => axiosInstance.get(`/users/result/admin/${id}`),
   create: (payload) => axiosInstance.post("/users", payload),
   update: (id, payload) => axiosInstance.put(`/users/${id}`, payload),
   delete: (id) => axiosInstance.delete(`/users/${id}`),

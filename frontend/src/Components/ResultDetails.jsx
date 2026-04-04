@@ -18,6 +18,11 @@ export default function ResultDetails() {
     /* ---------- MOCK RESULT COLUMNS ---------- */
     const mockColumns = [
         {
+            key: "name",
+            label: "Name",
+            sortable: true,
+        },
+        {
             key: "total_question",
             label: "Total Questions",
             sortable: true,
@@ -52,6 +57,16 @@ export default function ResultDetails() {
         {
             key: "time_taken",
             label: "Total Time Taken",
+            sortable: true,
+        },
+        {
+            key: "PaperSet",
+            label: "Paper Set",
+            sortable: true,
+        },
+        {
+            key: "Paperlevel",
+            label: "Paper Level",
             sortable: true,
         }
     ];

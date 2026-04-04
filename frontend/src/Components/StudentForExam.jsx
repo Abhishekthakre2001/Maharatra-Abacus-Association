@@ -17,8 +17,8 @@ export default function StudentForExam() {
 
     const levelMap = {
         0: "Bud level",
-        9: "New commer",
-        10: "A level",
+        10: "New commer",
+        11: "A level",
         1: "1st level",
         2: "2nd level",
         3: "3rd level",

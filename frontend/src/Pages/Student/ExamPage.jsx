@@ -9,6 +9,7 @@ import questionApi from '../../api/questionApi';
 import ResultApi from '../../api/result';
 import { useCreate } from '../../hooks/useCreate';
 import MessageModal from "../../utils/MessageModal";
+import Level from '../../Components/Level';
 // import ExamViolationGuard from "../../Features/ExamViolationGuard"
 
 /* ---------- Helpers ---------- */
@@ -428,8 +429,12 @@ export default function ExamPage() {
         const resultfor = examType === "mock" ? "Test" : "Exam";
         const examtitle = localStorage.getItem("Exam_Tittle") || "Not Available";
         const exam_id = localStorage.getItem("exam_id") || null;
+        const UserLevel = localStorage.getItem("Userlevl") || null;
+        const paperset = localStorage.getItem("paperset") || null;
 
         const resultPayload = {
+            set: paperset,
+            Level: UserLevel,
             user_id: user.id,
             total_question,
             total_answer,

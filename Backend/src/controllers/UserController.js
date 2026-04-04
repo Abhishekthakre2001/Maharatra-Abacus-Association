@@ -21,6 +21,11 @@ exports.getUserByadminId = async (req, res) => {
   res.json(user);
 };
 
+exports.getResultUserByadminId = async (req, res) => {
+  const user = await UserService.getResultUserByadminId(req.params.id);
+  res.json(user);
+};
+
 exports.updateUser = async (req, res) => {
   console.log("req.body",req.body)
   await UserService.updateUser(req.params.id, req.body);

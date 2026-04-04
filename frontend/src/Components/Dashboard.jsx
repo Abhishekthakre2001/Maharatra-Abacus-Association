@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Package, ShoppingCart, BarChart3, Users
 } from 'lucide-react';
@@ -16,6 +16,8 @@ import {
   ResponsiveContainer,
   CartesianGrid
 } from "recharts";
+import ResultApi from "../api/result.js";
+import { Download } from "lucide-react";
 
 
 
@@ -24,6 +26,7 @@ export default function Dashboard() {
   // Sample static data for display
   const products = [];
   const loading = false;
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : {};
@@ -42,7 +45,37 @@ export default function Dashboard() {
   }));
 
 
+  const handleDownloadAllResults = async () => {
+    try {
+      if (!user?.id) {
+        alert("User id not found");
+        return;
+      }
 
+      setIsDownloading(true); // 🔥 start loading
+
+      const response = await ResultApi.downloadAllResultsExcel(user.id);
+
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `results_${user.id}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error("Excel download failed:", error);
+      alert("Failed to download Excel file");
+    } finally {
+      setIsDownloading(false); // 🔥 stop loading
+    }
+  };
 
   return (
     <>
@@ -82,7 +115,26 @@ export default function Dashboard() {
         </div>
 
       </div>
-
+      <button
+        onClick={handleDownloadAllResults}
+        disabled={isDownloading}
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg transition
+    ${isDownloading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+      >
+        {isDownloading ? (
+          <>
+            <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+            Downloading...
+          </>
+        ) : (
+          <>
+            <Download size={18} />
+            Download All Results
+          </>
+        )}
+      </button>
 
       <div className="bg-white rounded-2xl shadow p-6 my-10">
         <h3 className="text-lg font-semibold mb-1">

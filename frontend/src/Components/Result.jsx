@@ -18,7 +18,7 @@ export default function Result() {
     // console.log("user",user)
     const { data: students, loading, reload } = useFetchData(() => {
         if (!user?.id) return Promise.resolve([]);
-        return userApi.getbyadminid(user.id);
+        return userApi.getresultbyadminid(user.id);
     });
 
     const handleView = (student) => {

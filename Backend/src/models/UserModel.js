@@ -60,6 +60,25 @@ const UserModel = {
     return rows;
   },
 
+  ResultfindByadminId: async (id) => {
+    const [rows] = await pool.query(
+      `SELECT DISTINCT
+        u.*,
+        l.level_name
+     FROM users u
+     INNER JOIN result r
+       ON r.user_id = u.id
+     LEFT JOIN levels l
+       ON u.level = l.level
+      AND u.createdby = l.createdby
+     WHERE u.createdby = ?
+       AND u.usertype = 'student'`,
+      [id]
+    );
+
+    return rows;
+  },
+
   update: async (id, data) => {
     const sql = `
       UPDATE users SET

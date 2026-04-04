@@ -17,6 +17,11 @@ const ResultApi = {
         exam_id,
       },
     }),
+
+  downloadAllResultsExcel: (id) =>
+    axiosInstance.get(`/results/all-results-excel/${id}`, {
+      responseType: "blob",
+    }),
 };
 
 export default ResultApi;

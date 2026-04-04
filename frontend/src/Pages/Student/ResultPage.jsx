@@ -42,13 +42,9 @@ export default function ResultPage() {
   const [PaperSet, setPaperSet] = useState("")
 
   useEffect(() => {
-    const level = localStorage.getItem("Userlevl");
-    const Set = localStorage.getItem("paperset");
-    if (level) {
-      setUserLevel(level);
-      setPaperSet(Set);
-    }
-  }, []);
+    setUserLevel(storedResult?.Level ? String(storedResult.Level).trim() : "");
+    setPaperSet(storedResult?.set ? String(storedResult.set).trim() : "");
+  }, [storedResult]);
 
   useEffect(() => {
     const preventBackNavigation = () => {
