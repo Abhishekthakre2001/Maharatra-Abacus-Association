@@ -8,7 +8,8 @@ import {
   Settings,
   Proportions,
   CaptionsOff,
-  List
+  List,
+  RotateCcw
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import colors from "../utils/Color";
@@ -59,6 +60,44 @@ const AppBar = ({
     navigate("/");
   };
 
+  // const hardReload = () => {
+  //   window.location.reload(true); // force reload
+  // };
+  const hardReload = async () => {
+    try {
+      // setIsRefreshing(true);
+
+      // 1. Clear local/session temporary app data if needed
+      // Keep this only if you do NOT want to remove login/session data
+      // localStorage.clear();
+      // sessionStorage.clear();
+
+      // If you want to preserve auth, remove only app cache keys manually instead
+      // localStorage.removeItem("someOldCacheKey");
+
+      // 2. Clear Cache Storage used by PWA/service worker
+      if ("caches" in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+      }
+
+      // 3. Unregister all service workers
+      if ("serviceWorker" in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      }
+
+      // 4. Force browser to fetch fresh page from server
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set("_ts", Date.now().toString());
+
+      window.location.replace(currentUrl.toString());
+    } catch (error) {
+      console.error("Hard refresh failed:", error);
+      window.location.reload();
+    }
+  };
+
   return (
     <div className="sticky top-4 md:top-4 z-50">
 
@@ -88,18 +127,41 @@ const AppBar = ({
             {subtitle && <p className="text-sm md:text-lg" style={{ color: colors.appbar.text.subtitle }}>{subtitle}</p>}
           </div>
 
-          {/* RIGHT – MOBILE MENU BUTTON */}
-          <button
-            onClick={() => setOpen(!open)}
-            className="md:hidden p-2 rounded-xl"
-            style={{
-              backgroundColor: colors.appbar.toggle.background,
-              color: colors.appbar.toggle.icon,
-            }}
+          <div className="flex items-center gap-3">
 
-          >
-            {open ? <X size={22} /> : <Menu size={22} />}
-          </button>
+            {/* 🔄 HARD REFRESH BUTTON (DESKTOP ONLY) */}
+            <button
+              onClick={hardReload}
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 group"
+              style={{
+                background: "rgba(255,255,255,0.1)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.2)"
+              }}
+            >
+              <RotateCcw
+                size={18}
+                className="transition-transform duration-500 group-hover:rotate-180"
+              />
+              <span className="text-sm font-medium">Refresh</span>
+            </button>
+
+            {/* MOBILE MENU BUTTON */}
+            <button
+              onClick={() => setOpen(!open)}
+              className="md:hidden p-2 rounded-xl"
+              style={{
+                backgroundColor: colors.appbar.toggle.background,
+                color: colors.appbar.toggle.icon,
+              }}
+            >
+              {open ? <X size={22} /> : <Menu size={22} />}
+            </button>
+
+          </div>
+
+
+
         </div>
 
         {/* MOBILE USER INFO */}

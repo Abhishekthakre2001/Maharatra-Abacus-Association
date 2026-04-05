@@ -1,5 +1,6 @@
 const QuestionService = require("../services/QuestionService");
 const QuestionModel = require("../models/QuestionModel");
+const paperCache = new Map();
 
 exports.createQuestion = async (req, res) => {
   const result = await QuestionService.createQuestion(req.body);
@@ -151,7 +152,20 @@ exports.getpaperset = async (req, res) => {
 
   const level = parseInt(req.query.level, 10);
   const createdby = parseInt(req.query.createdby, 10);
-  const set = String(req.query.set)
+  const set = String(req.query.set);
+
+  const cacheKey = `${createdby}_${level}_${set}`;
+
+  // ✅ Check cache first
+  if (paperCache.has(cacheKey)) {
+    console.log("⚡ Cache HIT");
+    return res.json({
+      success: true,
+      data: paperCache.get(cacheKey),
+    });
+  }
+
+  console.log("🔥 DB HIT");
 
   const [rows] = await QuestionService.getpaperSet({
     level,
@@ -159,9 +173,15 @@ exports.getpaperset = async (req, res) => {
     set
   });
 
+    // ✅ Shuffle in Node (instead of DB)
+  const shuffled = rows.sort(() => Math.random() - 0.5);
+
+  // ✅ Store in cache
+  paperCache.set(cacheKey, shuffled);
+
   res.status(200).json({
     success: true,
-    data: rows
+    data: shuffled,
   });
 };
 

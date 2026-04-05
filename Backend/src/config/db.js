@@ -10,7 +10,7 @@ const pool = mysql.createPool({
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   waitForConnections: true,
-  connectionLimit: 10, // number of parallel DB connections
+  connectionLimit: 80, // number of parallel DB connections
   queueLimit: 0,
 });
 
