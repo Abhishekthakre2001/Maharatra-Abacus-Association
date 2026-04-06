@@ -1,4 +1,5 @@
 const ExamScheduleModel = require("../models/ExamScheduleModel");
+const paperCache = new Map();
 
 exports.create = async (req, res) => {
   console.log("data", req.body);
@@ -47,10 +48,22 @@ exports.getlevelwise = async (req, res) => {
       });
     }
 
+    const cacheKey = `studentexam_${createdby}_${level}`;
+    if (paperCache.has(cacheKey)) {
+      console.log("⚡ Cache HIT");
+      return res.status(200).json({
+        success: true,
+        data: paperCache.get(cacheKey),
+      });
+    }
+
     const [rows] = await ExamScheduleModel.findLevelWise({
       level: Number(level),
       createdby: Number(createdby),
     });
+
+    // ✅ Store in cache
+    paperCache.set(cacheKey, rows);
 
     res.json(rows);
   } catch (err) {

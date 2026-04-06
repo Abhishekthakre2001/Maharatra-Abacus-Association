@@ -133,10 +133,27 @@ exports.getLevelWiseSets = async (req, res) => {
   const level = parseInt(req.query.level, 10);
   const createdby = parseInt(req.query.createdby, 10);
 
+  const cacheKey = `levelwisesets_${createdby}_${level}`;
+
+  // ✅ Cache check
+  if (paperCache.has(cacheKey)) {
+    console.log("⚡ Cache HIT");
+    const rows = paperCache.get(cacheKey);
+
+    return res.status(200).json({
+      success: true,
+      level: rows.length ? rows[0].level_name : null,
+      data: rows,
+      formatted: rows.map(r => `${r.level}${r.set_id}`),
+    });
+  }
+
   const [rows] = await QuestionService.getSetsByLevelAndCreator({
     level,
     createdby,
   });
+
+  paperCache.set(cacheKey, rows);
 
   res.status(200).json({
     success: true,
@@ -173,7 +190,7 @@ exports.getpaperset = async (req, res) => {
     set
   });
 
-    // ✅ Shuffle in Node (instead of DB)
+  // ✅ Shuffle in Node (instead of DB)
   const shuffled = rows.sort(() => Math.random() - 0.5);
 
   // ✅ Store in cache
