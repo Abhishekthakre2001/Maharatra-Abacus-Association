@@ -31,7 +31,7 @@ export default function StudentDashboard() {
       .map(n => n[0])
       .slice(0, 2)
       .join("")
-      .toUpperCase() ;
+      .toUpperCase();
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -47,10 +47,10 @@ export default function StudentDashboard() {
   );
 
   useEffect(() => {
-  if (levelwise_set?.length > 0 && levelwise_set[0]?.level_name) {
-    localStorage.setItem("Userlevl", levelwise_set[0].level_name);
-  }
-}, [levelwise_set]);
+    if (levelwise_set?.length > 0 && levelwise_set[0]?.level_name) {
+      localStorage.setItem("Userlevl", levelwise_set[0].level_name);
+    }
+  }, [levelwise_set]);
 
 
   /* ================= DATE HELPERS ================= */
@@ -253,7 +253,7 @@ export default function StudentDashboard() {
               </p>
             ) : (
               <div className="space-y-3">
-                {!showSets && (
+                {!showSets && !liveExamData && (
                   <Button
                     variant="primary"
                     size="lg"
@@ -274,7 +274,7 @@ export default function StudentDashboard() {
                       className={`w-full ${!isexam ? "cursor-pointer" : "cursor-not-allowed"}`}
 
                     >
-                      Start Live Exam
+                      {liveExamData.exam_title || "Start Live Exam"} 
                     </Button>
                     {isexam && (
                       <div
