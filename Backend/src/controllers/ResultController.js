@@ -55,7 +55,14 @@ exports.checkExamSubmission = async (req, res) => {
     });
   }
 
-  paperCache.set(cacheKey, response);
+  paperCache.set(cacheKey, rows.length > 0
+    ? {
+      exam: true,
+      user_id: Number(user_id),
+      exam_id: Number(exam_id)
+    }
+    : { exam: false }
+  );
 
   return res.json({ exam: false });
 };
