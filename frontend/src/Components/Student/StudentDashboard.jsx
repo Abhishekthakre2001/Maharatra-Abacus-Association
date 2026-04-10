@@ -128,8 +128,17 @@ export default function StudentDashboard() {
     return now >= start && now <= end;
   };
 
+  const userCityId = Number(user?.city_id);
+
+
+  // const liveExamData = filteredUpcomingExams.find(
+  //   exam =>
+  //     new Date(exam.date).toDateString() === new Date().toDateString() &&
+  //     isLiveTime(exam.start_time, exam.end_time)
+  // );
   const liveExamData = filteredUpcomingExams.find(
     exam =>
+      Number(exam?.Exam_for_city) === userCityId &&
       new Date(exam.date).toDateString() === new Date().toDateString() &&
       isLiveTime(exam.start_time, exam.end_time)
   );
@@ -206,18 +215,38 @@ export default function StudentDashboard() {
             <div className="bg-white rounded-2xl shadow-sm p-3">
               <TopAutoCarousel
                 items={
-                  filteredUpcomingExams.length > 0
-                    ? filteredUpcomingExams.map((exam) => (
-                      <CreamCarouselCard
-                        key={exam.id}
-                        title={`Abacus Level ${exam.exam_level} Examination`}
-                        subtitle={exam.exam_title}
-                        examDate={formatDate(exam.date)}
-                        startTime={formatTime(exam.start_time)}
-                        endTime={formatTime(exam.end_time)}
-                        image={examImg}
-                      />
-                    ))
+                  upcomeingexam?.filter((exam) => {
+                    const examCityId = Number(exam?.Exam_for_city);
+                    const userCityId = Number(user?.city_id);
+
+                    return (
+                      examCityId === userCityId &&
+                      isTodayOrFuture(exam.date) &&
+                      isExamStillActiveOrFuture(exam)
+                    );
+                  }).length > 0
+                    ? upcomeingexam
+                      ?.filter((exam) => {
+                        const examCityId = Number(exam?.Exam_for_city);
+                        const userCityId = Number(user?.city_id);
+
+                        return (
+                          examCityId === userCityId &&
+                          isTodayOrFuture(exam.date) &&
+                          isExamStillActiveOrFuture(exam)
+                        );
+                      })
+                      .map((exam) => (
+                        <CreamCarouselCard
+                          key={exam.id}
+                          title={`Abacus Level ${exam.exam_level} Examination`}
+                          subtitle={exam.exam_title}
+                          examDate={formatDate(exam.date)}
+                          startTime={formatTime(exam.start_time)}
+                          endTime={formatTime(exam.end_time)}
+                          image={examImg}
+                        />
+                      ))
                     : [
                       <CreamCarouselCard
                         key="no-exam"
@@ -274,7 +303,7 @@ export default function StudentDashboard() {
                       className={`w-full ${!isexam ? "cursor-pointer" : "cursor-not-allowed"}`}
 
                     >
-                      {liveExamData.exam_title || "Start Live Exam"} 
+                      {liveExamData.exam_title || "Start Live Exam"}
                     </Button>
                     {isexam && (
                       <div
