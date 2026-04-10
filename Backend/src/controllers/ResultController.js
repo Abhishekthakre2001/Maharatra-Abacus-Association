@@ -1,6 +1,6 @@
 const ResultModel = require("../models/ResultModel");
 const ExcelJS = require("exceljs");
-const paperCache = new Map();
+// const paperCache = new Map();
 
 exports.create = async (req, res) => {
   const [result] = await ResultModel.create(req.body);
@@ -37,13 +37,13 @@ exports.checkExamSubmission = async (req, res) => {
     });
   }
 
-  const cacheKey = `examcheck_${user_id}_${exam_id}`;
+  // const cacheKey = `examcheck_${user_id}_${exam_id}`;
 
-  // ✅ Cache check
-  if (paperCache.has(cacheKey)) {
-    console.log("⚡ Cache HIT");
-    return res.json(paperCache.get(cacheKey));
-  }
+  // // ✅ Cache check
+  // if (paperCache.has(cacheKey)) {
+  //   console.log("⚡ Cache HIT");
+  //   return res.json(paperCache.get(cacheKey));
+  // }
 
   const [rows] = await ResultModel.findByUserAndExam(user_id, exam_id);
 
@@ -55,14 +55,14 @@ exports.checkExamSubmission = async (req, res) => {
     });
   }
 
-  paperCache.set(cacheKey, rows.length > 0
-    ? {
-      exam: true,
-      user_id: Number(user_id),
-      exam_id: Number(exam_id)
-    }
-    : { exam: false }
-  );
+  // paperCache.set(cacheKey, rows.length > 0
+  //   ? {
+  //     exam: true,
+  //     user_id: Number(user_id),
+  //     exam_id: Number(exam_id)
+  //   }
+  //   : { exam: false }
+  // );
 
   return res.json({ exam: false });
 };

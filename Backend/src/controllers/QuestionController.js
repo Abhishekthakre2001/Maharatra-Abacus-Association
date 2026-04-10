@@ -1,6 +1,6 @@
 const QuestionService = require("../services/QuestionService");
 const QuestionModel = require("../models/QuestionModel");
-const paperCache = new Map();
+// const paperCache = new Map();
 
 exports.createQuestion = async (req, res) => {
   const result = await QuestionService.createQuestion(req.body);
@@ -133,27 +133,27 @@ exports.getLevelWiseSets = async (req, res) => {
   const level = parseInt(req.query.level, 10);
   const createdby = parseInt(req.query.createdby, 10);
 
-  const cacheKey = `levelwisesets_${createdby}_${level}`;
+  // const cacheKey = `levelwisesets_${createdby}_${level}`;
 
-  // ✅ Cache check
-  if (paperCache.has(cacheKey)) {
-    console.log("⚡ Cache HIT");
-    const rows = paperCache.get(cacheKey);
+  // // ✅ Cache check
+  // if (paperCache.has(cacheKey)) {
+  //   console.log("⚡ Cache HIT");
+  //   const rows = paperCache.get(cacheKey);
 
-    return res.status(200).json({
-      success: true,
-      level: rows.length ? rows[0].level_name : null,
-      data: rows,
-      formatted: rows.map(r => `${r.level}${r.set_id}`),
-    });
-  }
+  //   return res.status(200).json({
+  //     success: true,
+  //     level: rows.length ? rows[0].level_name : null,
+  //     data: rows,
+  //     formatted: rows.map(r => `${r.level}${r.set_id}`),
+  //   });
+  // }
 
   const [rows] = await QuestionService.getSetsByLevelAndCreator({
     level,
     createdby,
   });
 
-  paperCache.set(cacheKey, rows);
+  // paperCache.set(cacheKey, rows);
 
   res.status(200).json({
     success: true,
@@ -171,16 +171,16 @@ exports.getpaperset = async (req, res) => {
   const createdby = parseInt(req.query.createdby, 10);
   const set = String(req.query.set);
 
-  const cacheKey = `${createdby}_${level}_${set}`;
+  // const cacheKey = `${createdby}_${level}_${set}`;
 
-  // ✅ Check cache first
-  if (paperCache.has(cacheKey)) {
-    console.log("⚡ Cache HIT");
-    return res.json({
-      success: true,
-      data: paperCache.get(cacheKey),
-    });
-  }
+  // // ✅ Check cache first
+  // if (paperCache.has(cacheKey)) {
+  //   console.log("⚡ Cache HIT");
+  //   return res.json({
+  //     success: true,
+  //     data: paperCache.get(cacheKey),
+  //   });
+  // }
 
   console.log("🔥 DB HIT");
 
@@ -194,7 +194,7 @@ exports.getpaperset = async (req, res) => {
   const shuffled = rows.sort(() => Math.random() - 0.5);
 
   // ✅ Store in cache
-  paperCache.set(cacheKey, shuffled);
+  // paperCache.set(cacheKey, shuffled);
 
   res.status(200).json({
     success: true,
