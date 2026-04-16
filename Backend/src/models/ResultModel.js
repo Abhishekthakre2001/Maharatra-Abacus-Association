@@ -72,10 +72,39 @@ module.exports = {
       ]
     ),
 
+  // findByUserAndExam: (user_id, exam_id) =>
+  //   pool.query(
+  //     `SELECT id FROM result 
+  //    WHERE user_id = ? AND exam_id = ?
+  //    LIMIT 1`,
+  //     [user_id, exam_id]
+  //   ),
+
   findByUserAndExam: (user_id, exam_id) =>
     pool.query(
-      `SELECT id FROM result 
+      `SELECT 
+        id,
+        user_id,
+        exam_id,
+        admin_id,
+        exam_name,
+        exam_level,
+        paper_set,
+        date,
+        exam_start_at,
+        exam_end_at,
+        exam_time,
+        time_taken,
+        total_question,
+        total_solve,
+        total_unsolve,
+        total_correct,
+        status,
+        created_at,
+        updated_at
+     FROM Exam_Result
      WHERE user_id = ? AND exam_id = ?
+     ORDER BY id DESC
      LIMIT 1`,
       [user_id, exam_id]
     ),

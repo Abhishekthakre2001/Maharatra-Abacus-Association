@@ -16,6 +16,7 @@ import Examschedule from "../Pages/Examschedule";
 // student dashboard routes from here below
 import StudentDashboardPage from "../Pages/Student/StudentDashboardPage";
 import ExamRule from "../Pages/Student/ExamRule";
+// import ExamPage from "../Pages/Student/ExamPage-old";
 import ExamPage from "../Pages/Student/ExamPage";
 import StudentResultPage from "../Pages/Student/ResultPage";
 import RoleProtectedRoute from "./RoleBasedProtectedRoute";

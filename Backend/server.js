@@ -18,10 +18,11 @@ const errorHandler = require("./src/utils/errorHandler");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
 const theme = require("./src/routes/ThemeRoutes");
+const ExamResultRoutes = require("./src/routes/ExamResultRoutes");
 
 
 const app = express();
-const PORT = 6000;
+const PORT = 5000;
 
 if (cluster.isMaster) {
     // 🌟 Master process (manages workers)
@@ -61,6 +62,7 @@ if (cluster.isMaster) {
     app.use("/sets", setRoutes);
     app.use("/exam-schedule", examschedule);
     app.use("/results", resultRoutes);
+    app.use("/exam-results", ExamResultRoutes);
     app.use("/admin-settings", adminsetting);
     app.use("/summary", summary);
     app.use("/theme", theme)
