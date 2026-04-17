@@ -13,6 +13,9 @@ const ExamResultApi = {
   getById: (id) => axiosInstance.get(`/exam-results/${id}`),
 
   getByStudentId: (user_id) => axiosInstance.get(`/exam-results/student/${user_id}`),
+
+  getExamResultsByAdmin: (adminId) =>
+    axiosInstance.get(`/exam-results/examresult/${adminId}`),
 };
 
 export default ExamResultApi;

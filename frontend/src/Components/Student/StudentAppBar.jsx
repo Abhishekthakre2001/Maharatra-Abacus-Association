@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import colors from "../../utils/Color";
 import Button from "../../UI/Button";
 import MessageModal from "../../utils/MessageModal";
+import {
+  RotateCcw
+} from "lucide-react";
 
 const StudentAppBar = ({
   subtitle,
@@ -36,6 +39,41 @@ const StudentAppBar = ({
     document.cookie = "token=; Max-Age=0; path=/";
     onLogout && onLogout();
     navigate("/");
+  };
+
+  const hardReload = async () => {
+    try {
+      // setIsRefreshing(true);
+
+      // 1. Clear local/session temporary app data if needed
+      // Keep this only if you do NOT want to remove login/session data
+      // localStorage.clear();
+      // sessionStorage.clear();
+
+      // If you want to preserve auth, remove only app cache keys manually instead
+      // localStorage.removeItem("someOldCacheKey");
+
+      // 2. Clear Cache Storage used by PWA/service worker
+      if ("caches" in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+      }
+
+      // 3. Unregister all service workers
+      if ("serviceWorker" in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      }
+
+      // 4. Force browser to fetch fresh page from server
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set("_ts", Date.now().toString());
+
+      window.location.replace(currentUrl.toString());
+    } catch (error) {
+      console.error("Hard refresh failed:", error);
+      window.location.reload();
+    }
   };
 
   return (
@@ -156,11 +194,32 @@ const StudentAppBar = ({
                 </p>
               </div>
 
+
               {/* DETAILS */}
               <div className="mt-6 space-y-4 text-sm">
                 <ProfileRow icon={User} label="Username" value={user.username} />
                 <ProfileRow icon={MapPin} label="Address" value={user.address} />
                 <ProfileRow icon={Phone} label="Mobile" value={user.mobilenumber} />
+                <div className="w-full ">
+                  {/* 🔄 HARD REFRESH BUTTON (DESKTOP ONLY) */}
+                  <button
+                    onClick={hardReload}
+                    className="flex  items-center gap-2 px-4 py-2 my-2 rounded-xl transition-all duration-300 group"
+                    style={{
+                      background: "rgba(180,180,180,0.1)",
+                      backdropFilter: "blur(10px)",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      width: '100%'
+                    }}
+                  >
+                    <RotateCcw
+                      size={18}
+                      className="transition-transform duration-500 group-hover:rotate-180 text-Gray-500"
+                    />
+                    <span className="text-sm font-medium text-gray-500">Refresh</span>
+                  </button>
+                </div>
+
                 {/* <ProfileRow
                   icon={Calendar}
                   label="Subscription Ends"

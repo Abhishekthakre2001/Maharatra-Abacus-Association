@@ -50,6 +50,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     { id: "questions", label: "Questions", icon: FileQuestionMark, path: "/questions" },
     { id: "result", label: "Result", icon: FileUser, path: "/results" },
     { id: "exam-schedule", label: "Exam Schedule", icon: FileClock, path: "/exam-schedule" },
+    { id: "exam-result", label: "Exam Result", icon: FileUser, path: "/exam-result" },
     { id: "master", label: "Master", icon: Settings, path: "/masters" },
     // ✅ Only visible for admin id 55
     ...(user?.id === 50

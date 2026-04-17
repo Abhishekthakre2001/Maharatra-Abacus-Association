@@ -290,3 +290,30 @@ exports.remove = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to delete record" });
   }
 };
+
+exports.getexamresultByAdminId = async (req, res) => {
+  try {
+    const { admin_id } = req.params;
+
+    if (!admin_id) {
+      return res.status(400).json({
+        success: false,
+        message: "admin_id is required",
+      });
+    }
+
+    const [rows] = await ExamResultModel.findExamResultByAdminId(admin_id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Exam results fetched successfully",
+      data: rows,
+    });
+  } catch (error) {
+    console.error("getByAdminId error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch exam results by admin id",
+    });
+  }
+};

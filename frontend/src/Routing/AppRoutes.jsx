@@ -12,6 +12,7 @@ import ProtectedRoute from "./RoleBasedProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import Masters from "../Pages/Masters";
 import Examschedule from "../Pages/Examschedule";
+import ExamResult from "../Pages/Examresult";
 
 // student dashboard routes from here below
 import StudentDashboardPage from "../Pages/Student/StudentDashboardPage";
@@ -24,6 +25,7 @@ import InstallApp from "../Pages/InstallApp";
 import NfcReader from "../Components/NfcReader";
 import Registration from "../Registration/Registartion";
 import ExamStudent from "../Pages/ExamStudent";
+
 
 
 
@@ -51,6 +53,15 @@ const AppRoutes = () => {
         element={
           <RoleProtectedRoute allowedRoles={["Admin"]}>
             <Dashboard />
+          </RoleProtectedRoute>
+        }
+      />
+
+        <Route
+        path="/exam-result"
+        element={
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
+            <ExamResult />
           </RoleProtectedRoute>
         }
       />

@@ -181,6 +181,7 @@ const AppBar = ({
             </div>
           </div>
         )}
+
       </div>
 
       {/* MOBILE DROPDOWN MENU */}
@@ -224,6 +225,27 @@ const AppBar = ({
               );
             })}
           </div>
+
+          <div className="px-6">
+            {/* 🔄 HARD REFRESH BUTTON (DESKTOP ONLY) */}
+            <button
+              onClick={hardReload}
+              className="flex md:hidden items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 group"
+              style={{
+                background: "rgba(255,255,255,0.1)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.2)"
+              }}
+            >
+              <RotateCcw
+                size={18}
+                className="transition-transform duration-500 group-hover:rotate-180 text-white"
+              />
+              <span className="text-sm font-medium text-white">Refresh</span>
+            </button>
+          </div>
+
+
           {/* Logout */}
           <div className="p-4" onClick={() => logout()}>
             <button
@@ -241,6 +263,7 @@ const AppBar = ({
               <LogOut size={20} />
               {<span>Logout</span>}
             </button>
+
           </div>
         </div>
       )}
