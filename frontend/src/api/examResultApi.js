@@ -16,6 +16,8 @@ const ExamResultApi = {
 
   getExamResultsByAdmin: (adminId) =>
     axiosInstance.get(`/exam-results/examresult/${adminId}`),
+
+   deleteExamResult: (id) => axiosInstance.delete(`/exam-results/${id}`),
 };
 
 export default ExamResultApi;

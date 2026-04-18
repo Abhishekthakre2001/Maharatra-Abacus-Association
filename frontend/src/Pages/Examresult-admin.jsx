@@ -2,12 +2,17 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Sidebar from "../Components/Sidebar";
 import AppBar from '../UI/AppBar';
 import DataTable from '../UI/DataTable';
+import DeleteConfirmModal from "../UI/DeleteConfirmModal";
 import ExamResultApi from "../api/examResultApi";
 
 export default function ExamResult() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     const authUser = JSON.parse(localStorage.getItem("user") || "{}");
     const adminId =
@@ -68,9 +73,7 @@ export default function ExamResult() {
 
     const formatDate = (value) => {
         if (!value) return "";
-
         const date = new Date(value);
-
         return date.toLocaleDateString("en-GB", {
             timeZone: "UTC",
         });
@@ -78,9 +81,7 @@ export default function ExamResult() {
 
     const formatTime = (value) => {
         if (!value) return "";
-
         const date = new Date(value);
-
         return date.toLocaleTimeString("en-GB", {
             timeZone: "UTC",
             hour: "2-digit",
@@ -90,34 +91,51 @@ export default function ExamResult() {
         });
     };
 
-    useEffect(() => {
+    const fetchResults = async () => {
         if (!adminId) {
-            console.log("adminId not found");
             setData([]);
             return;
         }
 
-        const fetchResults = async () => {
-            try {
-                setLoading(true);
-                console.log("Calling API with adminId:", adminId);
+        try {
+            setLoading(true);
+            const res = await ExamResultApi.getExamResultsByAdmin(adminId);
+            const payload = res?.data?.data || [];
+            setData(Array.isArray(payload) ? payload : []);
+        } catch (error) {
+            console.error("Failed to fetch exam results:", error);
+            setData([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                const res = await ExamResultApi.getExamResultsByAdmin(adminId);
-
-                console.log("API response:", res?.data);
-
-                const payload = res?.data?.data || [];
-                setData(Array.isArray(payload) ? payload : []);
-            } catch (error) {
-                console.error("Failed to fetch exam results:", error);
-                setData([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
+    useEffect(() => {
         fetchResults();
     }, [adminId]);
+
+    const handleDelete = (row) => {
+        setSelectedRow(row);
+        setDeleteOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!selectedRow?.id) return;
+
+        try {
+            setDeleteLoading(true);
+            await ExamResultApi.deleteExamResult(selectedRow.id);
+
+            setData((prev) => prev.filter((item) => item.id !== selectedRow.id));
+            setDeleteOpen(false);
+            setSelectedRow(null);
+        } catch (error) {
+            console.error("Delete exam result failed:", error);
+            alert(error?.response?.data?.message || "Failed to delete exam result");
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
 
     const tableData = useMemo(() => {
         return (data || []).map((item) => {
@@ -156,6 +174,18 @@ export default function ExamResult() {
 
     return (
         <>
+            <DeleteConfirmModal
+                open={deleteOpen}
+                onClose={() => {
+                    setDeleteOpen(false);
+                    setSelectedRow(null);
+                }}
+                onConfirm={handleConfirmDelete}
+                loading={deleteLoading}
+                title="Reset Exam"
+                message={`Are you sure you want to reset exam for "${selectedRow?.name}"? This action cannot be undone.`}
+            />
+
             <Sidebar
                 isCollapsed={isCollapsed}
                 setIsCollapsed={setIsCollapsed}
@@ -182,7 +212,8 @@ export default function ExamResult() {
                         pagination
                         loading={loading}
                         exportable={true}
-                        showActions={false}
+                        showActions={true}
+                        onDelete={handleDelete}
                     />
                 </div>
             </main>
