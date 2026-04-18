@@ -26,6 +26,21 @@ export default function Result() {
 
     const columns = [
         {
+            key: "date",
+            label: "Date",
+            sortable: true,
+            render: (value) =>
+                value
+                    ? new Date(value).toLocaleDateString("en-GB")
+                    : ""
+        },
+        {
+            key: "time",
+            label: "Time",
+            sortable: true,
+            render: (value) => <span className="font-medium">{value}</span>
+        },
+        {
             key: "name",
             label: "Student Name",
             sortable: true,
