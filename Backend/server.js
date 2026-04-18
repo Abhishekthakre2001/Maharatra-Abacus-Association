@@ -22,7 +22,7 @@ const ExamResultRoutes = require("./src/routes/ExamResultRoutes");
 
 
 const app = express();
-const PORT = 5000;
+const PORT = 6000;
 
 if (cluster.isMaster) {
     // 🌟 Master process (manages workers)
