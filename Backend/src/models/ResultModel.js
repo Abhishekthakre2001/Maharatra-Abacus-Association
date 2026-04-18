@@ -155,6 +155,60 @@ module.exports = {
 
     return rows;
   },
+
+
+  findResultByAdminId: (id) =>
+    pool.query(
+      `
+    SELECT
+      r.id,
+      r.user_id,
+      r.total_question,
+      r.total_answer,
+      r.total_correct,
+      r.total_unsolve,
+      r.date,
+      r.time,
+      r.totaltime,
+      r.time_taken,
+      r.resultfor,
+      r.examtitle,
+      r.exam_id,
+      r.PaperSet,
+      r.Paperlevel,
+      r.createdby,
+
+      u.name,
+      u.username,
+      u.class,
+      u.address,
+      u.mobilenumber,
+      u.dob,
+      u.subscription_end_date,
+      u.level AS user_level,
+
+      l.level_name, 
+     CONCAT(u.level, ' - ', COALESCE(l.level_name, 'NA')) AS level_display
+
+    FROM result r
+    INNER JOIN users u
+      ON r.user_id = u.id
+
+    LEFT JOIN levels l
+      ON u.level = l.level
+      AND u.createdby = l.createdby 
+
+    WHERE r.createdby = ?
+
+    ORDER BY 
+      u.level ASC,
+      r.total_correct DESC,
+      r.total_answer DESC,
+      r.time_taken ASC,
+      r.id DESC
+    `,
+      [id]
+    )
 };
 
 

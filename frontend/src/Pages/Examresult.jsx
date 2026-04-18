@@ -63,7 +63,7 @@ export default function ExamResult() {
         // { key: "percentage", label: "Percentage" },
         // { key: "grade", label: "Grade" },
         { key: "rank", label: "Rank" },
-        { key: "status", label: "Status" },
+        // { key: "status", label: "Status" },
     ];
 
     const formatDate = (value) => {
@@ -101,7 +101,12 @@ export default function ExamResult() {
                 console.log("API response:", res?.data);
 
                 const payload = res?.data?.data || [];
-                setData(Array.isArray(payload) ? payload : []);
+
+                const submittedOnly = Array.isArray(payload)
+                    ? payload.filter((item) => item.status === "SUBMITTED")
+                    : [];
+
+                setData(submittedOnly);
             } catch (error) {
                 console.error("Failed to fetch exam results:", error);
                 setData([]);
@@ -150,7 +155,7 @@ export default function ExamResult() {
 
     return (
         <>
-            <Sidebar
+            {/* <Sidebar
                 isCollapsed={isCollapsed}
                 setIsCollapsed={setIsCollapsed}
             />
@@ -165,7 +170,7 @@ export default function ExamResult() {
                 <AppBar
                     title="Exam Results"
                     subtitle="View and manage exam results for students"
-                />
+                /> */}
 
                 <div className="mt-8">
                     <DataTable
@@ -179,7 +184,7 @@ export default function ExamResult() {
                         showActions={false}
                     />
                 </div>
-            </main>
+            {/* </main> */}
         </>
     );
 }

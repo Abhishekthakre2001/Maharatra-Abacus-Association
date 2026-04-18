@@ -155,3 +155,30 @@ exports.downloadResultsExcel = async (req, res) => {
     });
   }
 };
+
+exports.getResultByAdminId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "admin id is required",
+      });
+    }
+
+    const [rows] = await ResultModel.findResultByAdminId(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Results fetched successfully",
+      data: rows,
+    });
+  } catch (error) {
+    console.error("getResultByAdminId error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch results by admin id",
+    });
+  }
+};

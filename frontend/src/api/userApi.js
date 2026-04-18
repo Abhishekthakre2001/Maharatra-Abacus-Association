@@ -11,6 +11,8 @@ const userApi = {
   update: (id, payload) => axiosInstance.put(`/users/${id}`, payload),
   delete: (id) => axiosInstance.delete(`/users/${id}`),
 
+  getresultbyadminid: (id) => axiosInstance.get(`/results/admin/${id}`),
+
   // Registred students for exam
   getregistredstudentbyadminid: (id) => axiosInstance.get(`/exam-registration/createdby/${id}`),
 };

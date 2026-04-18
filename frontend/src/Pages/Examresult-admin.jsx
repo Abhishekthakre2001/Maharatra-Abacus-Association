@@ -68,19 +68,25 @@ export default function ExamResult() {
 
     const formatDate = (value) => {
         if (!value) return "";
-        return new Date(value).toLocaleDateString("en-GB", {
-            timeZone: "Asia/Kolkata"
+
+        const date = new Date(value);
+
+        return date.toLocaleDateString("en-GB", {
+            timeZone: "UTC",
         });
     };
 
     const formatTime = (value) => {
         if (!value) return "";
-        return new Date(value).toLocaleTimeString("en-IN", {
-            timeZone: "Asia/Kolkata",
+
+        const date = new Date(value);
+
+        return date.toLocaleTimeString("en-GB", {
+            timeZone: "UTC",
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit",
-            hour12: true,
+            hour12: false,
         });
     };
 

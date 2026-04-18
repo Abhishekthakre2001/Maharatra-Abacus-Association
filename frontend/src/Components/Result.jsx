@@ -1,47 +1,37 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useFetchData } from "../hooks/useFetchData";
 import DataTable from "../UI/DataTable"
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AppBar from '../UI/AppBar';
+import Tabs from '../UI/Tabs';
 import userApi from "../api/userApi";
+import ExamResult from '../Pages/Examresult';
 
 export default function Result() {
     const navigate = useNavigate();
 
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : {};
-    // const { data: students, loading, reload } = useFetchData(() => {
-    //     if (!user?.id) return Promise.resolve([]);
-    //     return userApi.getbyadminid(user.id);
-    // });
 
-    // console.log("user",user)
-    const { data: students, loading, reload } = useFetchData(() => {
-        if (!user?.id) return Promise.resolve([]);
-        return userApi.getresultbyadminid(user.id);
+    const { data: students = [], loading, reload } = useFetchData(async () => {
+        if (!user?.id) return [];
+
+        const res = await userApi.getresultbyadminid(user.id);
+        return res?.data?.data || [];
     });
 
     const handleView = (student) => {
-        navigate(`/studentresults/${student.id}`);
+        navigate(`/studentresults/${student.user_id}`);
     };
 
     const columns = [
-        // {
-        //     key: "id",
-        //     label: "Sr. No.",
-        //     render: (value, row, index, serial) => serial + 1
-        // },
         {
             key: "name",
             label: "Student Name",
             sortable: true,
             render: (value) => <span className="font-medium">{value}</span>
         },
-        {
-            key: "class",
-            label: "Class",
-            sortable: true
-        },
+
         {
             key: "address",
             label: "Address",
@@ -49,35 +39,35 @@ export default function Result() {
             render: (value) => <span className="text-sm">{value}</span>
         },
         {
-            key: "mobilenumber",
-            label: "Mobile Number",
+            key: "level_name",
+            label: "Level",
+            sortable: true
+        },
+
+        {
+            key: "total_question",
+            label: "Total Questions",
             sortable: true
         },
         {
-            key: "dob",
-            label: "Date of Birth",
-            sortable: true,
-            isDate: true,
-            render: (value) =>
-                value ? new Date(value).toLocaleDateString("en-GB") : ""
+            key: "total_answer",
+            label: "Total Answer",
+            sortable: true
         },
         {
-            key: "subscription_end_date",
-            label: "Subscription End Date",
-            sortable: true,
-            isDate: true,
-
-            render: (value) =>
-                value ? new Date(value).toLocaleDateString("en-GB") : ""
+            key: "total_correct",
+            label: "Total Correct",
+            sortable: true
         },
-
         {
-            key: "username",
-            label: "Username",
-            sortable: true,
-            render: (value) => (
-                <span className="font-medium" >{value}</span>
-            )
+            key: "total_unsolve",
+            label: "Total Unsolve",
+            sortable: true
+        },
+        {
+            key: "time_taken",
+            label: "Time Taken",
+            sortable: true
         }
     ];
 
@@ -88,23 +78,34 @@ export default function Result() {
                 subtitle="Insights into student achievements"
             />
 
-
-            {/* Student Table */}
-            <div className="p-0 my-8">
-                <DataTable
-                    columns={columns}
-                    data={students}
-                    title="All Students"
-                    onView={handleView}
-                    searchable
-                    pagination
-                    showActions
-                    loading={loading}
+            {/* tabs */}
+            <div className="p-6">
+                <Tabs
+                    tabs={[
+                        {
+                            label: 'Test Result', content: <>
+                                <div className="p-0 my-8">
+                                    <DataTable
+                                        columns={columns}
+                                        data={students}
+                                        title="All Students Results"
+                                        // onView={handleView}
+                                        searchable
+                                        pagination
+                                        showActions={false}
+                                        loading={loading}
+                                    />
+                                </div>
+                            </>
+                        },
+                        { label: 'Exam Result', content: <ExamResult /> }
+                    ]}
                 />
             </div>
 
+
         </div>
-    )
+    );
 }
 
 // import React from 'react'
@@ -130,15 +131,15 @@ export default function Result() {
 //             </div>
 
 
-//             {/* tabs */}
-//             <div className="p-6">
-//                 <Tabs
-//                     tabs={[
-//                         { label: 'Mock Result', content: <MockResultTable /> },
-//                         { label: 'Main Result', content: <MainExamResultTable /> }
-//                     ]}
-//                 />
-//             </div>
+// {/* tabs */}
+// <div className="p-6">
+//     <Tabs
+//         tabs={[
+//             { label: 'Mock Result', content: <MockResultTable /> },
+//             { label: 'Main Result', content: <MainExamResultTable /> }
+//         ]}
+//     />
+// </div>
 
 //         </>
 //     )
