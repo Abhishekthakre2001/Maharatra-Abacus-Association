@@ -116,18 +116,24 @@ const secondsToTime = (seconds) => {
 const parseMysqlDateTime = (value) => {
   if (!value) return null;
 
-  // If already a JS Date object
+  // Convert Date object to MySQL-like local string first
   if (value instanceof Date) {
-    return value;
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, "0");
+    const day = String(value.getDate()).padStart(2, "0");
+    const hour = String(value.getHours()).padStart(2, "0");
+    const minute = String(value.getMinutes()).padStart(2, "0");
+    const second = String(value.getSeconds()).padStart(2, "0");
+
+    value = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   }
 
-  // If MySQL returned string
   if (typeof value === "string") {
-    return new Date(value.replace(" ", "T") + "+05:30");
+    const normalized = value.trim().replace(" ", "T");
+    return new Date(`${normalized}+05:30`);
   }
 
-  // fallback
-  return new Date(value);
+  return null;
 };
 
 exports.submitExam = async (req, res) => {
@@ -163,7 +169,6 @@ exports.submitExam = async (req, res) => {
     }
 
     const { datetime } = getIndianDateTimeParts();
-
     const startDateTime = examRow[0].exam_start_at;
 
     if (!startDateTime) {
@@ -175,6 +180,10 @@ exports.submitExam = async (req, res) => {
 
     const start = parseMysqlDateTime(startDateTime);
     const end = parseMysqlDateTime(datetime);
+
+    console.log("Raw exam_start_at from DB:", startDateTime);
+    console.log("Parsed start:", start);
+    console.log("Parsed end:", end);
 
     if (!start || isNaN(start.getTime())) {
       return res.status(400).json({
@@ -192,7 +201,18 @@ exports.submitExam = async (req, res) => {
 
     let totalSeconds = Math.floor((end.getTime() - start.getTime()) / 1000);
 
-    if (totalSeconds < 0) totalSeconds = 0;
+    console.log("Calculated totalSeconds:", totalSeconds);
+
+    if (totalSeconds < 0) {
+      console.error("Negative time difference detected", {
+        startDateTime,
+        endDateTime: datetime,
+        startISO: start.toISOString(),
+        endISO: end.toISOString(),
+      });
+
+      totalSeconds = 0;
+    }
 
     const time_taken = secondsToTime(totalSeconds);
 
