@@ -131,17 +131,17 @@ export default function StudentDashboard() {
   const userCityId = Number(user?.city_id);
 
 
-  // const liveExamData = filteredUpcomingExams.find(
-  //   exam =>
-  //     new Date(exam.date).toDateString() === new Date().toDateString() &&
-  //     isLiveTime(exam.start_time, exam.end_time)
-  // );
   const liveExamData = filteredUpcomingExams.find(
     exam =>
-      Number(exam?.Exam_for_city) === userCityId &&
       new Date(exam.date).toDateString() === new Date().toDateString() &&
       isLiveTime(exam.start_time, exam.end_time)
   );
+  // const liveExamData = filteredUpcomingExams.find(
+  //   exam =>
+  //     Number(exam?.Exam_for_city) === userCityId &&
+  //     new Date(exam.date).toDateString() === new Date().toDateString() &&
+  //     isLiveTime(exam.start_time, exam.end_time)
+  // );
 
   const [isexam, setIsExam] = useState(false);
   const [examloading, setexamloading] = useState(true);
