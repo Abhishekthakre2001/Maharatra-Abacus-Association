@@ -116,24 +116,18 @@ const secondsToTime = (seconds) => {
 const parseMysqlDateTime = (value) => {
   if (!value) return null;
 
-  // Convert Date object to MySQL-like local string first
+  // If already a JS Date object
   if (value instanceof Date) {
-    const year = value.getFullYear();
-    const month = String(value.getMonth() + 1).padStart(2, "0");
-    const day = String(value.getDate()).padStart(2, "0");
-    const hour = String(value.getHours()).padStart(2, "0");
-    const minute = String(value.getMinutes()).padStart(2, "0");
-    const second = String(value.getSeconds()).padStart(2, "0");
-
-    value = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    return value;
   }
 
+  // If MySQL returned string
   if (typeof value === "string") {
-    const normalized = value.trim().replace(" ", "T");
-    return new Date(`${normalized}+05:30`);
+    return new Date(value.replace(" ", "T") + "+05:30");
   }
 
-  return null;
+  // fallback
+  return new Date(value);
 };
 
 exports.submitExam = async (req, res) => {
@@ -169,6 +163,7 @@ exports.submitExam = async (req, res) => {
     }
 
     const { datetime } = getIndianDateTimeParts();
+
     const startDateTime = examRow[0].exam_start_at;
 
     if (!startDateTime) {
@@ -178,40 +173,78 @@ exports.submitExam = async (req, res) => {
       });
     }
 
-    const start = parseMysqlDateTime(startDateTime);
-    const end = parseMysqlDateTime(datetime);
+    // const start = parseMysqlDateTime(startDateTime);
+    // const end = parseMysqlDateTime(datetime);
 
-    console.log("Raw exam_start_at from DB:", startDateTime);
-    console.log("Parsed start:", start);
-    console.log("Parsed end:", end);
+    // if (!start || isNaN(start.getTime())) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Invalid exam start time",
+    //   });
+    // }
 
-    if (!start || isNaN(start.getTime())) {
+    // if (!end || isNaN(end.getTime())) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Invalid exam end time",
+    //   });
+    // }
+
+    // let totalSeconds = Math.floor((end.getTime() - start.getTime()) / 1000);
+
+    // if (totalSeconds < 0) totalSeconds = 0;
+
+    // const time_taken = secondsToTime(totalSeconds);
+    const extractTimePart = (value) => {
+      if (!value) return null;
+
+      if (value instanceof Date) {
+        const h = String(value.getHours()).padStart(2, "0");
+        const m = String(value.getMinutes()).padStart(2, "0");
+        const s = String(value.getSeconds()).padStart(2, "0");
+        return `${h}:${m}:${s}`;
+      }
+
+      if (typeof value === "string") {
+        const str = value.trim();
+
+        // "YYYY-MM-DD HH:mm:ss"
+        if (str.includes(" ")) {
+          return str.split(" ")[1];
+        }
+
+        // "HH:mm:ss"
+        return str;
+      }
+
+      return null;
+    };
+
+    const startTimeOnly = extractTimePart(startDateTime);
+    const endTimeOnly = extractTimePart(datetime);
+
+    if (!startTimeOnly) {
       return res.status(400).json({
         success: false,
         message: "Invalid exam start time",
       });
     }
 
-    if (!end || isNaN(end.getTime())) {
+    if (!endTimeOnly) {
       return res.status(400).json({
         success: false,
         message: "Invalid exam end time",
       });
     }
 
-    let totalSeconds = Math.floor((end.getTime() - start.getTime()) / 1000);
+    const startSeconds = timeToSeconds(startTimeOnly);
+    const endSeconds = timeToSeconds(endTimeOnly);
 
-    console.log("Calculated totalSeconds:", totalSeconds);
+    let totalSeconds = endSeconds - startSeconds;
 
+    // handles crossing midnight
     if (totalSeconds < 0) {
-      console.error("Negative time difference detected", {
-        startDateTime,
-        endDateTime: datetime,
-        startISO: start.toISOString(),
-        endISO: end.toISOString(),
-      });
-
-      totalSeconds = 0;
+      totalSeconds = (24 * 3600 - startSeconds) + endSeconds;
     }
 
     const time_taken = secondsToTime(totalSeconds);
