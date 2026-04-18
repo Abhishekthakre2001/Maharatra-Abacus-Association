@@ -54,8 +54,13 @@ export default function Result() {
             render: (value) => <span className="text-sm">{value}</span>
         },
         {
-            key: "level_name",
+            key: "Paperlevel",
             label: "Level",
+            sortable: true
+        },
+           {
+            key: "PaperSet",
+            label: "Set",
             sortable: true
         },
 
@@ -77,6 +82,11 @@ export default function Result() {
         {
             key: "total_unsolve",
             label: "Total Unsolve",
+            sortable: true
+        },
+         {
+            key: "totaltime",
+            label: "Total Time",
             sortable: true
         },
         {

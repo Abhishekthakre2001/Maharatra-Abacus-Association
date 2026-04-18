@@ -185,18 +185,11 @@ module.exports = {
       u.mobilenumber,
       u.dob,
       u.subscription_end_date,
-      u.level AS user_level,
-
-      l.level_name, 
-     CONCAT(u.level, ' - ', COALESCE(l.level_name, 'NA')) AS level_display
+      u.level AS user_level
 
     FROM result r
     INNER JOIN users u
       ON r.user_id = u.id
-
-    LEFT JOIN levels l
-      ON u.level = l.level
-      AND u.createdby = l.createdby 
 
     WHERE r.createdby = ?
 
