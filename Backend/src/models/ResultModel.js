@@ -157,51 +157,108 @@ module.exports = {
   },
 
 
-  findResultByAdminId: (id) =>
-    pool.query(
-      `
-    SELECT
-      r.id,
-      r.user_id,
-      r.total_question,
-      r.total_answer,
-      r.total_correct,
-      r.total_unsolve,
-      r.date,
-      r.time,
-      r.totaltime,
-      r.time_taken,
-      r.resultfor,
-      r.examtitle,
-      r.exam_id,
-      r.PaperSet,
-      r.Paperlevel,
-      r.createdby,
+  // findResultByAdminId: (id) =>
+  //   pool.query(
+  //     `
+  //   SELECT
+  //     r.id,
+  //     r.user_id,
+  //     r.total_question,
+  //     r.total_answer,
+  //     r.total_correct,
+  //     r.total_unsolve,
+  //     r.date,
+  //     r.time,
+  //     r.totaltime,
+  //     r.time_taken,
+  //     r.resultfor,
+  //     r.examtitle,
+  //     r.exam_id,
+  //     r.PaperSet,
+  //     r.Paperlevel,
+  //     r.createdby,
 
-      u.name,
-      u.username,
-      u.class,
-      u.address,
-      u.mobilenumber,
-      u.dob,
-      u.subscription_end_date,
-      u.level AS user_level
+  //     u.name,
+  //     u.username,
+  //     u.class,
+  //     u.address,
+  //     u.mobilenumber,
+  //     u.dob,
+  //     u.subscription_end_date,
+  //     u.level AS user_level
 
-    FROM result r
-    INNER JOIN users u
-      ON r.user_id = u.id
+  //   FROM result r
+  //   INNER JOIN users u
+  //     ON r.user_id = u.id
 
-    WHERE r.createdby = ?
+  //   WHERE r.createdby = ?
 
+  //   ORDER BY 
+  //     u.level ASC,
+  //     r.total_correct DESC,
+  //     r.total_answer DESC,
+  //     r.time_taken ASC,
+  //     r.id DESC
+  //   `,
+  //     [id]
+  //   )
+ findResultByAdminId: (id) =>
+  pool.query(
+    `
+    SELECT * FROM (
+      SELECT
+        r.id,
+        r.user_id,
+        r.total_question,
+        r.total_answer,
+        r.total_correct,
+        r.total_unsolve,
+        r.date,
+        r.time,
+        r.totaltime,
+        r.time_taken,
+        r.resultfor,
+        r.examtitle,
+        r.exam_id,
+        r.PaperSet,
+        r.Paperlevel,
+        r.createdby,
+
+        u.name,
+        u.username,
+        u.class,
+        u.address,
+        u.mobilenumber,
+        u.dob,
+        u.subscription_end_date,
+        u.level AS user_level,
+
+        FLOOR(UNIX_TIMESTAMP(r.createdat) / 60) AS time_bucket,
+
+        ROW_NUMBER() OVER (
+          PARTITION BY r.user_id, FLOOR(UNIX_TIMESTAMP(r.createdat) / 60)
+          ORDER BY 
+            r.total_correct DESC,
+            r.total_answer DESC,
+            r.time_taken ASC,
+            r.id DESC
+        ) AS rn
+
+      FROM result r
+      INNER JOIN users u
+        ON r.user_id = u.id
+      WHERE r.createdby = ?
+    ) t
+    WHERE t.rn = 1
     ORDER BY 
-      u.level ASC,
-      r.total_correct DESC,
-      r.total_answer DESC,
-      r.time_taken ASC,
-      r.id DESC
+      t.user_level ASC,
+      t.total_correct DESC,
+      t.total_answer DESC,
+      t.time_taken ASC,
+      t.id DESC
     `,
-      [id]
-    )
+    [id]
+  )
 };
 
 

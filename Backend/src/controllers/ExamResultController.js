@@ -247,11 +247,27 @@ exports.submitExam = async (req, res) => {
       totalSeconds = (24 * 3600 - startSeconds) + endSeconds;
     }
 
+    // const time_taken = secondsToTime(totalSeconds);
+
     const time_taken = secondsToTime(totalSeconds);
+
+    // ✅ NEW LOGIC: cap time_taken to exam_time
+    const examTime = examRow[0].exam_time; // format: HH:mm:ss
+
+    if (examTime) {
+      const examSeconds = timeToSeconds(examTime);
+
+      if (totalSeconds > examSeconds) {
+        totalSeconds = examSeconds;
+      }
+    }
+
+    // final corrected time_taken
+    const final_time_taken = secondsToTime(totalSeconds);
 
     await ExamResultModel.submitExam(id, {
       exam_end_at: datetime,
-      time_taken,
+      time_taken: final_time_taken,
       total_solve,
       total_unsolve,
       total_correct,
@@ -260,7 +276,7 @@ exports.submitExam = async (req, res) => {
     return res.json({
       success: true,
       message: "Exam submitted successfully",
-      time_taken,
+      time_taken: final_time_taken,
     });
   } catch (error) {
     console.error("submitExam error:", error);
