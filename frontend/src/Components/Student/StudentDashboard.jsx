@@ -216,22 +216,15 @@ export default function StudentDashboard() {
               <TopAutoCarousel
                 items={
                   upcomeingexam?.filter((exam) => {
-                    const examCityId = Number(exam?.Exam_for_city);
-                    const userCityId = Number(user?.city_id);
 
                     return (
-                      examCityId === userCityId &&
                       isTodayOrFuture(exam.date) &&
                       isExamStillActiveOrFuture(exam)
                     );
                   }).length > 0
                     ? upcomeingexam
                       ?.filter((exam) => {
-                        const examCityId = Number(exam?.Exam_for_city);
-                        const userCityId = Number(user?.city_id);
-
                         return (
-                          examCityId === userCityId &&
                           isTodayOrFuture(exam.date) &&
                           isExamStillActiveOrFuture(exam)
                         );

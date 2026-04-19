@@ -53,6 +53,13 @@ export default function Result() {
             sortable: true,
             render: (value) => <span className="text-sm">{value}</span>
         },
+
+        {
+            key: "city",
+            label: "City",
+            sortable: true,
+            render: (value) => <span className="text-sm">{value}</span>
+        },
         {
             key: "Paperlevel",
             label: "Level",

@@ -233,6 +233,8 @@ module.exports = {
         u.subscription_end_date,
         u.level AS user_level,
 
+        sr.city,  
+
         FLOOR(UNIX_TIMESTAMP(r.createdat) / 60) AS time_bucket,
 
         ROW_NUMBER() OVER (
@@ -247,6 +249,10 @@ module.exports = {
       FROM result r
       INNER JOIN users u
         ON r.user_id = u.id
+
+      LEFT JOIN student_registration sr  
+        ON sr.user_id = u.id
+
       WHERE r.createdby = ?
     ) t
     WHERE t.rn = 1
