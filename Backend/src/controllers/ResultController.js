@@ -1,10 +1,42 @@
 const ResultModel = require("../models/ResultModel");
 const ExcelJS = require("exceljs");
+const ExamScheduleModel = require("../models/ExamScheduleModel");
+
 // const paperCache = new Map();
 
+// exports.create = async (req, res) => {
+//   const [result] = await ResultModel.create(req.body);
+//   res.status(201).json({ id: result.insertId });
+// };
 exports.create = async (req, res) => {
-  const [result] = await ResultModel.create(req.body);
-  res.status(201).json({ id: result.insertId });
+  try {
+    const data = req.body;
+
+    // 🔍 Step 1: Check if live exam exists for this user level
+    const [liveExamRows] = await ExamScheduleModel.findLiveExam({
+      level: Number(data.PaperLevel),        // same as paper level
+      createdby: Number(data.createdby)
+    });
+
+    // ❌ If live exam is running → block mock result
+    if (liveExamRows.length > 0) {
+      return res.status(400).json({
+        message: "Your exam is live now. Please give the exam, not a mock test."
+      });
+    }
+
+    // ✅ If no live exam → allow saving result
+    const [result] = await ResultModel.create(data);
+
+    return res.status(201).json({
+      id: result.insertId,
+      message: "Result saved successfully"
+    });
+
+  } catch (err) {
+    console.error("Create result error ❌", err);
+    res.status(500).json({ message: "Failed to save result" });
+  }
 };
 
 exports.getAll = async (req, res) => {
@@ -48,21 +80,26 @@ exports.checkExamSubmission = async (req, res) => {
   const [rows] = await ResultModel.findByUserAndExam(user_id, exam_id);
 
   if (rows.length > 0) {
-    return res.json({
-      exam: true,
-      user_id: Number(user_id),
-      exam_id: Number(exam_id)
-    });
-  }
+    const record = rows[0];
 
-  // paperCache.set(cacheKey, rows.length > 0
-  //   ? {
-  //     exam: true,
-  //     user_id: Number(user_id),
-  //     exam_id: Number(exam_id)
-  //   }
-  //   : { exam: false }
-  // );
+    // ✅ NEW LOGIC
+    if (record.status === "SUBMITTED") {
+      return res.json({
+        exam: true,
+        user_id: Number(user_id),
+        exam_id: Number(exam_id)
+      });
+    }
+
+    if (record.status === "STARTED") {
+      return res.json({
+        exam: false,
+        user_id: Number(user_id),
+        exam_id: Number(exam_id),
+        message: "Exam not submitted yet"
+      });
+    }
+  }
 
   return res.json({ exam: false });
 };

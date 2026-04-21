@@ -136,6 +136,7 @@ export default function ExamPage() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     const examType = localStorage.getItem("examType"); // mock or live
     const paperset = localStorage.getItem("paperset");
+    const paperlevel = localStorage.getItem("paperlevel");
     const userLevel = localStorage.getItem("Userlevl") || "";
     const examTitle = localStorage.getItem("Exam_Tittle") || "Not Available";
     const examId = localStorage.getItem("exam_id");
@@ -275,6 +276,7 @@ export default function ExamPage() {
         },
         (error) => {
             setSubmitting(false);
+            console.log("errorsdsdsds", error.message)
             setModal({
                 open: true,
                 type: "error",
@@ -518,6 +520,7 @@ export default function ExamPage() {
     const answeredCount = Object.keys(answers).length;
     const unansweredCount = Math.max(0, questions.length - answeredCount);
     const unvisitedCount = Math.max(0, questions.length - visited.size);
+    const [fatalError, setFatalError] = useState(null);
     const progressPercent =
         questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
 
@@ -617,6 +620,7 @@ export default function ExamPage() {
             const mysqlDateTime = now.toISOString().slice(0, 19).replace("T", " ");
 
             const resultPayload = {
+                PaperLevel: paperlevel,
                 set: paperset,
                 Level: userLevel,
                 user_id: user.id,
@@ -637,10 +641,61 @@ export default function ExamPage() {
             localStorage.removeItem("examState");
             localStorage.setItem("result", JSON.stringify(resultPayload));
 
+            // try {
+            //     await createMockResult(resultPayload);
+            // } catch (error) {
+            //     console.error("Mock submit error:", error);
+            // }
+
             try {
-                await createMockResult(resultPayload);
+                setSubmitting(true);
+
+                const res = await ResultApi.create(resultPayload);
+
+                setSubmitting(false);
+                setIsFinishingMock(true);
+
+                setModal({
+                    open: true,
+                    type: "success",
+                    title: "Success",
+                    message: "Exam Submitted successfully",
+                });
+
+                localStorage.removeItem("paperlevel");
+                localStorage.removeItem("examState");
+                localStorage.removeItem("Exam_Tittle");
+
+                setTimeout(() => {
+                    navigate("/student-result", {
+                        state: resultPayload,
+                    });
+                    localStorage.removeItem("examType");
+                }, 2000);
+
             } catch (error) {
-                console.error("Mock submit error:", error);
+                setSubmitting(false);
+
+                const errorMessage =
+                    error?.response?.data?.message ||
+                    error?.message ||
+                    "Something went wrong";
+
+                const isLiveExamError =
+                    errorMessage ===
+                    "Your exam is live now. Please give the exam, not a mock test.";
+
+                if (isLiveExamError) {
+                    setFatalError(errorMessage);
+                    return;
+                }
+
+                setModal({
+                    open: true,
+                    type: "error",
+                    title: "Error",
+                    message: errorMessage,
+                });
             }
 
             return;
@@ -678,6 +733,22 @@ export default function ExamPage() {
         }
     };
 
+    const handleGoToDashboard = () => {
+        // 🔥 clear everything
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // optional: clear cookies (basic way)
+        document.cookie.split(";").forEach((c) => {
+            document.cookie =
+                c.trim().split("=")[0] +
+                "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+        });
+
+        // 🔥 hard refresh + redirect
+        window.location.href = "/student-dashboard";
+    };
+
     /* ---------------- Loaders / Validations ---------------- */
     if (questionLoading || (examType !== "mock" && startExamLoading)) {
         return <ExamLoading />;
@@ -711,6 +782,30 @@ export default function ExamPage() {
         );
     }
 
+    if (fatalError) {
+        return (
+            <div className="h-screen flex flex-col items-center justify-center bg-red-50 px-6 text-center">
+                <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
+                    <h2 className="text-xl font-bold text-red-600 mb-4">
+                        Error
+                    </h2>
+
+                    <p className="text-gray-700 mb-6">
+                        {fatalError}
+                    </p>
+
+                    <Button
+                        variant="primary"
+                        onClick={handleGoToDashboard}
+                        className="w-full"
+                    >
+                        Logout
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
     if (submitting || submitExamLoading || createMockLoading) {
         return (
             <div className="h-screen flex items-center justify-center bg-blue-100">
@@ -737,6 +832,7 @@ export default function ExamPage() {
                     handleSubmitExam();
                 }}
             />
+
 
             <div className="flex-1 overflow-y-auto m-2">
                 <div className="bg-white rounded-lg shadow-lg p-4">

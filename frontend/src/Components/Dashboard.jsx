@@ -115,7 +115,7 @@ export default function Dashboard() {
         </div>
 
       </div>
-      <button
+      {/* <button
         onClick={handleDownloadAllResults}
         disabled={isDownloading}
         className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg transition
@@ -134,7 +134,7 @@ export default function Dashboard() {
             Download All Results
           </>
         )}
-      </button>
+      </button> */}
 
       <div className="bg-white rounded-2xl shadow p-6 my-10">
         <h3 className="text-lg font-semibold mb-1">

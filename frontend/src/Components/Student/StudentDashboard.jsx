@@ -10,12 +10,17 @@ import TopAutoCarousel from './LightDashboardCard';
 import CreamCarouselCard from './CreamCarouselCard';
 import examImg from "../../assets/exam.png";
 import Modal from '../../UI/Modal';
+import {
+  RotateCcw
+} from "lucide-react";
 
 export default function StudentDashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
   const [showSets, setShowSets] = useState(false);
   const [attemptedExamId, setAttemptedExamId] = useState(null);
+  const [is_exam_live, setIsExamLive] = useState(false);
+  const [LiveExamBtnName, setLiveExamBtnName] = useState("Start Live Exam");
 
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const userName =
@@ -41,6 +46,28 @@ export default function StudentDashboard() {
   const { data: upcomeingexam, examscheduleloading } = useFetchData(() =>
     examScheduleApi.getstudnetupcomeingexam(user.level, user.createdby)
   );
+
+ 
+
+  useEffect(() => {
+    const fetchLiveExam = async () => {
+      try {
+        const res = await examScheduleApi.getLiveExam(
+          user.level,
+          user.createdby
+        );
+        setIsExamLive(res.data.is_exam_live);
+        setLiveExamBtnName(res.data.exam?.exam_title || "Start Live Exam");
+        console.log("LIVE EXAM API RESPONSE 👉", res.data.exam.exam_title);
+      } catch (err) {
+        console.error("Live exam fetch error ❌", err);
+      }
+    };
+
+    if (user?.level && user?.createdby) {
+      fetchLiveExam();
+    }
+  }, [user?.level, user?.createdby]);
 
   const { data: levelwise_set, levelsetloading } = useFetchData(() =>
     questionApi.getset(user.level, user.createdby),
@@ -74,26 +101,45 @@ export default function StudentDashboard() {
     });
   };
 
-  const formatTime = (timeStr) => {
-    if (!timeStr) return "";
-    return timeStr.slice(0, 5);
+  const formatDateOnly = (dateStr) => {
+    if (!dateStr) return "";
+    return new Date(dateStr).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const formatTime12hr = (dateTimeStr) => {
+    if (!dateTimeStr) return "";
+    return new Date(dateTimeStr).toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
 
   /* ================= FILTERED EXAMS (🔥 FIX) ================= */
+  // const isExamStillActiveOrFuture = (exam) => {
+  //   const now = new Date();
+
+  //   // exam date (YYYY-MM-DD)
+  //   const examDate = new Date(exam.date);
+
+  //   // build full end datetime
+  //   const [hh, mm, ss] = exam.end_time.split(":").map(Number);
+  //   const examEndDateTime = new Date(examDate);
+  //   examEndDateTime.setHours(hh, mm, ss || 0, 0);
+
+  //   return examEndDateTime > now;
+  // };
+
   const isExamStillActiveOrFuture = (exam) => {
     const now = new Date();
+    const end = new Date(exam.end_time);
 
-    // exam date (YYYY-MM-DD)
-    const examDate = new Date(exam.date);
-
-    // build full end datetime
-    const [hh, mm, ss] = exam.end_time.split(":").map(Number);
-    const examEndDateTime = new Date(examDate);
-    examEndDateTime.setHours(hh, mm, ss || 0, 0);
-
-    return examEndDateTime > now;
+    return end > now;
   };
-
 
   // const filteredUpcomingExams =
   //   upcomeingexam?.filter(
@@ -111,24 +157,19 @@ export default function StudentDashboard() {
     ) || [];
 
 
-  console.log("upcomeingexam", upcomeingexam)
+  console.log("upcomeingexam", filteredUpcomingExams)
   /* ================= LIVE EXAM LOGIC ================= */
 
   const isLiveTime = (startTime, endTime) => {
     const now = new Date();
-    const [sh, sm, ss] = startTime.split(":").map(Number);
-    const [eh, em, es] = endTime.split(":").map(Number);
 
-    const start = new Date();
-    start.setHours(sh, sm, ss || 0);
-
-    const end = new Date();
-    end.setHours(eh, em, es || 0);
+    const start = new Date(startTime);
+    const end = new Date(endTime);
 
     return now >= start && now <= end;
   };
 
-  const userCityId = Number(user?.city_id);
+  // const userCityId = Number(user?.city_id);
 
 
   const liveExamData = filteredUpcomingExams.find(
@@ -188,7 +229,43 @@ export default function StudentDashboard() {
   };
 
 
-  console.log("liveExamData", levelwise_set[0]?.level_name);
+  // console.log("liveExamData", levelwise_set[0]?.level_name);
+  console.log("liveExamData",liveExamData)
+
+  const hardReload = async () => {
+    try {
+      // setIsRefreshing(true);
+
+      // 1. Clear local/session temporary app data if needed
+      // Keep this only if you do NOT want to remove login/session data
+      // localStorage.clear();
+      // sessionStorage.clear();
+
+      // If you want to preserve auth, remove only app cache keys manually instead
+      // localStorage.removeItem("someOldCacheKey");
+
+      // 2. Clear Cache Storage used by PWA/service worker
+      if ("caches" in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+      }
+
+      // 3. Unregister all service workers
+      if ("serviceWorker" in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      }
+
+      // 4. Force browser to fetch fresh page from server
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set("_ts", Date.now().toString());
+
+      window.location.replace(currentUrl.toString());
+    } catch (error) {
+      console.error("Hard refresh failed:", error);
+      window.location.reload();
+    }
+  };
 
   return (
     <>
@@ -234,9 +311,9 @@ export default function StudentDashboard() {
                           key={exam.id}
                           title={`Abacus Level ${exam.exam_level} Examination`}
                           subtitle={exam.exam_title}
-                          examDate={formatDate(exam.date)}
-                          startTime={formatTime(exam.start_time)}
-                          endTime={formatTime(exam.end_time)}
+                          examDate={exam.start_time}
+                          startTime={exam.start_time}
+                          endTime={exam.end_time}
                           image={examImg}
                         />
                       ))
@@ -255,6 +332,26 @@ export default function StudentDashboard() {
               />
             </div>
           </div>
+
+          <div className="w-full my-6">
+            <button
+              onClick={hardReload}
+              className="flex items-center justify-center gap-2 px-4 py-2 my-2 rounded-xl transition-all duration-300 group w-full"
+              style={{
+                background: "rgba(180,180,180,0.1)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              <RotateCcw
+                size={18}
+                className="transition-transform duration-500 group-hover:rotate-180 text-gray-500"
+              />
+              <span className="text-sm font-medium text-gray-500">Refresh</span>
+            </button>
+          </div>
+
+
 
           {/* ================= ACTION SECTION ================= */}
           <div className="mt-6 bg-white rounded-2xl shadow-sm p-5">
@@ -275,7 +372,15 @@ export default function StudentDashboard() {
               </p>
             ) : (
               <div className="space-y-3">
-                {!showSets && !liveExamData && (
+                {/* <Button
+                    variant="primary"
+                    size="lg"
+                    onClick={() => setModalOpen(true)}
+                    className="w-full"
+                  >
+                    Start Test Exam
+                  </Button> */}
+                {!showSets && !liveExamData && !is_exam_live && (
                   <Button
                     variant="primary"
                     size="lg"
@@ -286,7 +391,7 @@ export default function StudentDashboard() {
                   </Button>
                 )}
 
-                {liveExamData && (
+                {is_exam_live && (
                   <div className="relative group w-full">
                     <Button
                       variant="green"
@@ -296,7 +401,7 @@ export default function StudentDashboard() {
                       className={`w-full ${!isexam ? "cursor-pointer" : "cursor-not-allowed"}`}
 
                     >
-                      {liveExamData.exam_title || "Start Live Exam"}
+                      {LiveExamBtnName || "Start Live Exam"}
                     </Button>
                     {isexam && (
                       <div
@@ -370,6 +475,8 @@ export default function StudentDashboard() {
             </Modal>
 
           </div>
+
+
 
         </div>
       </div>

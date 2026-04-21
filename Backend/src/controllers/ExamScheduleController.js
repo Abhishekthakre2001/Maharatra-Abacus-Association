@@ -62,10 +62,25 @@ exports.getlevelwise = async (req, res) => {
       createdby: Number(createdby),
     });
 
-    // ✅ Store in cache
-    // paperCache.set(cacheKey, rows);
+    const formatToLocal = (date) => {
+      if (!date) return null;
 
-    res.json(rows);
+      const d = new Date(date);
+
+      return d.toLocaleString("sv-SE", {
+        timeZone: "Asia/Kolkata"
+      }).replace(" ", "T");
+    };
+
+    const formattedRows = rows.map(row => ({
+      ...row,
+      start_time: formatToLocal(row.start_time),
+      end_time: formatToLocal(row.end_time),
+      date: formatToLocal(row.date)
+    }));
+
+    res.json(formattedRows);
+
   } catch (err) {
     console.error("❌ getlevelwise error:", err);
     res.status(500).json({ message: "Failed to fetch exam schedules" });
@@ -118,3 +133,35 @@ exports.getByDate = async (req, res) => {
   res.json(rows);
 };
 
+exports.getLiveExam = async (req, res) => {
+  try {
+    const { level, createdby } = req.query;
+
+    if (!level || !createdby) {
+      return res.status(400).json({
+        message: "level and createdby are required",
+      });
+    }
+
+    const [rows] = await ExamScheduleModel.findLiveExam({
+      level: Number(level),
+      createdby: Number(createdby),
+    });
+
+    if (rows.length === 0) {
+      return res.json({
+        is_exam_live: false,
+        exam: null
+      });
+    }
+
+    return res.json({
+      is_exam_live: true,
+      exam: rows[0]
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch live exam" });
+  }
+};

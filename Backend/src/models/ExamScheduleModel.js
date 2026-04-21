@@ -103,5 +103,21 @@ ORDER BY date, start_time;
     ),
 
   remove: (id) =>
-    pool.query(`DELETE FROM exam_schedule WHERE id = ?`, [id])
+    pool.query(`DELETE FROM exam_schedule WHERE id = ?`, [id]),
+
+findLiveExam: ({ level, createdby }) =>
+  pool.query(
+    `
+    SELECT *
+    FROM exam_schedule
+    WHERE exam_level = ?
+      AND createdby = ?
+      AND CONVERT_TZ(NOW(), '+00:00', '+05:30')
+          BETWEEN start_time AND end_time
+    LIMIT 1
+    `,
+    [level, createdby]
+  ),
 };
+
+

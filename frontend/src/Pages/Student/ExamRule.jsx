@@ -1,12 +1,52 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import StudentAppBar from '../../Components/Student/StudentAppBar';
 import Button from '../../UI/Button';
 import { CheckCircle2, AlertTriangle, Clock, FileText, Ban, Play, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import examScheduleApi from '../../api/examScheduleApi';
+import { useFetchData } from '../../hooks/useFetchData';
 
 export default function ExamRule() {
   const [isAgreed, setIsAgreed] = useState(false);
   const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+
+  const { data: upcomeingexam, examscheduleloading } = useFetchData(() =>
+    examScheduleApi.getstudnetupcomeingexam(user.level, user.createdby)
+  );
+
+  useEffect(() => {
+    const fetchLiveExam = async () => {
+      try {
+        const res = await examScheduleApi.getLiveExam(
+          user.level,
+          user.createdby
+        );
+
+        const data = res.data;
+
+        console.log("LIVE EXAM API RESPONSE 👉", data);
+
+        if (data?.is_exam_live && data?.exam) {
+          const exam = data.exam;
+
+          localStorage.setItem("Exam_Tittle", exam.exam_title);
+          localStorage.setItem("paperlevel", exam.exam_level);
+          localStorage.setItem("paperset", exam.paper_set);
+          localStorage.setItem("exam_id", exam.id);
+          localStorage.setItem("examType", "live");
+        }
+
+      } catch (err) {
+        console.error("Live exam fetch error ❌", err);
+      }
+    };
+
+    if (user?.level && user?.createdby) {
+      fetchLiveExam();
+    }
+  }, [user?.level, user?.createdby]);
 
   const rules = [
     {

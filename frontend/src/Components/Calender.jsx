@@ -1,13 +1,27 @@
 // Helper to format time in 12-hour format with AM/PM
-function formatTime12hr(timeStr) {
-    if (!timeStr) return '';
-    const [h, m] = timeStr.split(":");
-    let hour = parseInt(h, 10);
-    const minute = m ? m.padStart(2, '0') : '00';
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12;
-    if (hour === 0) hour = 12;
-    return `${hour}:${minute} ${ampm}`;
+// function formatTime12hr(timeStr) {
+//     if (!timeStr) return '';
+//     const [h, m] = timeStr.split(":");
+//     let hour = parseInt(h, 10);
+//     const minute = m ? m.padStart(2, '0') : '00';
+//     const ampm = hour >= 12 ? 'PM' : 'AM';
+//     hour = hour % 12;
+//     if (hour === 0) hour = 12;
+//     return `${hour}:${minute} ${ampm}`;
+// }
+function formatDateTime12hr(dateTimeStr) {
+    if (!dateTimeStr) return '';
+
+    const dateObj = new Date(dateTimeStr);
+
+    const date = dateObj.toLocaleDateString("en-GB"); // 20/04/2026
+    const time = dateObj.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+    });
+
+    return `${date} ${time}`;
 }
 import React, { useState, useEffect } from "react";
 import AppBar from "../UI/AppBar";
@@ -325,8 +339,11 @@ export default function Calender() {
         return d.toISOString().split("T")[0];
     };
 
+    // const filteredSchedules = schedules.filter(
+    //     (exam) => formatDate(exam.date) === selectedDate
+    // );
     const filteredSchedules = schedules.filter(
-        (exam) => formatDate(exam.date) === selectedDate
+        (exam) => formatDate(exam.start_time) === selectedDate
     );
 
     const handleDelete = (id) => {
@@ -457,8 +474,14 @@ export default function Calender() {
                                         )}-${String(day).padStart(2, "0")}`;
 
                                     // Check if this date has a scheduled exam
+                                    // const hasExam = schedules.some(exam => {
+                                    //     const examDate = exam.date ? exam.date.split('T')[0] : '';
+                                    //     return examDate === fullDate;
+                                    // });
                                     const hasExam = schedules.some(exam => {
-                                        const examDate = exam.date ? exam.date.split('T')[0] : '';
+                                        const examDate = exam.start_time
+                                            ? new Date(exam.start_time).toISOString().split("T")[0]
+                                            : '';
                                         return examDate === fullDate;
                                     });
 
@@ -552,7 +575,7 @@ export default function Calender() {
                                                                     {exam.exam_level}{exam.paper_set}
                                                                 </h2>
                                                                 <p className="mt-3">
-                                                                    {formatTime12hr(exam.start_time)} To {formatTime12hr(exam.end_time)}
+                                                                    {formatDateTime12hr(exam.start_time)} To {formatDateTime12hr(exam.end_time)}
                                                                 </p>
                                                             </div>
 
@@ -673,7 +696,7 @@ export default function Calender() {
 
                     <InputField
                         label="Start Time"
-                        type="time"
+                        type="datetime-local"
                         value={examData.start_time}
                         onChange={(e) =>
                             setExamData({ ...examData, start_time: e.target.value })
@@ -682,7 +705,7 @@ export default function Calender() {
 
                     <InputField
                         label="End Time"
-                        type="time"
+                        type="datetime-local"
                         value={examData.end_time}
                         onChange={(e) =>
                             setExamData({ ...examData, end_time: e.target.value })

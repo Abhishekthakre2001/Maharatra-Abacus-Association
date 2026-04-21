@@ -58,14 +58,25 @@ exports.startExam = async (req, res) => {
       });
     }
 
-    const existing = await ExamResultModel.findStartedOrSubmitted(user_id, exam_id);
+    const existingRows = await ExamResultModel.findStartedOrSubmitted(
+      user_id,
+      exam_id
+    );
 
-    if (existing.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: "Exam already started or submitted for this user",
-        data: existing[0],
-      });
+    if (existingRows.length > 0) {
+      const existing = existingRows[0];
+
+      if (existing.status === "SUBMITTED") {
+        return res.status(409).json({
+          success: false,
+          message: "Exam already submitted for this user",
+          data: existing,
+        });
+      }
+
+      if (existing.status === "STARTED") {
+        await ExamResultModel.deleteById(existing.id);
+      }
     }
 
     const { date, datetime } = getIndianDateTimeParts();
@@ -92,6 +103,14 @@ exports.startExam = async (req, res) => {
     });
   } catch (error) {
     console.error("startExam error:", error);
+
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({
+        success: false,
+        message: "Exam already exists for this user and exam",
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: "Failed to start exam",

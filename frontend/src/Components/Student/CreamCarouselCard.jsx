@@ -1,31 +1,48 @@
 import { Calendar, Clock } from "lucide-react";
 
-function formatTime12hr(timeStr) {
-    if (!timeStr) return '';
-    const [h, m] = timeStr.split(":");
-    let hour = parseInt(h, 10);
-    const minute = m ? m.padStart(2, '0') : '00';
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12;
-    if (hour === 0) hour = 12;
-    return `${hour}:${minute} ${ampm}`;
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    });
+}
+
+function formatTime(dateStr) {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+    });
 }
 
 function isExamLive(startTime, endTime) {
     if (!startTime || !endTime) return false;
 
     const now = new Date();
+    return now >= new Date(startTime) && now <= new Date(endTime);
+}
 
-    const [sh, sm] = startTime.split(":").map(Number);
-    const [eh, em] = endTime.split(":").map(Number);
+function formatDateTime(dateStr) {
+    if (!dateStr) return '';
 
-    const start = new Date(now);
-    start.setHours(sh, sm, 0, 0);
+    const d = new Date(dateStr);
 
-    const end = new Date(now);
-    end.setHours(eh, em, 0, 0);
+    const date = d.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    });
 
-    return now >= start && now <= end;
+    const time = d.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+    });
+
+    return `${date} ${time}`;
 }
 
 
@@ -98,15 +115,14 @@ const CreamCarouselCard = ({
                             </div>
                         </> : <>
                             <div className="flex flex-col gap-2 text-sm text-gray-700">
-                                {examDate && (
+                                {/* {examDate && (
                                     <div className="flex items-center gap-2">
                                         <Calendar size={15} className="text-gray-600" />
                                         <span>
-                                            {new Date(examDate).toLocaleDateString("en-IN", {
-                                                day: "numeric",
-                                                month: "short",
-                                                year: "numeric"
-                                            })}
+                                            {formatDate(startTime)}
+                                            {formatDate(startTime) !== formatDate(endTime) &&
+                                                ` - ${formatDate(endTime)}`
+                                            }
                                         </span>
                                     </div>
                                 )}
@@ -114,9 +130,17 @@ const CreamCarouselCard = ({
                                 {startTime && endTime && (
                                     <div className="flex items-center gap-2">
                                         <Clock size={15} className="text-gray-600" />
-                                        <span>{formatTime12hr(startTime)} – {formatTime12hr(endTime)}</span>
+                                        <span>
+                                            {formatTime(startTime)} – {formatTime(endTime)}
+                                        </span>
                                     </div>
-                                )}
+                                )} */}
+                                <div className="flex items-center gap-2 text-sm text-gray-700">
+                                    <Clock size={15} className="text-gray-600" />
+                                    <span>
+                                        {formatDateTime(startTime)} to <br /> {formatDateTime(endTime)}
+                                    </span>
+                                </div>
                             </div>
                         </>
                     }

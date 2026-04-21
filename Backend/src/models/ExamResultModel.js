@@ -109,6 +109,12 @@ module.exports = {
     return rows;
   },
 
+  deleteById: (id) =>
+    pool.query(
+      `DELETE FROM Exam_Result WHERE id = ?`,
+      [id]
+    ),
+
   remove: (id) =>
     pool.query(`DELETE FROM Exam_Result WHERE id = ?`, [id]),
 
