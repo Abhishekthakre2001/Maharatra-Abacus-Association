@@ -2,7 +2,8 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   // baseURL: "https://apiabacus.deveraa.com",
-  baseURL: "http://localhost:5000",
+  // baseURL: "http://localhost:5000",
+    baseURL: "https://test.abacusapi.deveraa.com",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json"
