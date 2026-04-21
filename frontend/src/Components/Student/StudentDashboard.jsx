@@ -21,6 +21,7 @@ export default function StudentDashboard() {
   const [attemptedExamId, setAttemptedExamId] = useState(null);
   const [is_exam_live, setIsExamLive] = useState(false);
   const [LiveExamBtnName, setLiveExamBtnName] = useState("Start Live Exam");
+  const [liveExamId, setLiveExamId] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const userName =
@@ -47,7 +48,7 @@ export default function StudentDashboard() {
     examScheduleApi.getstudnetupcomeingexam(user.level, user.createdby)
   );
 
- 
+
 
   useEffect(() => {
     const fetchLiveExam = async () => {
@@ -56,7 +57,9 @@ export default function StudentDashboard() {
           user.level,
           user.createdby
         );
+        console.log("live exam", res.data.exam.id)
         setIsExamLive(res.data.is_exam_live);
+        setLiveExamId(res?.data.exam?.id);
         setLiveExamBtnName(res.data.exam?.exam_title || "Start Live Exam");
         console.log("LIVE EXAM API RESPONSE 👉", res.data.exam.exam_title);
       } catch (err) {
@@ -188,29 +191,27 @@ export default function StudentDashboard() {
   const [examloading, setexamloading] = useState(true);
 
   useEffect(() => {
-    localStorage.removeItem('exam_id');
-    localStorage.removeItem('examState');
     const checkExam = async () => {
-      if (!user?.id || !liveExamData?.id) {
-        setexamloading(false);
-        return;
-      }
+      if (!user?.id || !liveExamId) return;
 
       try {
-        const res = await resultapi.examcheck(user.id, liveExamData.id);
-        console.log("res", res.data)
+        const res = await resultapi.examcheck(user.id, liveExamId);
+
+        console.log("Is Exam Attempted?", res.data);
+
         setIsExam(Boolean(res.data.exam));
         setAttemptedExamId(res.data.exam_id || null);
-        setexamloading(false)
       } catch (err) {
         console.error("Exam check failed", err);
         setIsExam(false);
         setAttemptedExamId(null);
+      } finally {
+        setexamloading(false);
       }
     };
 
     checkExam();
-  }, [user?.id, liveExamData?.id]);
+  }, [user?.id, liveExamId]);
 
   const handleSetSelect = (level, set) => {
     localStorage.setItem("paperset", set);
@@ -230,7 +231,7 @@ export default function StudentDashboard() {
 
 
   // console.log("liveExamData", levelwise_set[0]?.level_name);
-  console.log("liveExamData",liveExamData)
+  // console.log("liveExamData",liveExamData)
 
   const hardReload = async () => {
     try {
