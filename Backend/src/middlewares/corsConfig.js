@@ -4,7 +4,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "https://abacus.deveraa.com",
-  "http://192.168.1.7:5173/"
+  "http://192.168.1.7:5173/",
+  "https://test.abacusapi.deveraa.com"
 ];
 
 const corsOptions = {
