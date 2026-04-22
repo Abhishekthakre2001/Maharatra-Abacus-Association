@@ -57,13 +57,16 @@ export default function StudentDashboard() {
           user.level,
           user.createdby
         );
-        console.log("live exam", res.data.exam.id)
-        setIsExamLive(res.data.is_exam_live);
-        setLiveExamId(res?.data.exam?.id);
-        setLiveExamBtnName(res.data.exam?.exam_title || "Start Live Exam");
-        console.log("LIVE EXAM API RESPONSE 👉", res.data.exam.exam_title);
+
+        console.log("live exam", res?.data?.exam?.id)
+        setIsExamLive(res?.data?.is_exam_live);
+        setLiveExamId(res?.data?.exam?.id);
+        setLiveExamBtnName(res?.data?.exam?.exam_title || "Start Live Exam");
+        console.log("LIVE EXAM API RESPONSE 👉", res?.data?.exam?.exam_title);
+        setexamloading(false);
       } catch (err) {
         console.error("Live exam fetch error ❌", err);
+        setexamloading(false);
       }
     };
 
@@ -86,13 +89,10 @@ export default function StudentDashboard() {
   /* ================= DATE HELPERS ================= */
 
   const isTodayOrFuture = (dateStr) => {
+    const now = new Date();
     const examDate = new Date(dateStr);
-    const today = new Date();
 
-    examDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-
-    return examDate >= today;
+    return examDate >= now;
   };
 
   const formatDate = (dateStr) => {
@@ -154,8 +154,8 @@ export default function StudentDashboard() {
 
   const filteredUpcomingExams =
     upcomeingexam?.filter(
-      exam =>
-        isTodayOrFuture(exam.date) &&
+      (exam) =>
+        new Date(exam.start_time) >= new Date() &&
         isExamStillActiveOrFuture(exam)
     ) || [];
 
@@ -175,11 +175,9 @@ export default function StudentDashboard() {
   // const userCityId = Number(user?.city_id);
 
 
-  const liveExamData = filteredUpcomingExams.find(
-    exam =>
-      new Date(exam.date).toDateString() === new Date().toDateString() &&
-      isLiveTime(exam.start_time, exam.end_time)
-  );
+ const liveExamData = filteredUpcomingExams.find(
+  (exam) => isLiveTime(exam.start_time, exam.end_time)
+);
   // const liveExamData = filteredUpcomingExams.find(
   //   exam =>
   //     Number(exam?.Exam_for_city) === userCityId &&
@@ -268,6 +266,8 @@ export default function StudentDashboard() {
     }
   };
 
+  console.log("test", examloading)
+
   return (
     <>
       <div className="min-h-screen bg-slate-100 flex flex-col">
@@ -296,14 +296,14 @@ export default function StudentDashboard() {
                   upcomeingexam?.filter((exam) => {
 
                     return (
-                      isTodayOrFuture(exam.date) &&
+                      isTodayOrFuture(exam.start_time) &&
                       isExamStillActiveOrFuture(exam)
                     );
                   }).length > 0
                     ? upcomeingexam
                       ?.filter((exam) => {
                         return (
-                          isTodayOrFuture(exam.date) &&
+                          isTodayOrFuture(exam.start_time) &&
                           isExamStillActiveOrFuture(exam)
                         );
                       })

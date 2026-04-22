@@ -30,19 +30,17 @@ function formatDateTime(dateStr) {
 
     const d = new Date(dateStr);
 
-    const date = d.toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-    });
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    const month = d.toLocaleString("en-IN", { month: "short", timeZone: "UTC" });
+    const year = d.getUTCFullYear();
 
-    const time = d.toLocaleTimeString("en-IN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-    });
+    let hours = d.getUTCHours();
+    const minutes = String(d.getUTCMinutes()).padStart(2, '0');
 
-    return `${date} ${time}`;
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+
+    return `${day} ${month} ${year} ${hours}:${minutes} ${ampm}`;
 }
 
 
