@@ -334,17 +334,33 @@ export default function Calender() {
             .catch(err => console.error('Failed to load sets', err));
     }, []);
 
+    // const formatDate = (dateStr) => {
+    //     const d = new Date(dateStr);
+    //     return d.toISOString().split("T")[0];
+    // };
     const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+
         const d = new Date(dateStr);
-        return d.toISOString().split("T")[0];
+        if (isNaN(d)) return "";
+
+        return d.getFullYear() + "-" +
+            String(d.getMonth() + 1).padStart(2, "0") + "-" +
+            String(d.getDate()).padStart(2, "0");
     };
 
     // const filteredSchedules = schedules.filter(
     //     (exam) => formatDate(exam.date) === selectedDate
     // );
-    const filteredSchedules = schedules.filter(
-        (exam) => formatDate(exam.start_time) === selectedDate
-    );
+    // const filteredSchedules = schedules.filter(
+    //     (exam) => formatDate(exam.start_time) === selectedDate
+    // );
+    const filteredSchedules = schedules.filter((exam) => {
+        if (!exam.start_time) return false;
+
+        const formatted = formatDate(exam.start_time);
+        return formatted === selectedDate;
+    });
 
     const handleDelete = (id) => {
         setDeleteModal({ open: true, id, loading: false });
@@ -479,9 +495,9 @@ export default function Calender() {
                                     //     return examDate === fullDate;
                                     // });
                                     const hasExam = schedules.some(exam => {
-                                        const examDate = exam.start_time
-                                            ? new Date(exam.start_time).toISOString().split("T")[0]
-                                            : '';
+                                        if (!exam.start_time) return false;
+
+                                        const examDate = formatDate(exam.start_time); // ✅ safe
                                         return examDate === fullDate;
                                     });
 
