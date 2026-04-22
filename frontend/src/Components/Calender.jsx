@@ -14,15 +14,21 @@ function formatDateTime12hr(dateTimeStr) {
 
     const dateObj = new Date(dateTimeStr);
 
-    const date = dateObj.toLocaleDateString("en-GB"); // 20/04/2026
+    const date = dateObj.toLocaleDateString("en-GB", {
+        timeZone: "UTC"
+    });
+
     const time = dateObj.toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
-        hour12: true
+        hour12: true,
+        timeZone: "UTC"   // ✅ KEY FIX
     });
 
     return `${date} ${time}`;
 }
+
+
 import React, { useState, useEffect } from "react";
 import AppBar from "../UI/AppBar";
 import Button from "../UI/Button";
