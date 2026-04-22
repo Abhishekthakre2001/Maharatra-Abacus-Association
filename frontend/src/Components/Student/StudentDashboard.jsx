@@ -266,7 +266,6 @@ export default function StudentDashboard() {
     }
   };
 
-  console.log("test", examloading)
 
   return (
     <>
@@ -316,6 +315,7 @@ export default function StudentDashboard() {
                           startTime={exam.start_time}
                           endTime={exam.end_time}
                           image={examImg}
+                          isExamLive={is_exam_live}
                         />
                       ))
                     : [

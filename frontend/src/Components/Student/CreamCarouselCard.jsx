@@ -1,29 +1,6 @@
 import { Calendar, Clock } from "lucide-react";
 
-function formatDate(dateStr) {
-    if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-    });
-}
 
-function formatTime(dateStr) {
-    if (!dateStr) return '';
-    return new Date(dateStr).toLocaleTimeString("en-IN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-    });
-}
-
-function isExamLive(startTime, endTime) {
-    if (!startTime || !endTime) return false;
-
-    const now = new Date();
-    return now >= new Date(startTime) && now <= new Date(endTime);
-}
 
 function formatDateTime(dateStr) {
     if (!dateStr) return '';
@@ -50,9 +27,10 @@ const CreamCarouselCard = ({
     examDate,
     startTime,
     endTime,
-    image
+    image,
+    isExamLive
 }) => {
-    const examLive = isExamLive(startTime, endTime);
+
 
     return (
         <div
@@ -82,13 +60,13 @@ const CreamCarouselCard = ({
         text-xs font-semibold
         px-3 py-1 rounded-2xl shadow-lg
         backdrop-blur-lg border
-        ${examLive
+        ${isExamLive
                                 ? "text-red-600 bg-red-50 border-red-200 animate-pulse"
                                 : "text-blue-600 bg-white/70 border-blue-100"
                             }
     `}
                     >
-                        {examLive ? "Exam is Live Now " : "Upcoming Exam"}
+                        {isExamLive ? "Exam is Live Now " : "Upcoming Exam"}
                     </span>
 
 

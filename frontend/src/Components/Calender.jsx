@@ -49,8 +49,11 @@ export default function Calender() {
 
     const today = new Date();
     const [currentMonth, setCurrentMonth] = useState(today);
-    const formatToday = (date) =>
-        date.toISOString().split("T")[0];
+    const formatToday = (date) => {
+        return date.getFullYear() + "-" +
+            String(date.getMonth() + 1).padStart(2, "0") + "-" +
+            String(date.getDate()).padStart(2, "0");
+    };
 
     const [selectedDate, setSelectedDate] = useState(formatToday(today));
 
@@ -356,10 +359,19 @@ export default function Calender() {
     //     (exam) => formatDate(exam.start_time) === selectedDate
     // );
     const filteredSchedules = schedules.filter((exam) => {
-        if (!exam.start_time) return false;
+        if (!exam.start_time || !exam.end_time) return false;
 
-        const formatted = formatDate(exam.start_time);
-        return formatted === selectedDate;
+        const selected = new Date(selectedDate);
+
+        const start = new Date(exam.start_time);
+        const end = new Date(exam.end_time);
+
+        // Normalize all dates to ignore time
+        selected.setHours(0, 0, 0, 0);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        return selected >= start && selected <= end;
     });
 
     const handleDelete = (id) => {
@@ -495,10 +507,17 @@ export default function Calender() {
                                     //     return examDate === fullDate;
                                     // });
                                     const hasExam = schedules.some(exam => {
-                                        if (!exam.start_time) return false;
+                                        if (!exam.start_time || !exam.end_time) return false;
 
-                                        const examDate = formatDate(exam.start_time); // ✅ safe
-                                        return examDate === fullDate;
+                                        const date = new Date(fullDate);
+                                        const start = new Date(exam.start_time);
+                                        const end = new Date(exam.end_time);
+
+                                        date.setHours(0, 0, 0, 0);
+                                        start.setHours(0, 0, 0, 0);
+                                        end.setHours(0, 0, 0, 0);
+
+                                        return date >= start && date <= end;
                                     });
 
                                     let dayClass = "bg-gray-100 hover:bg-blue-100";
