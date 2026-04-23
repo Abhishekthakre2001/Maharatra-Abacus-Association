@@ -389,21 +389,21 @@ export default function Calender() {
     // const filteredSchedules = schedules.filter(
     //     (exam) => formatDate(exam.start_time) === selectedDate
     // );
-    const filteredSchedules = schedules.filter((exam) => {
-        if (!exam.start_time || !exam.end_time) return false;
+    // const filteredSchedules = schedules.filter((exam) => {
+    //     if (!exam.start_time || !exam.end_time) return false;
 
-        const selected = new Date(selectedDate);
+    //     const selected = new Date(selectedDate);
 
-        const start = new Date(exam.start_time);
-        const end = new Date(exam.end_time);
+    //     const start = new Date(exam.start_time);
+    //     const end = new Date(exam.end_time);
 
-        // Normalize all dates to ignore time
-        selected.setHours(0, 0, 0, 0);
-        start.setHours(0, 0, 0, 0);
-        end.setHours(0, 0, 0, 0);
+    //     // Normalize all dates to ignore time
+    //     selected.setHours(0, 0, 0, 0);
+    //     start.setHours(0, 0, 0, 0);
+    //     end.setHours(0, 0, 0, 0);
 
-        return selected >= start && selected <= end;
-    });
+    //     return selected >= start && selected <= end;
+    // });
 
     const handleDelete = (id) => {
         setDeleteModal({ open: true, id, loading: false });
@@ -418,7 +418,21 @@ export default function Calender() {
         }
     );
 
-    console.log("loading", loading)
+    console.log("loading", loading);
+
+    const isSameOrBetweenDates = (selectedDate, startTime, endTime) => {
+        if (!startTime || !endTime) return false;
+
+        // Extract ONLY UTC date part (no conversion)
+        const startDateUTC = startTime.split("T")[0]; // "2026-04-23"
+        const endDateUTC = endTime.split("T")[0];     // "2026-04-25"
+
+        return selectedDate >= startDateUTC && selectedDate <= endDateUTC;
+    };
+
+    const filteredSchedules = schedules.filter(exam =>
+        isSameOrBetweenDates(selectedDate, exam.start_time, exam.end_time)
+    );
 
     return (
         <>
@@ -537,19 +551,9 @@ export default function Calender() {
                                     //     const examDate = exam.date ? exam.date.split('T')[0] : '';
                                     //     return examDate === fullDate;
                                     // });
-                                    const hasExam = schedules.some(exam => {
-                                        if (!exam.start_time || !exam.end_time) return false;
-
-                                        const date = new Date(fullDate);
-                                        const start = new Date(exam.start_time);
-                                        const end = new Date(exam.end_time);
-
-                                        date.setHours(0, 0, 0, 0);
-                                        start.setHours(0, 0, 0, 0);
-                                        end.setHours(0, 0, 0, 0);
-
-                                        return date >= start && date <= end;
-                                    });
+                                    const hasExam = schedules.some(exam =>
+                                        isSameOrBetweenDates(fullDate, exam.start_time, exam.end_time)
+                                    );
 
                                     let dayClass = "bg-gray-100 hover:bg-blue-100";
                                     let textClass = "text-xs sm:text-sm";
@@ -788,7 +792,7 @@ export default function Calender() {
                                 setExamData({ ...examData, end_time: e.target.value })
                             }
                         />
-                        {isUpdate &&examData.end_time && (
+                        {isUpdate && examData.end_time && (
                             <p className="text-sm text-gray-500 mt-0">
                                 Current End Date: {formatDateTime12hr(examData.end_time)}
                             </p>
