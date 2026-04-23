@@ -616,8 +616,13 @@ export default function ExamPage() {
         // ✅ MOCK TEST FLOW
         if (examType === "mock") {
             const now = new Date();
-            const mysqlDate = now.toISOString().split("T")[0];
-            const mysqlDateTime = now.toISOString().slice(0, 19).replace("T", " ");
+
+            const mysqlDate = now.toLocaleDateString("en-CA");
+            // YYYY-MM-DD format
+
+            const mysqlDateTime = now
+                .toLocaleString("sv-SE")  // gives YYYY-MM-DD HH:mm:ss
+                .replace("T", " ");
 
             const resultPayload = {
                 PaperLevel: paperlevel,
