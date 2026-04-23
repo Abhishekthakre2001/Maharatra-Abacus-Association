@@ -68,7 +68,19 @@ export default function Calender() {
     const [updateExamId, setUpdateExamId] = useState(null);
     const [deleteModal, setDeleteModal] = useState({ open: false, id: null, loading: false });
     const [haserror, sethaserror] = useState(false);
-    const [buttonloading, setbuttonloading] = useState(false)
+    const [buttonloading, setbuttonloading] = useState(false);
+
+    const formatForInput = (dateStr) => {
+        if (!dateStr) return "";
+
+        const d = new Date(dateStr);
+
+        // convert UTC → local properly
+        const offset = d.getTimezoneOffset();
+        const local = new Date(d.getTime() - offset * 60000);
+
+        return local.toISOString().slice(0, 16);
+    };
 
     const [examData, setExamData] = useState({
         exam_title: "",
@@ -220,43 +232,56 @@ export default function Calender() {
         today.setHours(0, 0, 0, 0);
         selected.setHours(0, 0, 0, 0);
 
-        const now = new Date();
+        // const now = new Date();
 
-        // Convert start & end time to Date objects
-        const startTime = new Date(selectedDate);
-        const endTime = new Date(selectedDate);
+        // // Convert start & end time to Date objects
+        // const startTime = new Date(selectedDate);
+        // const endTime = new Date(selectedDate);
 
         const [startHour, startMinute] = start_time.split(":");
         const [endHour, endMinute] = end_time.split(":");
 
-        startTime.setHours(startHour, startMinute, 0);
-        endTime.setHours(endHour, endMinute, 0);
+        const now = new Date();
+        const startTime = new Date(start_time);
+        const endTime = new Date(end_time);
 
-        // ---------- IF TODAY → START TIME MUST BE IN FUTURE ----------
-        if (today.getTime() === selected.getTime()) {
-            if (startTime <= now) {
-                setModal({
-                    open: true,
-                    type: "error",
-                    title: "Invalid Start Time",
-                    message: "Start time must be greater than current time."
-                });
-                setOpenModal(false);
-                sethaserror(true);
-                setbuttonloading(false);
-                return;
-            }
+        // ---------- START TIME MUST BE IN FUTURE ----------
+        if (startTime <= now) {
+            setOpenModal(false);
+            setModal({
+                open: true,
+                type: "error",
+                title: "Invalid Start Time",
+                message: "Start time must be greater than current time."
+            });
+            setbuttonloading(false);
+            return;
         }
 
-        // ---------- END TIME MUST BE GREATER THAN START TIME ----------
+        // ---------- END TIME MUST BE GREATER THAN START ----------
         if (endTime <= startTime) {
+            setOpenModal(false);
             setModal({
                 open: true,
                 type: "error",
                 title: "Invalid End Time",
                 message: "End time must be greater than start time."
             });
+            // setOpenModal(true);
+            setbuttonloading(false);
+            return;
+        }
+
+        // ---------- END TIME MUST BE GREATER THAN START TIME ----------
+        if (endTime <= startTime) {
             setOpenModal(false);
+            setModal({
+                open: true,
+                type: "error",
+                title: "Invalid End Time",
+                message: "End time must be greater than start time."
+            });
+            // setOpenModal(true);
             sethaserror(true);
             setbuttonloading(false);
             return;
@@ -655,8 +680,8 @@ export default function Calender() {
                                                                     exam_title: exam.exam_title,
                                                                     exam_level: exam.exam_level,
                                                                     paper_set: exam.paper_set,
-                                                                    start_time: exam.start_time,
-                                                                    end_time: exam.end_time
+                                                                    start_time: formatForInput(exam.start_time),
+                                                                    end_time: formatForInput(exam.end_time)
                                                                 });
                                                                 setOpenModal(true);
                                                             }}>
@@ -735,23 +760,41 @@ export default function Calender() {
                         />
                     </div>
 
-                    <InputField
-                        label="Start Time"
-                        type="datetime-local"
-                        value={examData.start_time}
-                        onChange={(e) =>
-                            setExamData({ ...examData, start_time: e.target.value })
-                        }
-                    />
+                    <div>
 
-                    <InputField
-                        label="End Time"
-                        type="datetime-local"
-                        value={examData.end_time}
-                        onChange={(e) =>
-                            setExamData({ ...examData, end_time: e.target.value })
-                        }
-                    />
+                        <InputField
+                            label="Start Time"
+                            type="datetime-local"
+                            min={new Date().toISOString().slice(0, 16)}
+                            // value={examData.start_time}
+                            onChange={(e) =>
+                                setExamData({ ...examData, start_time: e.target.value })
+                            }
+                        />
+                        {isUpdate && examData.start_time && (
+                            <p className="text-sm text-gray-500 mt-1">
+                                Current Start Date: {formatDateTime12hr(examData.start_time)}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        <InputField
+                            label="End Time"
+                            type="datetime-local"
+                            min={new Date().toISOString().slice(0, 16)}
+                            // value={examData.end_time}
+                            onChange={(e) =>
+                                setExamData({ ...examData, end_time: e.target.value })
+                            }
+                        />
+                        {isUpdate &&examData.end_time && (
+                            <p className="text-sm text-gray-500 mt-0">
+                                Current End Date: {formatDateTime12hr(examData.end_time)}
+                            </p>
+                        )}
+                    </div>
+
 
 
                 </div>

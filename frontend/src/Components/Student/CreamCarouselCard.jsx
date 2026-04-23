@@ -31,7 +31,15 @@ const CreamCarouselCard = ({
     isExamLive
 }) => {
 
+    console.log("NOW", new Date());
+    console.log("START", new Date(startTime));
+    console.log("END", new Date(endTime));
+    console.log("FINAL isExamLive", isExamLive);
 
+    console.log("FULL PROPS 👉", {
+        startTime,
+        endTime,
+    });
     return (
         <div
             className="

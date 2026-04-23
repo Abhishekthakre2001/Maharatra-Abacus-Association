@@ -161,9 +161,7 @@ export default function StudentDashboard() {
 
   const filteredUpcomingExams =
     upcomeingexam?.filter(
-      (exam) =>
-        new Date(exam.start_time) >= new Date() &&
-        isExamStillActiveOrFuture(exam)
+      (exam) => isExamStillActiveOrFuture(exam)
     ) || [];
 
 
@@ -299,32 +297,22 @@ export default function StudentDashboard() {
             <div className="bg-white rounded-2xl shadow-sm p-3">
               <TopAutoCarousel
                 items={
-                  upcomeingexam?.filter((exam) => {
-
-                    return (
-                      isTodayOrFuture(exam.start_time) &&
-                      isExamStillActiveOrFuture(exam)
-                    );
-                  }).length > 0
-                    ? upcomeingexam
-                      ?.filter((exam) => {
-                        return (
-                          isTodayOrFuture(exam.start_time) &&
-                          isExamStillActiveOrFuture(exam)
-                        );
-                      })
-                      .map((exam) => (
-                        <CreamCarouselCard
-                          key={exam.id}
-                          title={`Abacus Level ${exam.exam_level} Examination`}
-                          subtitle={exam.exam_title}
-                          examDate={exam.start_time}
-                          startTime={exam.start_time}
-                          endTime={exam.end_time}
-                          image={examImg}
-                          isExamLive={is_exam_live}
-                        />
-                      ))
+                  filteredUpcomingExams.length > 0
+                    ? filteredUpcomingExams.map((exam) => (
+                      <CreamCarouselCard
+                        key={exam.id}
+                        title={`Abacus Level ${exam.exam_level} Examination`}
+                        subtitle={exam.exam_title}
+                        examDate={exam.start_time}
+                        startTime={exam.start_time}
+                        endTime={exam.end_time}
+                        image={examImg}
+                        isExamLive={
+                          is_exam_live &&
+                          isLiveTime(exam.start_time, exam.end_time)
+                        }
+                      />
+                    ))
                     : [
                       <CreamCarouselCard
                         key="no-exam"
@@ -334,6 +322,7 @@ export default function StudentDashboard() {
                         startTime="—"
                         endTime="—"
                         image={examImg}
+                        isExamLive={false}
                       />
                     ]
                 }
