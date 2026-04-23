@@ -22,6 +22,8 @@ export default function StudentDashboard() {
   const [is_exam_live, setIsExamLive] = useState(false);
   const [LiveExamBtnName, setLiveExamBtnName] = useState("Start Live Exam");
   const [liveExamId, setLiveExamId] = useState(null);
+  const [LiveExamSet, setLiveExamSet] = useState(null);
+  const [LiveExamLevel, SetLiveExamLevel] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const userName =
@@ -62,6 +64,8 @@ export default function StudentDashboard() {
         setIsExamLive(res?.data?.is_exam_live);
         setLiveExamId(res?.data?.exam?.id);
         setLiveExamBtnName(res?.data?.exam?.exam_title || "Start Live Exam");
+        setLiveExamSet(res?.data?.exam?.paper_set);
+        SetLiveExamLevel(res?.data?.exam?.exam_level);
         console.log("LIVE EXAM API RESPONSE 👉", res?.data?.exam?.exam_title);
         setexamloading(false);
       } catch (err) {
@@ -74,6 +78,9 @@ export default function StudentDashboard() {
       fetchLiveExam();
     }
   }, [user?.level, user?.createdby]);
+
+  console.log("LiveExamSet", LiveExamSet)
+  console.log("LiveExamLevel", LiveExamLevel)
 
   const { data: levelwise_set, levelsetloading } = useFetchData(() =>
     questionApi.getset(user.level, user.createdby),
@@ -175,9 +182,9 @@ export default function StudentDashboard() {
   // const userCityId = Number(user?.city_id);
 
 
- const liveExamData = filteredUpcomingExams.find(
-  (exam) => isLiveTime(exam.start_time, exam.end_time)
-);
+  const liveExamData = filteredUpcomingExams.find(
+    (exam) => isLiveTime(exam.start_time, exam.end_time)
+  );
   // const liveExamData = filteredUpcomingExams.find(
   //   exam =>
   //     Number(exam?.Exam_for_city) === userCityId &&
@@ -219,11 +226,11 @@ export default function StudentDashboard() {
   };
 
   const liveExam = () => {
-    localStorage.setItem("paperset", liveExamData.paper_set);
-    localStorage.setItem("paperlevel", liveExamData.exam_level);
-    localStorage.setItem("Exam_Tittle", liveExamData.exam_title);
+    localStorage.setItem("paperset", LiveExamSet);
+    localStorage.setItem("paperlevel", LiveExamLevel);
+    localStorage.setItem("Exam_Tittle", LiveExamBtnName);
     localStorage.setItem("examType", "live");
-    localStorage.setItem('exam_id', liveExamData.id)
+    localStorage.setItem('exam_id', liveExamId)
     navigate("/exam-rule");
   };
 
