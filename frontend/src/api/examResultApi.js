@@ -17,6 +17,9 @@ const ExamResultApi = {
   getExamResultsByAdmin: (adminId) =>
     axiosInstance.get(`/exam-results/examresult/${adminId}`),
 
+   getExamResultsBylevelnotattempt: (exam_id, level) =>
+    axiosInstance.get(`/exam-results/status/${exam_id}?level=${level}`),
+
    deleteExamResult: (id) => axiosInstance.delete(`/exam-results/${id}`),
 };
 

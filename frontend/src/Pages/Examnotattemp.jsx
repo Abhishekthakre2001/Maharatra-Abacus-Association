@@ -2,17 +2,18 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Sidebar from "../Components/Sidebar";
 import AppBar from '../UI/AppBar';
 import DataTable from '../UI/DataTable';
-import DeleteConfirmModal from "../UI/DeleteConfirmModal";
 import ExamResultApi from "../api/examResultApi";
+import examScheduleApi from "../api/examScheduleApi";
 
-export default function ExamResult() {
+
+export default function Examnotattemp() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [examList, setExamList] = useState([]);
+    const [selectedExam, setSelectedExam] = useState(null);
 
-    const [deleteOpen, setDeleteOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [deleteLoading, setDeleteLoading] = useState(false);
 
     const authUser = JSON.parse(localStorage.getItem("user") || "{}");
     const adminId =
@@ -48,16 +49,16 @@ export default function ExamResult() {
 
     const columns = [
         { key: "name", label: "Student Name" },
-        { key: "status", label: "Status" },
+        { key: "exam_status", label: "Status" },
         { key: "username", label: "Username" },
         { key: "mobilenumber", label: "Mobile Number" },
         { key: "address", label: "Address" },
-        { key: "learning_center_name", label: "Learning Center" },
-        { key: "age", label: "Age" },
-        { key: "exam_name", label: "Exam Name" },
+        // { key: "learning_center_name", label: "Learning Center" },
+        // { key: "age", label: "Age" },
+        { key: "exam_title", label: "Exam Name" },
         { key: "exam_level", label: "Exam Level" },
-        { key: "paper_set", label: "Paper Set" },
-        { key: "date", label: "Exam Date", isDate: true },
+        // { key: "paper_set", label: "Paper Set" },
+        // { key: "date", label: "Exam Date", isDate: true },
         { key: "exam_start_at", label: "Start Time" },
         { key: "exam_end_at", label: "End Time" },
         { key: "exam_time", label: "Exam Time" },
@@ -66,9 +67,9 @@ export default function ExamResult() {
         { key: "total_solve", label: "Solved" },
         { key: "total_unsolve", label: "Unsolved" },
         { key: "total_correct", label: "Correct" },
-        { key: "percentage", label: "Percentage" },
-        { key: "grade", label: "Grade" },
-        { key: "rank", label: "Rank" },
+        // { key: "percentage", label: "Percentage" },
+        // { key: "grade", label: "Grade" },
+        // { key: "rank", label: "Rank" },
 
     ];
 
@@ -92,15 +93,16 @@ export default function ExamResult() {
         });
     };
 
-    const fetchResults = async () => {
-        if (!adminId) {
-            setData([]);
-            return;
-        }
+    const fetchResults = async (examId, level) => {
+        if (!examId && examId !== 0) return;
+
+
+        // const examId = 15;
+        // const level = 0;
 
         try {
             setLoading(true);
-            const res = await ExamResultApi.getExamResultsByAdmin(adminId);
+            const res = await ExamResultApi.getExamResultsBylevelnotattempt(examId, level);
             const payload = res?.data?.data || [];
             setData(Array.isArray(payload) ? payload : []);
         } catch (error) {
@@ -111,31 +113,31 @@ export default function ExamResult() {
         }
     };
 
-    useEffect(() => {
-        fetchResults();
-    }, [adminId]);
-
-    const handleDelete = (row) => {
-        setSelectedRow(row);
-        setDeleteOpen(true);
+    const fetchExamList = async () => {
+        try {
+            const res = await examScheduleApi.getByadmin(adminId);
+            setExamList(res?.data || []);
+        } catch (err) {
+            console.error("Failed to fetch exam list", err);
+            setExamList([]);
+        }
     };
 
-    const handleConfirmDelete = async () => {
-        if (!selectedRow?.id) return;
+    useEffect(() => {
+        fetchExamList();
+    }, []);
 
-        try {
-            setDeleteLoading(true);
-            await ExamResultApi.deleteExamResult(selectedRow.id);
+    useEffect(() => {
+        fetchResults();
+    }, []);
 
-            setData((prev) => prev.filter((item) => item.id !== selectedRow.id));
-            setDeleteOpen(false);
-            setSelectedRow(null);
-        } catch (error) {
-            console.error("Delete exam result failed:", error);
-            alert(error?.response?.data?.message || "Failed to delete exam result");
-        } finally {
-            setDeleteLoading(false);
-        }
+
+    const handleExamChange = (e) => {
+        const value = JSON.parse(e.target.value);
+
+        setSelectedExam(value);
+
+        fetchResults(value.id, value.exam_level);
     };
 
     const tableData = useMemo(() => {
@@ -151,12 +153,12 @@ export default function ExamResult() {
                 username: item.username || "",
                 mobilenumber: item.mobilenumber || "",
                 address: item.address || "",
-                learning_center_name: item.learning_center_name || "",
-                age: item.age || "",
-                exam_name: item.exam_name || "",
-                exam_level: item.exam_level || "",
-                paper_set: item.paper_set || "",
-                date: formatDate(item.date),
+                // learning_center_name: item.learning_center_name || "",
+                // age: item.age || "",
+                exam_title: item.exam_title || "",
+                exam_level: item.exam_level ?? item.level ?? "",
+                // paper_set: item.paper_set || "",
+                // date: formatDate(item.date),
                 exam_start_at: formatTime(item.exam_start_at),
                 exam_end_at: formatTime(item.exam_end_at),
                 exam_time: item.exam_time || "",
@@ -165,27 +167,17 @@ export default function ExamResult() {
                 total_solve: item.total_solve ?? 0,
                 total_unsolve: item.total_unsolve ?? 0,
                 total_correct: totalCorrect,
-                percentage: `${percentage}%`,
-                grade: getGrade(percentage),
-                rank: getRank(percentage),
-                status: item.status || "",
+                // percentage: `${percentage}%`,
+                // grade: getGrade(percentage),
+                // rank: getRank(percentage),
+                exam_status: item.exam_status || "",
             };
         });
     }, [data]);
 
     return (
         <>
-            <DeleteConfirmModal
-                open={deleteOpen}
-                onClose={() => {
-                    setDeleteOpen(false);
-                    setSelectedRow(null);
-                }}
-                onConfirm={handleConfirmDelete}
-                loading={deleteLoading}
-                title="Reset Exam"
-                message={`Are you sure you want to reset exam for "${selectedRow?.name}"? This action cannot be undone.`}
-            />
+
 
             <Sidebar
                 isCollapsed={isCollapsed}
@@ -205,16 +197,39 @@ export default function ExamResult() {
                 />
 
                 <div className="mt-8">
+
+                    <div className="mb-4">
+                        <select
+                            className="border px-3 py-2 rounded w-full md:w-1/3"
+                            onChange={handleExamChange}
+                            defaultValue=""
+                        >
+                            <option value="" disabled>Select Exam</option>
+
+                            {examList.map((exam) => (
+                                <option
+                                    key={exam.id}
+                                    value={JSON.stringify({
+                                        id: exam.id,
+                                        exam_level: exam.exam_level
+                                    })}
+                                >
+                                    {exam.exam_level} - {exam.paper_set} - {exam.exam_title}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
                     <DataTable
                         columns={columns}
                         data={tableData}
-                        title="Exam Results"
+                        title="Exam Status List"
                         searchable
                         pagination
                         loading={loading}
                         exportable={true}
                         showActions={true}
-                        onDelete={handleDelete}
+                    // onDelete={handleDelete}
                     />
                 </div>
             </main>

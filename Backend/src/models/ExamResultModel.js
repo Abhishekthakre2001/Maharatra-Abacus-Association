@@ -168,4 +168,68 @@ module.exports = {
       [admin_id]
     ),
 
+
+  getExamStatusList: (exam_id, level) => {
+    let query = `
+    SELECT 
+      u.id AS user_id,
+      u.name,
+      u.username,
+      u.mobilenumber,
+      u.level,
+      u.city_id,
+      u.address,
+      
+
+      es.exam_title,
+      es.exam_level,
+
+      er.id AS result_id,
+      er.exam_start_at,
+      er.exam_end_at,
+      er.exam_time,
+      er.time_taken,
+      er.total_question,
+      er.total_solve,
+      er.total_unsolve,
+      er.total_correct,
+      er.status,
+
+      CASE 
+        WHEN er.status = 'STARTED' THEN 'STARTED'
+        WHEN er.status = 'SUBMITTED' THEN 'SUBMITTED'
+        ELSE 'NOT STARTED'
+      END AS exam_status
+
+    FROM users u
+
+    LEFT JOIN exam_schedule es 
+      ON es.id = ?
+
+    LEFT JOIN Exam_Result er 
+      ON er.user_id = u.id 
+      AND er.exam_id = es.id
+
+    WHERE 1=1
+  `;
+
+    const params = [exam_id];
+
+    // ✅ Level filter (important)
+    if (level) {
+      query += ` AND u.level = ?`;
+      params.push(level);
+    }
+
+    // ✅ If you want ONLY users matching exam level
+    query += ` AND (es.exam_level = u.level OR es.exam_level IS NULL)`;
+
+    query += `
+    ORDER BY 
+      exam_status ASC,
+      u.name ASC
+  `;
+
+    return pool.query(query, params);
+  }
 };

@@ -12,4 +12,6 @@ router.put("/submit/:id", controller.submitExam);
 
 router.delete("/:id", controller.remove);
 
+router.get("/status/:exam_id", controller.getExamStatusList);
+
 module.exports = router;

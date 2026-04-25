@@ -405,3 +405,35 @@ exports.getexamresultByAdminId = async (req, res) => {
     });
   }
 };
+
+exports.getExamStatusList = async (req, res) => {
+  try {
+    const { exam_id } = req.params;
+    const { level } = req.query; // optional filter
+
+    if (!exam_id) {
+      return res.status(400).json({
+        success: false,
+        message: "exam_id is required",
+      });
+    }
+
+    const [rows] = await ExamResultModel.getExamStatusList(
+      exam_id,
+      level
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Exam status list fetched successfully",
+      total: rows.length,
+      data: rows,
+    });
+  } catch (error) {
+    console.error("getExamStatusList error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch exam status list",
+    });
+  }
+};

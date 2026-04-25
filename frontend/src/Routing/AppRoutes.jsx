@@ -26,6 +26,7 @@ import NfcReader from "../Components/NfcReader";
 import Registration from "../Registration/Registartion";
 import ExamStudent from "../Pages/ExamStudent";
 import ExamStudentadmin from "../Pages/Examresult-admin";
+import Examnotattemp from "../Pages/Examnotattemp";
 
 
 
@@ -72,6 +73,15 @@ const AppRoutes = () => {
         element={
           <RoleProtectedRoute allowedRoles={["Admin"]}>
             <ExamStudentadmin />
+          </RoleProtectedRoute>
+        }
+      />
+
+       <Route
+        path="/exam-not-attempt"
+        element={
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
+            <Examnotattemp />
           </RoleProtectedRoute>
         }
       />
