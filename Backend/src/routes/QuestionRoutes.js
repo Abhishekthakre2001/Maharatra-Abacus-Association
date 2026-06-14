@@ -1,21 +1,23 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/QuestionController");
+const verifyJwt = require("../middlewares/verifyJwt");
+const allowedRoles = require("../middlewares/allowedRoles");
 // routes/questionRoutes.js
-router.get("/level-wise-sets", controller.getLevelWiseSets);
+router.get("/level-wise-sets", verifyJwt, allowedRoles('admin'), controller.getLevelWiseSets);
 
 // routes/questionRoutes.js
-router.get("/paperset", controller.getpaperset);
+router.get("/paperset", verifyJwt, allowedRoles('admin'), controller.getpaperset);
 // Bulk upload endpoint (CSV/JSON array of questions)
-router.post("/bulk", controller.bulkCreateQuestions);
-router.post("/", controller.createQuestion);
-router.get("/", controller.getQuestions);
-router.put("/updateset", controller.updateSet);
-router.get("/admin/:id", controller.getQuestionsByAdmin);
-router.get("/:id", controller.getQuestionById);
-router.put("/:id", controller.updateQuestion);
-router.delete("/:id", controller.deleteQuestion);
-router.delete("/deleteset/level/:level/set/:set", controller.deleteSet);
+router.post("/bulk", verifyJwt, allowedRoles('admin'), controller.bulkCreateQuestions);
+router.post("/", verifyJwt, allowedRoles('admin'), controller.createQuestion);
+router.get("/", verifyJwt, allowedRoles('admin'), controller.getQuestions);
+router.put("/updateset", verifyJwt, allowedRoles('admin'), controller.updateSet);
+router.get("/admin/:id", verifyJwt, allowedRoles('admin'), controller.getQuestionsByAdmin);
+router.get("/:id", verifyJwt, allowedRoles('admin'), controller.getQuestionById);
+router.put("/:id", verifyJwt, allowedRoles('admin'), controller.updateQuestion);
+router.delete("/:id", verifyJwt, allowedRoles('admin'), controller.deleteQuestion);
+router.delete("/deleteset/level/:level/set/:set", verifyJwt, allowedRoles('admin'), controller.deleteSet);
 
 
 

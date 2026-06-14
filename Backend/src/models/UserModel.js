@@ -24,7 +24,7 @@ const UserModel = {
       data.subscription_end_date,
       data.usertype,
       data.createdby,
-      data.status ?? 1
+      data.status ?? 1,
     ]);
 
     return result;
@@ -54,7 +54,7 @@ const UserModel = {
       AND u.createdby = l.createdby
     WHERE u.createdby = ? 
       AND u.usertype = 'student'`,
-      [id]
+      [id],
     );
 
     return rows;
@@ -73,7 +73,7 @@ const UserModel = {
       AND u.createdby = l.createdby
      WHERE u.createdby = ?
        AND u.usertype = 'student'`,
-      [id]
+      [id],
     );
 
     return rows;
@@ -89,7 +89,6 @@ const UserModel = {
     const username = data.username?.trim();
     const password = data.password?.trim();
 
-
     const [result] = await pool.query(sql, [
       data.name,
       data.class,
@@ -102,7 +101,7 @@ const UserModel = {
       data.subscription_end_date,
       data.usertype,
       data.status,
-      id
+      id,
     ]);
     return result;
   },
@@ -114,47 +113,70 @@ const UserModel = {
       await connection.beginTransaction();
 
       // 1️⃣ Delete child records first
-      await connection.query(
-        "DELETE FROM result WHERE user_id = ?",
-        [id]
-      );
+      await connection.query("DELETE FROM result WHERE user_id = ?", [id]);
 
       // 2) Delete student registration records
       await connection.query(
         "DELETE FROM student_registration WHERE user_id = ?",
-        [id]
+        [id],
       );
 
       // 3 Delete parent record
       const [userResult] = await connection.query(
         "DELETE FROM users WHERE id = ?",
-        [id]
+        [id],
       );
 
       await connection.commit();
       return userResult;
-
     } catch (error) {
       await connection.rollback();
       throw error;
-
     } finally {
       connection.release();
     }
   },
 
-
   findByUsername: async (username) => {
     const [rows] = await pool.query(
       "SELECT * FROM users WHERE BINARY username = ?",
-      [username]
+      [username],
     );
 
     return rows[0];
-  }
+  },
+  saveRefreshToken: async (userId, refreshToken, refreshTokenExpiry) => {
+    const [result] = await pool.query(
+      `UPDATE users
+     SET refreshToken = ?,
+         refreshTokenExpiry = ?
+     WHERE id = ?`,
+      [refreshToken, refreshTokenExpiry, userId],
+    );
 
+    return result;
+  },
+  findByRefreshToken: async (refreshToken) => {
+    const [rows] = await pool.query(
+      `SELECT * FROM users
+     WHERE refreshToken = ?`,
+      [refreshToken],
+    );
 
+    return rows[0];
+  },
 
+  clearRefreshToken: async (userId) => {
+    const [result] = await pool.query(
+      `UPDATE users
+     SET refreshToken = NULL,
+         refreshTokenExpiry = NULL
+     WHERE id = ?`,
+      [userId],
+    );
+
+    return result;
+  },
 };
 
 module.exports = UserModel;

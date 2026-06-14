@@ -3,7 +3,9 @@ const bcrypt = require("bcryptjs");
 
 const UserService = {
   createUser: async (data) => {
-    // data.password = await bcrypt.hash(data.password, 10);
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password.trim(), 10);
+    }
     return UserModel.create(data);
   },
 
@@ -13,7 +15,7 @@ const UserService = {
 
   getUserByadminId: (id) => UserModel.findByadminId(id),
 
-   getResultUserByadminId: (id) => UserModel.ResultfindByadminId(id),
+  getResultUserByadminId: (id) => UserModel.ResultfindByadminId(id),
 
   updateUser: (id, data) => UserModel.update(id, data),
 
@@ -24,14 +26,24 @@ const UserService = {
     if (!user) return null;
 
     // ✅ PLAIN TEXT comparison
-    if (password !== user.password) {
+    const isMatch = await bcrypt.compare(password.trim(), user.password);
+
+    if (!isMatch) {
       return null;
     }
 
     return user;
-  }
+  },
+  saveRefreshToken: async (userId, refreshToken, refreshTokenExpiry) => {
+    return UserModel.saveRefreshToken(userId, refreshToken, refreshTokenExpiry);
+  },
+  findByRefreshToken: async (refreshToken) => {
+    return UserModel.findByRefreshToken(refreshToken);
+  },
 
-
+  clearRefreshToken: async (userId) => {
+    return UserModel.clearRefreshToken(userId);
+  },
 };
 
 module.exports = UserService;

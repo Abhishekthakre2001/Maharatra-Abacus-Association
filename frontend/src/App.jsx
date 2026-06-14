@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import AppRoutes from "./Routing/AppRoutes";
 import LoadingScreen from "./UI/LoadingScreen";
 import { themeReady } from "./utils/Color";
-
+import useAutoLogout from "./hooks/useAutoLogout";
 function App() {
   const [ready, setReady] = useState(false);
+  useAutoLogout();
 
   useEffect(() => {
     themeReady.then(() => {
