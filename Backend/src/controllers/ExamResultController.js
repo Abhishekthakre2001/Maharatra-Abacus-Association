@@ -1,4 +1,6 @@
 const ExamResultModel = require("../models/ExamResultModel");
+const resultService = require("../services/resultService");
+const { getPaginationParams } = require("../utils/getPaginationParams");
 
 const getIndianDateTimeParts = () => {
   const now = new Date();
@@ -60,7 +62,7 @@ exports.startExam = async (req, res) => {
 
     const existingRows = await ExamResultModel.findStartedOrSubmitted(
       user_id,
-      exam_id
+      exam_id,
     );
 
     if (existingRows.length > 0) {
@@ -263,7 +265,7 @@ exports.submitExam = async (req, res) => {
 
     // handles crossing midnight
     if (totalSeconds < 0) {
-      totalSeconds = (24 * 3600 - startSeconds) + endSeconds;
+      totalSeconds = 24 * 3600 - startSeconds + endSeconds;
     }
 
     // const time_taken = secondsToTime(totalSeconds);
@@ -306,15 +308,15 @@ exports.submitExam = async (req, res) => {
   }
 };
 
-
-
 exports.getAll = async (req, res) => {
   try {
     const [rows] = await ExamResultModel.findAll();
-    res.json(rows);
+    // res.json(rows);
   } catch (error) {
     console.error("getAll error:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch records" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch records" });
   }
 };
 
@@ -334,7 +336,10 @@ exports.getByStudentId = async (req, res) => {
     res.json(rows);
   } catch (error) {
     console.error("getByStudentId error:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch student exam history" });
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch student exam history",
+    });
   }
 };
 
@@ -365,7 +370,9 @@ exports.checkExamStatus = async (req, res) => {
     });
   } catch (error) {
     console.error("checkExamStatus error:", error);
-    res.status(500).json({ success: false, message: "Failed to check exam status" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to check exam status" });
   }
 };
 
@@ -375,9 +382,39 @@ exports.remove = async (req, res) => {
     res.json({ success: true, message: "Record deleted successfully" });
   } catch (error) {
     console.error("remove error:", error);
-    res.status(500).json({ success: false, message: "Failed to delete record" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to delete record" });
   }
 };
+
+// exports.getexamresultByAdminId = async (req, res) => {
+//   try {
+//     const { admin_id } = req.params;
+
+//     if (!admin_id) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "admin_id is required",
+//       });
+//     }
+
+//     const [rows] = await ExamResultModel.findExamResultByAdminId(admin_id);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Exam results fetched successfully",
+//       data: rows,
+//     });
+//   } catch (error) {
+//     console.error("getByAdminId error:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch exam results by admin id",
+//     });
+//   }
+// };
+
 
 exports.getexamresultByAdminId = async (req, res) => {
   try {
@@ -390,15 +427,21 @@ exports.getexamresultByAdminId = async (req, res) => {
       });
     }
 
-    const [rows] = await ExamResultModel.findExamResultByAdminId(admin_id);
+    const { page, limit, search } =
+      getPaginationParams(req);
 
-    return res.status(200).json({
-      success: true,
-      message: "Exam results fetched successfully",
-      data: rows,
-    });
+    const result =
+      await resultService.getExamResultByAdminId(
+        admin_id,
+        page,
+        limit,
+        search
+      );
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error("getByAdminId error:", error);
+
     return res.status(500).json({
       success: false,
       message: "Failed to fetch exam results by admin id",
@@ -418,10 +461,7 @@ exports.getExamStatusList = async (req, res) => {
       });
     }
 
-    const [rows] = await ExamResultModel.getExamStatusList(
-      exam_id,
-      level
-    );
+    const [rows] = await ExamResultModel.getExamStatusList(exam_id, level);
 
     return res.status(200).json({
       success: true,

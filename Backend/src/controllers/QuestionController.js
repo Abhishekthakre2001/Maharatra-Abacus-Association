@@ -1,5 +1,10 @@
 const QuestionService = require("../services/QuestionService");
 const QuestionModel = require("../models/QuestionModel");
+const {
+  getPaginationParams,
+  buildPaginationResponse,
+} = require("../utils/getPaginationParams");
+
 // const paperCache = new Map();
 
 exports.createQuestion = async (req, res) => {
@@ -15,7 +20,7 @@ exports.bulkCreateQuestions = async (req, res) => {
     if (!questions || !Array.isArray(questions) || questions.length < 1) {
       return res.status(400).json({
         success: false,
-        message: "Questions array is required"
+        message: "Questions array is required",
       });
     }
 
@@ -27,75 +32,89 @@ exports.bulkCreateQuestions = async (req, res) => {
       set,
       createdby,
       time,
-      ismockset
+      ismockset,
     );
 
     res.status(201).json({
       success: true,
-      insertedRows: result.affectedRows
+      insertedRows: result.affectedRows,
     });
-
   } catch (err) {
     console.error(err);
 
     if (err.code === "SET_EXISTS") {
       return res.status(409).json({
         success: false,
-        message: "Set already exists. Please choose another set."
+        message: "Set already exists. Please choose another set.",
       });
     }
 
     res.status(500).json({
       success: false,
-      message: "Failed to upload questions"
+      message: "Failed to upload questions",
     });
   }
 };
+
+// exports.getQuestionsByAdmin = async (req, res) => {
+//   const rows = await QuestionService.getQuestionsByAdmin(req.params.id);
+
+//   // Group by level + set_id
+//   const grouped = {};
+
+//   for (const q of rows) {
+//     const key = `${q.level}_${q.set_id}`;
+
+//     if (!grouped[key]) {
+//       grouped[key] = {
+//         set: q.set_id,
+//         level: q.level,
+//         level_name: q.level_name || null,
+//         ismock: q.ismockset,
+//         paper_set: `${q.level}-${q.set_id}`,
+//         total_question: 0,
+//         total_time: q.set_time,
+//         questions: [],
+//       };
+//     }
+
+//     grouped[key].questions.push({
+//       id: q.id,
+//       question: q.question,
+//       option1: q.option1,
+//       option2: q.option2,
+//       option3: q.option3,
+//       option4: q.option4,
+//       correctoption: q.correctoption,
+//       createdat: q.createdat,
+//     });
+
+//     grouped[key].total_question++;
+//   }
+
+//   // Convert object → array
+//   const response = Object.values(grouped);
+
+//   // res.json(response);
+// };
+
+
 
 
 exports.getQuestionsByAdmin = async (req, res) => {
-  const rows = await QuestionService.getQuestionsByAdmin(req.params.id);
+  const { page, limit, search } =
+    getPaginationParams(req);
 
-  // Group by level + set_id
-  const grouped = {};
+  const result =
+    await QuestionService.getQuestionsByAdmin(
+      req.params.id,
+      page,
+      limit,
+      search
+    );
 
-  for (const q of rows) {
-    const key = `${q.level}_${q.set_id}`;
-
-    if (!grouped[key]) {
-      grouped[key] = {
-        set: q.set_id,
-        level: q.level,
-        level_name: q.level_name || null,
-        ismock: q.ismockset,
-        paper_set: `${q.level}-${q.set_id}`,
-        total_question: 0,
-        total_time: q.set_time,
-        questions: []
-      };
-    }
-
-    grouped[key].questions.push({
-      id: q.id,
-      question: q.question,
-      option1: q.option1,
-      option2: q.option2,
-      option3: q.option3,
-      option4: q.option4,
-      correctoption: q.correctoption,
-      createdat: q.createdat
-    });
-
-    grouped[key].total_question++;
-  }
-
-  // Convert object → array
-  const response = Object.values(grouped);
-
-  res.json(response);
+  res.json(result);
 };
-
-
 exports.getQuestions = async (req, res) => {
   const data = await QuestionService.getQuestions();
   res.json(data);
@@ -159,10 +178,9 @@ exports.getLevelWiseSets = async (req, res) => {
     success: true,
     level: rows.length ? rows[0].level_name : null,
     data: rows,
-    formatted: rows.map(r => `${r.level}${r.set_id}`)
+    formatted: rows.map((r) => `${r.level}${r.set_id}`),
   });
 };
-
 
 exports.getpaperset = async (req, res) => {
   console.log("req aya", req.query);
@@ -187,7 +205,7 @@ exports.getpaperset = async (req, res) => {
   const [rows] = await QuestionService.getpaperSet({
     level,
     createdby,
-    set
+    set,
   });
 
   // ✅ Shuffle in Node (instead of DB)
@@ -201,6 +219,3 @@ exports.getpaperset = async (req, res) => {
     data: shuffled,
   });
 };
-
-
-

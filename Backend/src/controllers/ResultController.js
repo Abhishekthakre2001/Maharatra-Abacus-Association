@@ -1,6 +1,8 @@
 const ResultModel = require("../models/ResultModel");
 const ExcelJS = require("exceljs");
 const ExamScheduleModel = require("../models/ExamScheduleModel");
+const { getPaginationParams } = require("../utils/getPaginationParams");
+const resultService = require("../services/resultService");
 
 // const paperCache = new Map();
 
@@ -14,14 +16,15 @@ exports.create = async (req, res) => {
 
     // 🔍 Step 1: Check if live exam exists for this user level
     const [liveExamRows] = await ExamScheduleModel.findLiveExam({
-      level: Number(data.PaperLevel),        // same as paper level
-      createdby: Number(data.createdby)
+      level: Number(data.PaperLevel), // same as paper level
+      createdby: Number(data.createdby),
     });
 
     // ❌ If live exam is running → block mock result
     if (liveExamRows.length > 0) {
       return res.status(400).json({
-        message: "Your exam is live now. Please give the exam, not a mock test."
+        message:
+          "Your exam is live now. Please give the exam, not a mock test.",
       });
     }
 
@@ -30,9 +33,8 @@ exports.create = async (req, res) => {
 
     return res.status(201).json({
       id: result.insertId,
-      message: "Result saved successfully"
+      message: "Result saved successfully",
     });
-
   } catch (err) {
     console.error("Create result error ❌", err);
     res.status(500).json({ message: "Failed to save result" });
@@ -65,7 +67,7 @@ exports.checkExamSubmission = async (req, res) => {
   if (!user_id || !exam_id) {
     return res.status(400).json({
       exam: false,
-      message: "user_id and exam_id are required"
+      message: "user_id and exam_id are required",
     });
   }
 
@@ -87,7 +89,7 @@ exports.checkExamSubmission = async (req, res) => {
       return res.json({
         exam: true,
         user_id: Number(user_id),
-        exam_id: Number(exam_id)
+        exam_id: Number(exam_id),
       });
     }
 
@@ -96,14 +98,13 @@ exports.checkExamSubmission = async (req, res) => {
         exam: false,
         user_id: Number(user_id),
         exam_id: Number(exam_id),
-        message: "Exam not submitted yet"
+        message: "Exam not submitted yet",
       });
     }
   }
 
   return res.json({ exam: false });
 };
-
 
 exports.downloadResultsExcel = async (req, res) => {
   try {
@@ -175,12 +176,9 @@ exports.downloadResultsExcel = async (req, res) => {
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=results.xlsx"
-    );
+    res.setHeader("Content-Disposition", "attachment; filename=results.xlsx");
 
     await workbook.xlsx.write(res);
     res.end();
@@ -193,27 +191,54 @@ exports.downloadResultsExcel = async (req, res) => {
   }
 };
 
+// exports.getResultByAdminId = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     if (!id) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "admin id is required",
+//       });
+//     }
+
+//     const [rows] = await ResultModel.findResultByAdminId(id);
+
+//     // return res.status(200).json({
+//     //   success: true,
+//     //   message: "Results fetched successfully",
+//     //   data: rows,
+//     // });
+//   } catch (error) {
+//     console.error("getResultByAdminId error:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch results by admin id",
+//     });
+//   }
+// };
+
+
 exports.getResultByAdminId = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: "admin id is required",
-      });
-    }
+    const { page, limit, search } =
+      getPaginationParams(req);
 
-    const [rows] = await ResultModel.findResultByAdminId(id);
+    const result =
+      await resultService.getResultByAdminId(
+        id,
+        page,
+        limit,
+        search
+      );
 
-    return res.status(200).json({
-      success: true,
-      message: "Results fetched successfully",
-      data: rows,
-    });
+    res.status(200).json(result);
   } catch (error) {
     console.error("getResultByAdminId error:", error);
-    return res.status(500).json({
+
+    res.status(500).json({
       success: false,
       message: "Failed to fetch results by admin id",
     });

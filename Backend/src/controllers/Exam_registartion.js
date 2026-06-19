@@ -1,4 +1,5 @@
 const ExamRegistration = require("../models/Exam_registartion");
+const { getPaginationParams } = require("../utils/getPaginationParams");
 
 exports.examRegistration = async (req, res) => {
     try {
@@ -38,31 +39,37 @@ exports.examRegistration = async (req, res) => {
     }
 };
 
+
 exports.getByCreatedBy = async (req, res) => {
-        try {
+    try {
+        const { createdby } = req.params;
 
-            const { createdby } = req.params;
-
-            if (!createdby) {
-                return res.status(400).json({
-                    success: false,
-                    message: "createdby is required"
-                });
-            }
-
-            const data = await ExamRegistration.getByCreatedBy(createdby);
-
-            return res.status(200).json({
-                success: true,
-                data
-            });
-
-        } catch (error) {
-            console.error("Fetch By CreatedBy Error:", error);
-            return res.status(500).json({
+        if (!createdby) {
+            return res.status(400).json({
                 success: false,
-                message: "Failed to fetch registrations"
+                message: "createdby is required"
             });
         }
-    };
 
+        const { page, limit, search } =
+            getPaginationParams(req);
+
+        const result =
+            await ExamRegistration.getByCreatedBy(
+                createdby,
+                page,
+                limit,
+                search
+            );
+
+        return res.status(200).json(result);
+
+    } catch (error) {
+        console.error("Fetch By CreatedBy Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch registrations"
+        });
+    }
+};

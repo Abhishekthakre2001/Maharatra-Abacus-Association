@@ -7,11 +7,22 @@ import colors from '../utils/Color';
 import { useFetchData } from "../hooks/useFetchData";
 import userApi from "../api/userApi";
 import { useDelete } from "../hooks/useDelete";
+import useTableState from '../hooks/useTableState';
 
 
 export default function StudentList() {
 
     const navigate = useNavigate();
+    const {
+  page,
+  limit,
+  search,
+  debouncedSearch,
+
+  setPage,
+  handleSearchChange,
+  handleLimitChange,
+} = useTableState();
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
     const { remove, loading: deleteLoading } = useDelete(
@@ -26,11 +37,27 @@ export default function StudentList() {
 
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : {};
-    const { data: students, loading, reload } = useFetchData(() => {
-        if (!user?.id) return Promise.resolve([]);
-        return userApi.getbyadminid(user.id);
-    });
+const {
+  data: response,
+  loading,
+  reload
+} = useFetchData(() => {
+  if (!user?.id) return Promise.resolve(null);
 
+  return userApi.getbyadminid(
+    user.id,
+    page,
+    limit,
+    debouncedSearch
+  );
+}, [page, limit, debouncedSearch],  { preserveResponse: true });
+
+const students = response?.data || [];
+const totalPages =
+  response?.pagination?.totalPages || 1;
+
+const totalRecords =
+  response?.pagination?.totalRecords || 0;
 
     const handleEdit = (row) => {
         // Navigate to add-student in update mode with id
@@ -178,7 +205,7 @@ export default function StudentList() {
 
             {/* Student Table */}
             <div className="p-0 my-8">
-                <DataTable
+                {/* <DataTable
                     columns={columns}
                     data={students}
                     title="All Students"
@@ -189,7 +216,33 @@ export default function StudentList() {
                     pagination
                     showActions
                     loading={loading}
-                />
+                /> */}
+                <DataTable
+    columns={columns}
+    data={students}
+    title="All Students"
+
+    currentPage={page}
+    totalPages={totalPages}
+    totalRecords={totalRecords}
+
+    onPageChange={setPage}
+
+    onLimitChange={handleLimitChange}
+
+    searchTerm={search}
+
+    onSearchChange={  handleSearchChange}
+
+    onCreate={() => navigate("/add-student")}
+    onEdit={handleEdit}
+    onDelete={handleDelete}
+
+    searchable
+    pagination
+    showActions
+    loading={loading}
+/>
             </div>
         </>
     )

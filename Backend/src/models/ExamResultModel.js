@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { buildPaginationResponse } = require("../utils/getPaginationParams");
 
 module.exports = {
   startExam: (data) =>
@@ -29,7 +30,7 @@ module.exports = {
         data.total_question,
         data.Exam_level,
         data.paper_set,
-      ]
+      ],
     ),
 
   submitExam: (id, data) =>
@@ -50,7 +51,7 @@ module.exports = {
         data.total_unsolve,
         data.total_correct,
         id,
-      ]
+      ],
     ),
 
   findAll: () =>
@@ -77,13 +78,13 @@ module.exports = {
       FROM Exam_Result er
       LEFT JOIN users u ON er.user_id = u.id
       WHERE er.id = ?`,
-      [id]
+      [id],
     ),
 
   findByRecordId: async (id) => {
     const [rows] = await pool.query(
       `SELECT * FROM Exam_Result WHERE id = ? LIMIT 1`,
-      [id]
+      [id],
     );
     return rows;
   },
@@ -94,7 +95,7 @@ module.exports = {
        FROM Exam_Result
        WHERE user_id = ?
        ORDER BY id DESC`,
-      [user_id]
+      [user_id],
     ),
 
   findStartedOrSubmitted: async (user_id, exam_id) => {
@@ -104,22 +105,112 @@ module.exports = {
        WHERE user_id = ? AND exam_id = ?
        ORDER BY id DESC
        LIMIT 1`,
-      [user_id, exam_id]
+      [user_id, exam_id],
     );
     return rows;
   },
 
-  deleteById: (id) =>
-    pool.query(
-      `DELETE FROM Exam_Result WHERE id = ?`,
-      [id]
-    ),
+  deleteById: (id) => pool.query(`DELETE FROM Exam_Result WHERE id = ?`, [id]),
 
-  remove: (id) =>
-    pool.query(`DELETE FROM Exam_Result WHERE id = ?`, [id]),
+  remove: (id) => pool.query(`DELETE FROM Exam_Result WHERE id = ?`, [id]),
 
-  findExamResultByAdminId: (admin_id) =>
-    pool.query(
+  // findExamResultByAdminId: (admin_id) =>
+  //   pool.query(
+  //     `
+  //   SELECT
+  //     er.id,
+  //     er.user_id,
+  //     er.exam_id,
+  //     er.admin_id,
+  //     er.exam_name,
+  //     er.exam_level,
+  //     er.paper_set,
+  //     er.date,
+  //     er.exam_start_at,
+  //     er.exam_end_at,
+  //     er.exam_time,
+  //     er.time_taken,
+  //     er.total_question,
+  //     er.total_solve,
+  //     er.total_unsolve,
+  //     er.total_correct,
+  //     er.status,
+  //     er.created_at,
+  //     er.updated_at,
+
+  //     u.name,
+  //     u.address,
+  //     u.mobilenumber,
+  //     u.username,
+
+  //     sr.learning_center_name,
+  //     sr.age
+
+  //   FROM Exam_Result er
+  //   LEFT JOIN users u
+  //     ON er.user_id = u.id
+  //   LEFT JOIN student_registration sr
+  //     ON er.user_id = sr.user_id
+  //   WHERE er.admin_id = ?
+
+  //   ORDER BY
+  //     er.exam_name ASC,
+  //     er.exam_level ASC,
+  //     er.total_correct DESC,
+  //     er.total_solve DESC,
+  //     er.time_taken ASC,
+  //     er.id DESC
+  //   `,
+  //     [admin_id]
+  //   ),
+
+  findExamResultByAdminId: async (
+    admin_id,
+    page = 1,
+    limit = 5,
+    search = "",
+  ) => {
+    const offset = (page - 1) * limit;
+
+    // Total Count
+    const [countRows] = await pool.query(
+      `
+    SELECT COUNT(*) AS total
+    FROM Exam_Result er
+
+    LEFT JOIN users u
+      ON er.user_id = u.id
+
+    LEFT JOIN student_registration sr
+      ON er.user_id = sr.user_id
+
+    WHERE er.admin_id = ?
+      AND (
+        ? = ''
+        OR u.name LIKE ?
+        OR u.username LIKE ?
+        OR u.mobilenumber LIKE ?
+        OR er.exam_name LIKE ?
+        OR er.exam_level LIKE ?
+        OR sr.learning_center_name LIKE ?
+      )
+    `,
+      [
+        admin_id,
+        search,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+      ],
+    );
+
+    const totalRecords = countRows[0].total;
+
+    // Main Data Query
+    const [rows] = await pool.query(
       `
     SELECT
       er.id,
@@ -151,24 +242,51 @@ module.exports = {
       sr.age
 
     FROM Exam_Result er
+
     LEFT JOIN users u
       ON er.user_id = u.id
+
     LEFT JOIN student_registration sr
       ON er.user_id = sr.user_id
+
     WHERE er.admin_id = ?
-    
+      AND (
+        ? = ''
+        OR u.name LIKE ?
+        OR u.username LIKE ?
+        OR u.mobilenumber LIKE ?
+        OR er.exam_name LIKE ?
+        OR er.exam_level LIKE ?
+        OR sr.learning_center_name LIKE ?
+      )
+
     ORDER BY
-      er.exam_name ASC,      
-      er.exam_level ASC,     
-      er.total_correct DESC,  
+      er.exam_name ASC,
+      er.exam_level ASC,
+      er.total_correct DESC,
       er.total_solve DESC,
       er.time_taken ASC,
       er.id DESC
+
+    LIMIT ?
+    OFFSET ?
     `,
-      [admin_id]
-    ),
+      [
+        admin_id,
+        search,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        Number(limit),
+        Number(offset),
+      ],
+    );
 
-
+    return buildPaginationResponse(rows, page, limit, totalRecords);
+  },
   getExamStatusList: (exam_id, level) => {
     let query = `
     SELECT 
@@ -231,5 +349,5 @@ module.exports = {
   `;
 
     return pool.query(query, params);
-  }
+  },
 };

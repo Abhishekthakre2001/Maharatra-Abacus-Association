@@ -1,7 +1,7 @@
 const pool = require("../config/db");
+const { buildPaginationResponse } = require("../utils/getPaginationParams");
 
 const ExamRegistration = {
-
   createWithTransaction: async (data) => {
     const connection = await pool.getConnection();
 
@@ -32,8 +32,8 @@ const ExamRegistration = {
           data.subscription_end_date,
           data.usertype,
           data.createdby,
-          data.status ?? 0
-        ]
+          data.status ?? 0,
+        ],
       );
 
       const userId = userResult.insertId;
@@ -56,18 +56,16 @@ const ExamRegistration = {
           data.level,
           data.parentName,
           data.whatsapp,
-          data.age
-        ]
+          data.age,
+        ],
       );
 
       await connection.commit();
 
       return { success: true, userId };
-
     } catch (error) {
       await connection.rollback();
       throw error;
-
     } finally {
       connection.release();
     }
@@ -80,7 +78,7 @@ const ExamRegistration = {
   //   try {
 
   //     const [rows] = await connection.query(`
-  //     SELECT 
+  //     SELECT
   //       u.id AS user_id,
   //       u.name,
   //       u.class,
@@ -101,7 +99,7 @@ const ExamRegistration = {
 
   //     FROM users u
   //     INNER JOIN student_registration s
-  //     ON u.id = s.user_id, 
+  //     ON u.id = s.user_id,
 
   //     WHERE u.createdby = ?
   //     ORDER BY s.registration_date DESC
@@ -114,48 +112,116 @@ const ExamRegistration = {
   //   }
   // }
 
-  getByCreatedBy: async (createdby) => {
+  getByCreatedBy: async (createdby, page = 1, limit = 5, search = "") => {
     const connection = await pool.getConnection();
 
     try {
-      const [rows] = await connection.query(
+      const offset = (page - 1) * limit;
+
+      // Count Query
+      const [countRows] = await connection.query(
         `
-      SELECT 
-        u.id AS user_id,
-        u.name,
-        u.class,
-        u.address,
-        u.mobilenumber,
-        u.username,
-        u.password,
-        u.level,
-        u.dob,
-        u.subscription_end_date,
-        u.usertype,
-        u.status,
+                SELECT COUNT(*) AS total
 
-        s.age,
-        s.learning_center_name,
-        s.city,
-        s.parent_name,
-        s.whatsapp_number,
-        s.registration_date
+                FROM users u
 
-      FROM users u
-      INNER JOIN student_registration s
-        ON u.id = s.user_id
-      WHERE u.createdby = ?
-      ORDER BY s.registration_date DESC
-      `,
-        [createdby]
+                INNER JOIN student_registration s
+                    ON u.id = s.user_id
+
+                WHERE u.createdby = ?
+                  AND (
+                        ? = ''
+                        OR u.name LIKE ?
+                        OR u.username LIKE ?
+                        OR u.mobilenumber LIKE ?
+                        OR s.parent_name LIKE ?
+                        OR s.city LIKE ?
+                        OR s.learning_center_name LIKE ?
+                        OR u.class LIKE ?
+                  )
+                `,
+        [
+          createdby,
+          search,
+          `%${search}%`,
+          `%${search}%`,
+          `%${search}%`,
+          `%${search}%`,
+          `%${search}%`,
+          `%${search}%`,
+          `%${search}%`,
+        ],
       );
 
-      return rows;
+      const totalRecords = countRows[0].total;
+
+      // Main Query
+      const [rows] = await connection.query(
+        `
+                SELECT 
+                    u.id AS user_id,
+                    u.name,
+                    u.class,
+                    u.address,
+                    u.mobilenumber,
+                    u.username,
+                    u.password,
+                    u.level,
+                    u.dob,
+                    u.subscription_end_date,
+                    u.usertype,
+                    u.status,
+
+                    s.age,
+                    s.learning_center_name,
+                    s.city,
+                    s.parent_name,
+                    s.whatsapp_number,
+                    s.registration_date
+
+                FROM users u
+
+                INNER JOIN student_registration s
+                    ON u.id = s.user_id
+
+                WHERE u.createdby = ?
+                  AND (
+                        ? = ''
+                        OR u.name LIKE ?
+                        OR u.username LIKE ?
+                        OR u.mobilenumber LIKE ?
+                        OR s.parent_name LIKE ?
+                        OR s.city LIKE ?
+                        OR s.learning_center_name LIKE ?
+                        OR u.class LIKE ?
+                  )
+
+                ORDER BY
+                    s.registration_date DESC
+
+                LIMIT ?
+                OFFSET ?
+                `,
+        [
+          createdby,
+          search,
+          `%${search}%`,
+          `%${search}%`,
+          `%${search}%`,
+          `%${search}%`,
+          `%${search}%`,
+          `%${search}%`,
+          `%${search}%`,
+          Number(limit),
+          Number(offset),
+        ],
+      );
+
+      return buildPaginationResponse(rows, page, limit, totalRecords);
     } finally {
       connection.release();
     }
-  }
-
+  },
 };
 
 module.exports = ExamRegistration;

@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { buildPaginationResponse } = require("../utils/getPaginationParams");
 
 const UserModel = {
   create: async (data) => {
@@ -43,23 +44,84 @@ const UserModel = {
   //   const [rows] = await pool.query("SELECT * FROM users WHERE createdby = ? && usertype= 'student'", [id]);
   //   return rows;
   // },
-  findByadminId: async (id) => {
+  // findByadminId: async (id) => {
+  //   const [rows] = await pool.query(
+  //     `SELECT
+  //     u.*,
+  //     l.level_name
+  //   FROM users u
+  //   LEFT JOIN levels l
+  //     ON u.level = l.level
+  //     AND u.createdby = l.createdby
+  //   WHERE u.createdby = ?
+  //     AND u.usertype = 'student'`,
+  //     [id],
+  //   );
+
+  //   return rows;
+  // },
+  findByadminId: async (id, page = 1, limit = 5, search = "") => {
+    const offset = (page - 1) * limit;
+
+    // Total Count
+    const [countRows] = await pool.query(
+      `
+    SELECT COUNT(*) as total
+    FROM users u
+    WHERE u.createdby = ?
+      AND u.usertype = 'student'
+      AND (
+        ? = ''
+        OR u.name LIKE ?
+        OR u.username LIKE ?
+        OR u.mobilenumber LIKE ?
+        OR u.class LIKE ?
+      )
+    `,
+      [id, search, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`],
+    );
+
+    const totalRecords = countRows[0].total;
+
+    // Main Data
     const [rows] = await pool.query(
-      `SELECT 
+      `
+    SELECT 
       u.*, 
       l.level_name
     FROM users u
-    LEFT JOIN levels l 
-      ON u.level = l.level 
+    LEFT JOIN levels l
+      ON u.level = l.level
       AND u.createdby = l.createdby
-    WHERE u.createdby = ? 
-      AND u.usertype = 'student'`,
-      [id],
+
+    WHERE u.createdby = ?
+      AND u.usertype = 'student'
+      AND (
+        ? = ''
+        OR u.name LIKE ?
+        OR u.username LIKE ?
+        OR u.mobilenumber LIKE ?
+        OR u.class LIKE ?
+      )
+
+    ORDER BY u.id DESC
+    LIMIT ?
+    OFFSET ?
+    `,
+      [
+        id,
+        search,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        Number(limit),
+        Number(offset),
+      ],
     );
 
-    return rows;
+    return buildPaginationResponse(rows, page, limit, totalRecords);
   },
-
   ResultfindByadminId: async (id) => {
     const [rows] = await pool.query(
       `SELECT DISTINCT

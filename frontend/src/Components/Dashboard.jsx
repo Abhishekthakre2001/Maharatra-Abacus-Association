@@ -35,7 +35,7 @@ export default function Dashboard() {
     if (!user?.id) return Promise.resolve(null);
     return summaryapi.getsummary(user.id);
   });
-  const summaryData = Array.isArray(summary) ? summary[0] : summary;
+  const summaryData = Array.isArray(summary) ? summary[0]?.data : summary;
 
   console.log("summary", summary)
 

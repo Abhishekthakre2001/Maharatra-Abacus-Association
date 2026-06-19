@@ -1,4 +1,5 @@
 const SetModel = require("../models/SetModel");
+const { getPaginationParams } = require("../utils/getPaginationParams");
 
 exports.create = async (req, res) => {
   try {
@@ -21,8 +22,18 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getbyadminid = async (req, res) => {
-  const [rows] = await SetModel.findbyadminid(req.params.id);
-  res.json(rows);
+  const { page, limit, search } =
+    getPaginationParams(req);
+
+  const result =
+    await SetModel.findbyadminid(
+      req.params.id,
+      page,
+      limit,
+      search
+    );
+
+  res.json(result);
 };
 
 exports.getById = async (req, res) => {

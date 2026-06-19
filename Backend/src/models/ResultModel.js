@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { buildPaginationResponse } = require("../utils/getPaginationParams");
 
 module.exports = {
   create: (data) =>
@@ -23,8 +24,8 @@ module.exports = {
         data.examtitle,
         data.exam_id,
         data.set,
-        data.Level
-      ]
+        data.Level,
+      ],
     ),
 
   findAll: () =>
@@ -48,7 +49,7 @@ module.exports = {
        ON r.user_id = u.id
      WHERE r.user_id = ?
      ORDER BY r.id DESC`,
-      [id]
+      [id],
     ),
 
   update: (id, data) =>
@@ -68,13 +69,13 @@ module.exports = {
         data.total_unsolve,
         data.totaltime,
         data.time_taken,
-        id
-      ]
+        id,
+      ],
     ),
 
   // findByUserAndExam: (user_id, exam_id) =>
   //   pool.query(
-  //     `SELECT id FROM result 
+  //     `SELECT id FROM result
   //    WHERE user_id = ? AND exam_id = ?
   //    LIMIT 1`,
   //     [user_id, exam_id]
@@ -106,15 +107,14 @@ module.exports = {
      WHERE user_id = ? AND exam_id = ?
      ORDER BY id DESC
      LIMIT 1`,
-      [user_id, exam_id]
+      [user_id, exam_id],
     ),
 
-
-  remove: (id) =>
-    pool.query("DELETE FROM result WHERE id = ?", [id]),
+  remove: (id) => pool.query("DELETE FROM result WHERE id = ?", [id]),
 
   getAllResultsWithUserName: async (id) => {
-    const [rows] = await pool.query(`
+    const [rows] = await pool.query(
+      `
     SELECT
       r.id,
       r.user_id,
@@ -151,11 +151,12 @@ module.exports = {
 
     WHERE r.createdby = ?
     ORDER BY r.id DESC
-  `, [id]);
+  `,
+      [id],
+    );
 
     return rows;
   },
-
 
   // findResultByAdminId: (id) =>
   //   pool.query(
@@ -193,7 +194,7 @@ module.exports = {
 
   //   WHERE r.createdby = ?
 
-  //   ORDER BY 
+  //   ORDER BY
   //     u.level ASC,
   //     r.total_correct DESC,
   //     r.total_answer DESC,
@@ -202,9 +203,118 @@ module.exports = {
   //   `,
   //     [id]
   //   )
- findResultByAdminId: (id) =>
-  pool.query(
-    `
+  //  findResultByAdminId: (id) =>
+  //   pool.query(
+  //     `
+  //     SELECT * FROM (
+  //       SELECT
+  //         r.id,
+  //         r.user_id,
+  //         r.total_question,
+  //         r.total_answer,
+  //         r.total_correct,
+  //         r.total_unsolve,
+  //         r.date,
+  //         r.time,
+  //         r.totaltime,
+  //         r.time_taken,
+  //         r.resultfor,
+  //         r.examtitle,
+  //         r.exam_id,
+  //         r.PaperSet,
+  //         r.Paperlevel,
+  //         r.createdby,
+
+  //         u.name,
+  //         u.username,
+  //         u.class,
+  //         u.address,
+  //         u.mobilenumber,
+  //         u.dob,
+  //         u.subscription_end_date,
+  //         u.level AS user_level,
+
+  //         sr.city,
+
+  //         FLOOR(UNIX_TIMESTAMP(r.createdat) / 60) AS time_bucket,
+
+  //         ROW_NUMBER() OVER (
+  //           PARTITION BY r.user_id, FLOOR(UNIX_TIMESTAMP(r.createdat) / 60)
+  //           ORDER BY
+  //             r.total_correct DESC,
+  //             r.total_answer DESC,
+  //             r.time_taken ASC,
+  //             r.id DESC
+  //         ) AS rn
+
+  //       FROM result r
+  //       INNER JOIN users u
+  //         ON r.user_id = u.id
+
+  //       LEFT JOIN student_registration sr
+  //         ON sr.user_id = u.id
+
+  //       WHERE r.createdby = ?
+  //     ) t
+  //     WHERE t.rn = 1
+  //     ORDER BY
+  //       t.user_level ASC,
+  //       t.total_correct DESC,
+  //       t.total_answer DESC,
+  //       t.time_taken ASC,
+  //       t.id DESC
+  //     `,
+  //     [id]
+  //   )
+
+  findResultByAdminId: async (id, page = 1, limit = 5, search = "") => {
+    const offset = (page - 1) * limit;
+
+    // Count Query
+    const [countRows] = await pool.query(
+      `
+    SELECT COUNT(*) AS total
+    FROM (
+      SELECT
+        r.user_id,
+        FLOOR(UNIX_TIMESTAMP(r.createdat) / 60) AS time_bucket,
+
+        ROW_NUMBER() OVER (
+          PARTITION BY r.user_id,
+          FLOOR(UNIX_TIMESTAMP(r.createdat) / 60)
+          ORDER BY
+            r.total_correct DESC,
+            r.total_answer DESC,
+            r.time_taken ASC,
+            r.id DESC
+        ) AS rn,
+
+        u.name,
+        u.username,
+        u.class,
+        u.mobilenumber
+      FROM result r
+      INNER JOIN users u
+        ON r.user_id = u.id
+      WHERE r.createdby = ?
+        AND (
+          ? = ''
+          OR u.name LIKE ?
+          OR u.username LIKE ?
+          OR u.class LIKE ?
+          OR u.mobilenumber LIKE ?
+        )
+    ) t
+    WHERE t.rn = 1
+    `,
+      [id, search, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`],
+    );
+
+    const totalRecords = countRows[0].total;
+
+    // Main Query
+    const [rows] = await pool.query(
+      `
     SELECT * FROM (
       SELECT
         r.id,
@@ -233,13 +343,14 @@ module.exports = {
         u.subscription_end_date,
         u.level AS user_level,
 
-        sr.city,  
+        sr.city,
 
         FLOOR(UNIX_TIMESTAMP(r.createdat) / 60) AS time_bucket,
 
         ROW_NUMBER() OVER (
-          PARTITION BY r.user_id, FLOOR(UNIX_TIMESTAMP(r.createdat) / 60)
-          ORDER BY 
+          PARTITION BY r.user_id,
+          FLOOR(UNIX_TIMESTAMP(r.createdat) / 60)
+          ORDER BY
             r.total_correct DESC,
             r.total_answer DESC,
             r.time_taken ASC,
@@ -250,21 +361,43 @@ module.exports = {
       INNER JOIN users u
         ON r.user_id = u.id
 
-      LEFT JOIN student_registration sr  
+      LEFT JOIN student_registration sr
         ON sr.user_id = u.id
 
       WHERE r.createdby = ?
+        AND (
+          ? = ''
+          OR u.name LIKE ?
+          OR u.username LIKE ?
+          OR u.class LIKE ?
+          OR u.mobilenumber LIKE ?
+        )
     ) t
+
     WHERE t.rn = 1
-    ORDER BY 
+
+    ORDER BY
       t.user_level ASC,
       t.total_correct DESC,
       t.total_answer DESC,
       t.time_taken ASC,
       t.id DESC
+
+    LIMIT ?
+    OFFSET ?
     `,
-    [id]
-  )
+      [
+        id,
+        search,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        Number(limit),
+        Number(offset),
+      ],
+    );
+
+    return buildPaginationResponse(rows, page, limit, totalRecords);
+  },
 };
-
-

@@ -1,18 +1,24 @@
 const LevelModel = require("../models/LevelModel");
+const { getPaginationParams } = require("../utils/getPaginationParams");
 
 exports.create = async (req, res) => {
   try {
     // Check if level already exists for this user
-    const [[existing]] = await LevelModel.findByLevelAndUser(req.body.level, req.body.createdby);
+    const [[existing]] = await LevelModel.findByLevelAndUser(
+      req.body.level,
+      req.body.createdby,
+    );
     if (existing) {
-      return res.status(400).json({ error: "Level already exists for this user" });
+      return res
+        .status(400)
+        .json({ error: "Level already exists for this user" });
     }
-    
+
     const [result] = await LevelModel.create(req.body);
-    res.status(201).json({ 
-      id: result.insertId, 
+    res.status(201).json({
+      id: result.insertId,
       level: req.body.level,
-      level_name: req.body.level_name
+      level_name: req.body.level_name,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -30,18 +36,34 @@ exports.getById = async (req, res) => {
 };
 
 exports.getAllByAdmin = async (req, res) => {
-  const [rows] = await LevelModel.findAllByAdmin(req.query.adminid);
-  res.json(rows);
-};
+  const { page, limit, search } = getPaginationParams(req);
 
+  const result = await LevelModel.findAllByAdmin(
+    req.query.adminid,
+    page,
+    limit,
+    search,
+  );
+
+  res.json(result);
+};
 exports.update = async (req, res) => {
   try {
     // Check if another level with same name exists for this user (excluding current one)
-    const [existing] = await LevelModel.findByLevelAndUser(req.body.level, req.body.createdby);
-    if (existing && existing.length > 0 && existing[0].id !== parseInt(req.params.id)) {
-      return res.status(400).json({ error: "Level already exists for this user" });
+    const [existing] = await LevelModel.findByLevelAndUser(
+      req.body.level,
+      req.body.createdby,
+    );
+    if (
+      existing &&
+      existing.length > 0 &&
+      existing[0].id !== parseInt(req.params.id)
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Level already exists for this user" });
     }
-    
+
     await LevelModel.update(req.params.id, req.body);
     res.json({ success: true });
   } catch (error) {

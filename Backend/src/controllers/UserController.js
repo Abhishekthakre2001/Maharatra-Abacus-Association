@@ -1,5 +1,6 @@
 const UserService = require("../services/UserServices");
 const jwt = require("jsonwebtoken");
+const { getPaginationParams } = require("../utils/getPaginationParams");
 
 exports.createUser = async (req, res) => {
   const result = await UserService.createUser(req.body);
@@ -16,11 +17,23 @@ exports.getUserById = async (req, res) => {
   res.json(user);
 };
 
-exports.getUserByadminId = async (req, res) => {
-  const user = await UserService.getUserByadminId(req.params.id);
-  res.json(user);
-};
+// exports.getUserByadminId = async (req, res) => {
+//   const user = await UserService.getUserByadminId(req.params.id);
+//   res.json(user);
+// };
 
+exports.getUserByadminId = async (req, res) => {
+  const { page, limit, search } = getPaginationParams(req);
+
+  const result = await UserService.getUserByadminId(
+    req.params.id,
+    page,
+    limit,
+    search
+  );
+
+  res.json(result);
+};
 exports.getResultUserByadminId = async (req, res) => {
   const user = await UserService.getResultUserByadminId(req.params.id);
   res.json(user);
@@ -239,10 +252,7 @@ exports.refreshToken = async (req, res) => {
       });
     }
 
-    const decoded = jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET
-    );
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
     const user = await UserService.getUserById(decoded.id);
 
@@ -271,14 +281,13 @@ exports.refreshToken = async (req, res) => {
       process.env.JWT_ACCESS_SECRET,
       {
         expiresIn: "15m",
-      }
+      },
     );
 
     res.json({
       success: true,
       accessToken,
     });
-
   } catch (error) {
     return res.status(401).json({
       success: false,

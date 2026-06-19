@@ -1,25 +1,44 @@
-import React, { useState } from 'react';
-import { useFetchData } from '../hooks/useFetchData';
-import levelApi from '../api/LevelApi';
-import DataTable from '../UI/DataTable';
-import Modal from '../UI/Modal';
-import DeleteConfirmModal from '../UI/DeleteConfirmModal';
+import React, { useState } from "react";
+import { useFetchData } from "../hooks/useFetchData";
+import levelApi from "../api/LevelApi";
+import DataTable from "../UI/DataTable";
+import Modal from "../UI/Modal";
+import DeleteConfirmModal from "../UI/DeleteConfirmModal";
+import useTableState from "../hooks/useTableState";
 
 export default function Level() {
   const adminid = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user")).id
     : null;
-
-  const { data: levels, loading, reload } = useFetchData(() =>
-    levelApi.getbyadminid(adminid)
+  const {
+    page,
+    limit,
+    search,
+    debouncedSearch,
+    setPage,
+    handleSearchChange,
+    handleLimitChange,
+  } = useTableState();
+  const {
+    data: response,
+    loading,
+    reload,
+  } = useFetchData(
+    () => levelApi.getbyadminid(adminid, page, limit, debouncedSearch),
+    [adminid, page, limit, debouncedSearch],
+    { preserveResponse: true },
   );
+  const levels = response?.data || [];
 
+  const totalPages = response?.pagination?.totalPages || 1;
+
+  const totalRecords = response?.pagination?.totalRecords || 0;
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRow, setEditingRow] = useState(null);
 
-  const [level, setLevel] = useState('');
-  const [levelName, setLevelName] = useState('');
-  const [error, setError] = useState('');
+  const [level, setLevel] = useState("");
+  const [levelName, setLevelName] = useState("");
+  const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -27,42 +46,42 @@ export default function Level() {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const columns = [
-    { key: 'level', label: 'Level' },
-    { key: 'level_name', label: 'Level Name' }
+    { key: "level", label: "Level" },
+    { key: "level_name", label: "Level Name" },
   ];
 
   const openCreate = () => {
     setEditingRow(null);
-    setLevel('');
-    setLevelName('');
-    setError('');
+    setLevel("");
+    setLevelName("");
+    setError("");
     setModalOpen(true);
   };
 
   const openEdit = (row) => {
     setEditingRow(row);
-    setLevel(row?.level ?? '');
-    setLevelName(row?.level_name ?? '');
-    setError('');
+    setLevel(row?.level ?? "");
+    setLevelName(row?.level_name ?? "");
+    setError("");
     setModalOpen(true);
   };
 
   const closeModal = () => {
     setModalOpen(false);
     setEditingRow(null);
-    setLevel('');
-    setLevelName('');
-    setError('');
+    setLevel("");
+    setLevelName("");
+    setError("");
   };
 
   const handleSave = async () => {
     if (!level || !level.toString().trim()) {
-      setError('Level is required');
+      setError("Level is required");
       return;
     }
 
     if (!levelName || !levelName.trim()) {
-      setError('Level name is required');
+      setError("Level name is required");
       return;
     }
 
@@ -71,7 +90,7 @@ export default function Level() {
       const payload = {
         level,
         level_name: levelName,
-        createdby: adminid
+        createdby: adminid,
       };
 
       if (editingRow && editingRow.id) {
@@ -86,10 +105,10 @@ export default function Level() {
       const errorMsg =
         err?.response?.data?.error ||
         err?.response?.data?.message ||
-        'Save failed';
+        "Save failed";
 
-      if (errorMsg.includes('already exists')) {
-        setError('This level already exists. Please use a different value.');
+      if (errorMsg.includes("already exists")) {
+        setError("This level already exists. Please use a different value.");
       } else {
         setError(errorMsg);
       }
@@ -125,6 +144,13 @@ export default function Level() {
         columns={columns}
         data={levels}
         title="Levels"
+        currentPage={page}
+        totalPages={totalPages}
+        totalRecords={totalRecords}
+        onPageChange={setPage}
+        onLimitChange={handleLimitChange}
+        searchTerm={search}
+        onSearchChange={handleSearchChange}
         onCreate={openCreate}
         onEdit={openEdit}
         onDelete={handleDeleteClick}
@@ -134,7 +160,6 @@ export default function Level() {
         loading={loading}
         exportable={false}
       />
-
       <DeleteConfirmModal
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
@@ -150,7 +175,7 @@ export default function Level() {
       <Modal
         open={modalOpen}
         onClose={closeModal}
-        title={editingRow ? 'Edit Level' : 'Create Level'}
+        title={editingRow ? "Edit Level" : "Create Level"}
       >
         <div className="space-y-4">
           <div>
@@ -161,7 +186,7 @@ export default function Level() {
               type="text"
               value={level}
               onChange={(e) => {
-                const numericValue = e.target.value.replace(/[^0-9]/g, '');
+                const numericValue = e.target.value.replace(/[^0-9]/g, "");
                 setLevel(numericValue);
               }}
               className="w-full border border-slate-300 rounded px-3 py-2"
@@ -196,7 +221,7 @@ export default function Level() {
               disabled={saving}
               className="px-4 py-2 bg-blue-600 text-white rounded"
             >
-              {saving ? 'Saving...' : 'Save'}
+              {saving ? "Saving..." : "Save"}
             </button>
           </div>
         </div>

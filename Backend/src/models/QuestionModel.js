@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { buildPaginationResponse } = require("../utils/getPaginationParams");
 
 const QuestionModel = {
   // create: async (data) => {
@@ -101,24 +102,112 @@ const QuestionModel = {
 
   //   return rows;
   // },
-  findByAdmin: async (adminId) => {
-    const [rows] = await pool.query(
-      `
+  // findByAdmin: async (adminId) => {
+  //   const [rows] = await pool.query(
+  //     `
+  //   SELECT 
+  //     q.*,
+  //     l.level_name
+  //   FROM questions q
+  //   LEFT JOIN levels l 
+  //     ON q.level = l.level 
+  //     AND q.createdby = l.createdby
+  //   WHERE q.createdby = ?
+  //   `,
+  //     [adminId]
+  //   );
+
+  //   return rows;
+  // },
+
+findByAdmin: async (
+  adminId,
+  page = 1,
+  limit = 5,
+  search = ""
+) => {
+  const [rows] = await pool.query(
+    `
     SELECT 
       q.*,
       l.level_name
     FROM questions q
-    LEFT JOIN levels l 
-      ON q.level = l.level 
+    LEFT JOIN levels l
+      ON q.level = l.level
       AND q.createdby = l.createdby
+
     WHERE q.createdby = ?
+      AND (
+        ? = ''
+        OR q.question LIKE ?
+        OR q.set_id LIKE ?
+        OR q.level LIKE ?
+        OR l.level_name LIKE ?
+      )
+
+    ORDER BY q.id DESC
     `,
-      [adminId]
-    );
+    [
+      adminId,
+      search,
+      `%${search}%`,
+      `%${search}%`,
+      `%${search}%`,
+      `%${search}%`,
+    ]
+  );
 
-    return rows;
-  },
+  // Group by level + set_id
+  const grouped = {};
 
+  for (const q of rows) {
+    const key = `${q.level}_${q.set_id}`;
+
+    if (!grouped[key]) {
+      grouped[key] = {
+        set: q.set_id,
+        level: q.level,
+        level_name: q.level_name || null,
+        ismock: q.ismockset,
+        paper_set: `${q.level}-${q.set_id}`,
+        total_question: 0,
+        total_time: q.set_time,
+        questions: [],
+      };
+    }
+
+    grouped[key].questions.push({
+      id: q.id,
+      question: q.question,
+      option1: q.option1,
+      option2: q.option2,
+      option3: q.option3,
+      option4: q.option4,
+      correctoption: q.correctoption,
+      createdat: q.createdat,
+    });
+
+    grouped[key].total_question++;
+  }
+
+  const groupedData = Object.values(grouped);
+
+  const totalRecords = groupedData.length;
+
+  const offset = (page - 1) * limit;
+
+  const paginatedData = groupedData.slice(
+    offset,
+    offset + Number(limit)
+  );
+
+  return buildPaginationResponse(
+    paginatedData,
+    page,
+    limit,
+    totalRecords
+  );
+},
   findById: async (id) => {
     const [rows] = await pool.query(
       "SELECT * FROM questions WHERE id = ?", [id]
