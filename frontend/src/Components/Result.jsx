@@ -7,6 +7,7 @@ import Tabs from "../UI/Tabs";
 import userApi from "../api/userApi";
 import ExamResult from "../Pages/Examresult";
 import useTableState from "../hooks/useTableState";
+import { downloadExcelFile } from "../utils/downloadExcelFile";
 export default function Result() {
   const navigate = useNavigate();
 
@@ -121,6 +122,9 @@ export default function Result() {
     },
   ];
 
+  const handleExport = () => {
+    downloadExcelFile(() => userApi.exportTestResultData(user?.id), "test-results.xlsx");
+  };
   return (
     <div className="max-w-7xl mx-auto">
       <AppBar
@@ -137,17 +141,6 @@ export default function Result() {
               content: (
                 <>
                   <div className="p-0 my-8">
-                    {/* <DataTable
-                      columns={columns}
-                      data={students}
-                      title="All Students Results"
-                      // onView={handleView}
-                      searchable
-                      pagination
-                      showActions={false}
-                      loading={loading}
-                    /> */}
-
                     <DataTable
                       columns={columns}
                       data={students}
@@ -163,6 +156,7 @@ export default function Result() {
                       pagination
                       showActions={false}
                       loading={loading}
+                      onExport={handleExport}
                     />
                   </div>
                 </>

@@ -7,6 +7,8 @@ const questionApi = {
     axiosInstance.get(
       `/questions/admin/${adminId}?page=${page}&limit=${limit}&search=${search}`,
     ),
+  exportData: (id) =>
+    axiosInstance.get(`/questions/export/${id}`, { responseType: "blob" }),
   create: (data) => axiosInstance.post("/questions", data),
   bulkSave: (data, onUploadProgress) =>
     axiosInstance.post("/questions/bulk", data, { onUploadProgress }),

@@ -12,6 +12,7 @@ import Modal from "../UI/Modal";
 import InputField from "../UI/InputField";
 import MessageModal from "../utils/MessageModal";
 import useTableState from "../hooks/useTableState";
+import { downloadExcelFile } from "../utils/downloadExcelFile";
 
 export default function QuestionPage() {
   const {
@@ -431,8 +432,9 @@ export default function QuestionPage() {
     setTime(v);
   };
 
-  // console.log("time", tableloading)
-
+  const handleExport = () => {
+    downloadExcelFile(() => questionApi.exportData(adminId), "questions.xlsx");
+  };
   return (
     <>
       <MessageModal
@@ -466,20 +468,7 @@ export default function QuestionPage() {
                 <ArrowLeft size={18} /> Back
               </button>
             )}
-            {/* Questions DataTable */}
-            {/* <DataTable
-              title="Questions Bank"
-              data={questions}
-              loading={loading}
-              columns={QuestionsView ? questionscolumn : setcolumns}
-              showActions={true}
-              onEdit={handleUpdate}
-              onDelete={handleDelete}
-              onView={QuestionsView ? false : handleview}
-              onCreate={() => navigate("/add-question")}
-              searchable={true}
-              pagination={true}
-            /> */}
+
             <DataTable
               columns={QuestionsView ? questionscolumn : setcolumns}
               data={questions}
@@ -494,9 +483,10 @@ export default function QuestionPage() {
               loading={loading}
               pagination
               searchable
-                            showActions={true}
+              showActions={true}
               onEdit={handleUpdate}
               onDelete={handleDelete}
+              onExport={handleExport}
               onView={QuestionsView ? false : handleview}
               onCreate={() => navigate("/add-question")}
             />

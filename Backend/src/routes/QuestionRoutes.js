@@ -5,7 +5,12 @@ const verifyJwt = require("../middlewares/verifyJwt");
 const allowedRoles = require("../middlewares/allowedRoles");
 // routes/questionRoutes.js
 router.get("/level-wise-sets", verifyJwt, allowedRoles('admin'), controller.getLevelWiseSets);
-
+router.get(
+  "/export/:id",
+  verifyJwt,
+  allowedRoles("admin"),
+  controller.exportQuestionSet,
+);
 // routes/questionRoutes.js
 router.get("/paperset", verifyJwt, allowedRoles('admin'), controller.getpaperset);
 // Bulk upload endpoint (CSV/JSON array of questions)

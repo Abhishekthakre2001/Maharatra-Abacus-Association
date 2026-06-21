@@ -1,6 +1,10 @@
 const UserService = require("../services/UserServices");
+const UserModel = require("../models/UserModel");
 const jwt = require("jsonwebtoken");
 const { getPaginationParams } = require("../utils/getPaginationParams");
+const formatExcelData = require("../utils/formatExcelData");
+const exportToExcel = require("../utils/excelExport");
+const ExamResultModel = require("../models/ExamResultModel");
 
 exports.createUser = async (req, res) => {
   const result = await UserService.createUser(req.body);
@@ -17,11 +21,6 @@ exports.getUserById = async (req, res) => {
   res.json(user);
 };
 
-// exports.getUserByadminId = async (req, res) => {
-//   const user = await UserService.getUserByadminId(req.params.id);
-//   res.json(user);
-// };
-
 exports.getUserByadminId = async (req, res) => {
   const { page, limit, search } = getPaginationParams(req);
 
@@ -29,7 +28,7 @@ exports.getUserByadminId = async (req, res) => {
     req.params.id,
     page,
     limit,
-    search
+    search,
   );
 
   res.json(result);
@@ -49,75 +48,6 @@ exports.deleteUser = async (req, res) => {
   await UserService.deleteUser(req.params.id);
   res.json({ success: true });
 };
-
-// exports.loginUser = async (req, res) => {
-//   try {
-//     let { username, password } = req.body;
-
-//     if (!username || !password) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Username and password required"
-//       });
-//     }
-
-//     // ✅ ONLY trim spaces
-//     username = username.trim();
-
-//     const user = await UserService.loginUser(username, password);
-
-//     if (!user) {
-//       return res.status(401).json({
-//         success: false,
-//         message: "Invalid username or password"
-//       });
-//     }
-
-//     if (user.status !== 1) {
-//       return res.status(403).json({
-//         success: false,
-//         message: "User account is inactive or locked"
-//       });
-//     }
-
-//     // ⏳ subscription check (unchanged)
-//     if (user.subscription_end_date) {
-//       const today = new Date();
-//       today.setHours(0, 0, 0, 0);
-
-//       const expiryDate = new Date(user.subscription_end_date);
-//       expiryDate.setHours(0, 0, 0, 0);
-
-//       if (expiryDate < today) {
-//         return res.status(403).json({
-//           success: false,
-//           message: "Subscription expired. Please contact admin."
-//         });
-//       }
-//     }
-
-//     const token = jwt.sign(
-//       { id: user.id, username: user.username, usertype: user.usertype },
-//       process.env.JWT_SECRET || "SECRET_KEY",
-//       { expiresIn: "1d" }
-//     );
-
-//     delete user.password;
-
-//     res.json({
-//       success: true,
-//       token,
-//       user
-//     });
-
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Server error"
-//     });
-//   }
-// };
 
 exports.loginUser = async (req, res) => {
   try {
@@ -292,6 +222,204 @@ exports.refreshToken = async (req, res) => {
     return res.status(401).json({
       success: false,
       message: "Refresh token expired",
+    });
+  }
+};
+
+exports.exportUserByAdminId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const users = await UserModel.findAll({
+      where: {
+        createdby: id,
+      },
+      raw: true,
+    });
+
+    const columns = [
+      {
+        key: "name",
+        label: "Student Name",
+      },
+      {
+        key: "class",
+        label: "Class",
+      },
+      {
+        key: "address",
+        label: "Address",
+      },
+      {
+        key: "mobilenumber",
+        label: "Mobile Number",
+      },
+      {
+        key: "dob",
+        label: "Date of Birth",
+      },
+      {
+        key: "subscription_end_date",
+        label: "Subscription End Date",
+      },
+      {
+        key: "level",
+        label: "Level",
+      },
+      {
+        key: "username",
+        label: "Username",
+      },
+      {
+        key: "password",
+        label: "Password",
+      },
+    ];
+
+    const excelData = formatExcelData(
+      users.map((user) => ({
+        ...user,
+        dob: user.dob ? new Date(user.dob).toLocaleDateString("en-IN") : "",
+        subscription_end_date: user.subscription_end_date
+          ? new Date(user.subscription_end_date).toLocaleDateString("en-IN")
+          : "",
+      })),
+      columns,
+    );
+
+    const buffer = exportToExcel({
+      data: excelData,
+      sheetName: "Students",
+    });
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="students.xlsx"',
+    );
+
+    return res.send(buffer);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+exports.exportTestResultData = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await ExamResultModel.findExamResultByAdminId(
+      id,
+      1,
+      999999,
+      ""
+    );
+
+    const data = result.data || [];
+
+    const formattedData = formatExcelData(
+      data.map((item) => ({
+        ...item,
+        date: item.date
+          ? new Date(item.date).toLocaleDateString("en-IN")
+          : "",
+      })),
+      [
+        {
+          key: "name",
+          label: "Student Name",
+        },
+        {
+          key: "username",
+          label: "Username",
+        },
+        {
+          key: "mobilenumber",
+          label: "Mobile Number",
+        },
+        {
+          key: "learning_center_name",
+          label: "Learning Center",
+        },
+        {
+          key: "exam_name",
+          label: "Exam Name",
+        },
+        {
+          key: "exam_level",
+          label: "Exam Level",
+        },
+        {
+          key: "paper_set",
+          label: "Paper Set",
+        },
+        {
+          key: "total_question",
+          label: "Total Questions",
+        },
+        {
+          key: "total_solve",
+          label: "Total Solved",
+        },
+        {
+          key: "total_unsolve",
+          label: "Total Unsolved",
+        },
+        {
+          key: "total_correct",
+          label: "Total Correct",
+        },
+        {
+          key: "exam_time",
+          label: "Exam Time",
+        },
+        {
+          key: "time_taken",
+          label: "Time Taken",
+        },
+        {
+          key: "status",
+          label: "Status",
+        },
+        {
+          key: "date",
+          label: "Date",
+        },
+      ]
+    );
+
+    const buffer = exportToExcel({
+      data: formattedData,
+      sheetName: "Exam Results",
+    });
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="exam-results.xlsx"'
+    );
+
+    return res.send(buffer);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

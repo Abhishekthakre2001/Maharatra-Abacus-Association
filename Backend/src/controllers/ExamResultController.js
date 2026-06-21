@@ -1,5 +1,7 @@
 const ExamResultModel = require("../models/ExamResultModel");
 const resultService = require("../services/resultService");
+const exportToExcel = require("../utils/excelExport");
+const formatExcelData = require("../utils/formatExcelData");
 const { getPaginationParams } = require("../utils/getPaginationParams");
 
 const getIndianDateTimeParts = () => {
@@ -415,7 +417,6 @@ exports.remove = async (req, res) => {
 //   }
 // };
 
-
 exports.getexamresultByAdminId = async (req, res) => {
   try {
     const { admin_id } = req.params;
@@ -427,16 +428,14 @@ exports.getexamresultByAdminId = async (req, res) => {
       });
     }
 
-    const { page, limit, search } =
-      getPaginationParams(req);
+    const { page, limit, search } = getPaginationParams(req);
 
-    const result =
-      await resultService.getExamResultByAdminId(
-        admin_id,
-        page,
-        limit,
-        search
-      );
+    const result = await resultService.getExamResultByAdminId(
+      admin_id,
+      page,
+      limit,
+      search,
+    );
 
     return res.status(200).json(result);
   } catch (error) {
@@ -474,6 +473,106 @@ exports.getExamStatusList = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch exam status list",
+    });
+  }
+};
+
+exports.exportExamResultByAdminId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const data = await resultService.exportExamResultByAdminId(id);
+    const formattedData = formatExcelData(
+      data.map((item) => ({
+        ...item,
+        date: item.date ? new Date(item.date).toLocaleDateString("en-IN") : "",
+      })),
+      [
+        {
+          key: "name",
+          label: "Student Name",
+        },
+        {
+          key: "username",
+          label: "Username",
+        },
+        {
+          key: "mobilenumber",
+          label: "Mobile Number",
+        },
+        {
+          key: "learning_center_name",
+          label: "Learning Center",
+        },
+        {
+          key: "exam_name",
+          label: "Exam Name",
+        },
+        {
+          key: "exam_level",
+          label: "Exam Level",
+        },
+        {
+          key: "paper_set",
+          label: "Paper Set",
+        },
+        {
+          key: "total_question",
+          label: "Total Questions",
+        },
+        {
+          key: "total_solve",
+          label: "Total Solved",
+        },
+        {
+          key: "total_unsolve",
+          label: "Total Unsolved",
+        },
+        {
+          key: "total_correct",
+          label: "Total Correct",
+        },
+        {
+          key: "exam_time",
+          label: "Exam Time",
+        },
+        {
+          key: "time_taken",
+          label: "Time Taken",
+        },
+        {
+          key: "status",
+          label: "Status",
+        },
+        {
+          key: "date",
+          label: "Exam Date",
+        },
+      ],
+    );
+
+    const buffer = exportToExcel({
+      data: formattedData,
+      sheetName: "Exam Results",
+    });
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="exam-results.xlsx"',
+    );
+
+    return res.send(buffer);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

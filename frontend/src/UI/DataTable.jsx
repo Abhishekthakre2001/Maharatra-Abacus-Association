@@ -579,7 +579,6 @@ const DataTable = ({
   // Pagination
   const paginatedData = sortedData;
 
-  // const totalPages = Math.ceil(sortedData?.length / itemsPerPage);
   const totalPages =
   externalTotalPages ||
   Math.ceil(sortedData?.length / itemsPerPage);
@@ -628,18 +627,6 @@ const DataTable = ({
     });
   };
 
-
-  // useEffect(() => {
-  //   const totalPages = Math.ceil(sortedData?.length / itemsPerPage);
-
-  //   if (currentPage > totalPages && totalPages > 0) {
-  //     setCurrentPage(totalPages);
-  //   }
-
-  //   if (totalPages === 0) {
-  //     setCurrentPage(1);
-  //   }
-  // }, [sortedData?.length, itemsPerPage, currentPage]);
 
 useEffect(() => {
   if (onPageChange) {

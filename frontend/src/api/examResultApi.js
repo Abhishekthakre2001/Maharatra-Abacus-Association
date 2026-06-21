@@ -27,6 +27,8 @@ const ExamResultApi = {
     axiosInstance.get(`/exam-results/status/${exam_id}?level=${level}`),
 
   deleteExamResult: (id) => axiosInstance.delete(`/exam-results/${id}`),
+  exportexportExamResultsByAdmin: (id) =>
+    axiosInstance.get(`/exam-results/export/${id}`, { responseType: "blob" }),
 };
 
 export default ExamResultApi;

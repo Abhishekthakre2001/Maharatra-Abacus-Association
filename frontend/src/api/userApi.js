@@ -12,7 +12,17 @@ const userApi = {
   create: (payload) => axiosInstance.post("/users", payload),
   update: (id, payload) => axiosInstance.put(`/users/${id}`, payload),
   delete: (id) => axiosInstance.delete(`/users/${id}`),
+  exportData: (id) =>
+    axiosInstance.get(`/users/export/${id}`, { responseType: "blob" }),
 
+  exportTestResultData: (id) =>
+    axiosInstance.get(`/users/test-result/export/${id}`, {
+      responseType: "blob",
+    }),
+  exportExamRegistrationData: (createdby) =>
+    axiosInstance.get(`/exam-registration/export/${createdby}`, {
+      responseType: "blob",
+    }),
   // getresultbyadminid: (id) => axiosInstance.get(`/results/admin/${id}`),
   getresultbyadminid: (id, page = 1, limit = 5, search = "") =>
     axiosInstance.get(

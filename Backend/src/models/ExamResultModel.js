@@ -287,6 +287,59 @@ module.exports = {
 
     return buildPaginationResponse(rows, page, limit, totalRecords);
   },
+  exportExamResultByAdminId: async (admin_id) => {
+    const [rows] = await pool.query(
+      `
+    SELECT
+      er.id,
+      er.user_id,
+      er.exam_id,
+      er.admin_id,
+      er.exam_name,
+      er.exam_level,
+      er.paper_set,
+      er.date,
+      er.exam_start_at,
+      er.exam_end_at,
+      er.exam_time,
+      er.time_taken,
+      er.total_question,
+      er.total_solve,
+      er.total_unsolve,
+      er.total_correct,
+      er.status,
+
+      u.name,
+      u.address,
+      u.mobilenumber,
+      u.username,
+
+      sr.learning_center_name,
+      sr.age
+
+    FROM Exam_Result er
+
+    LEFT JOIN users u
+      ON er.user_id = u.id
+
+    LEFT JOIN student_registration sr
+      ON er.user_id = sr.user_id
+
+    WHERE er.admin_id = ?
+
+    ORDER BY
+      er.exam_name ASC,
+      er.exam_level ASC,
+      er.total_correct DESC,
+      er.total_solve DESC,
+      er.time_taken ASC,
+      er.id DESC
+    `,
+      [admin_id],
+    );
+
+    return rows;
+  },
   getExamStatusList: (exam_id, level) => {
     let query = `
     SELECT 

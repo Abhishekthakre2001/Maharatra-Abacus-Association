@@ -4,6 +4,8 @@ const {
   getPaginationParams,
   buildPaginationResponse,
 } = require("../utils/getPaginationParams");
+const formatExcelData = require("../utils/formatExcelData");
+const exportToExcel = require("../utils/excelExport");
 
 // const paperCache = new Map();
 
@@ -98,20 +100,15 @@ exports.bulkCreateQuestions = async (req, res) => {
 //   // res.json(response);
 // };
 
-
-
-
 exports.getQuestionsByAdmin = async (req, res) => {
-  const { page, limit, search } =
-    getPaginationParams(req);
+  const { page, limit, search } = getPaginationParams(req);
 
-  const result =
-    await QuestionService.getQuestionsByAdmin(
-      req.params.id,
-      page,
-      limit,
-      search
-    );
+  const result = await QuestionService.getQuestionsByAdmin(
+    req.params.id,
+    page,
+    limit,
+    search,
+  );
 
   res.json(result);
 };
@@ -218,4 +215,76 @@ exports.getpaperset = async (req, res) => {
     success: true,
     data: shuffled,
   });
+};
+
+exports.exportQuestionSet = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await QuestionModel.findByAdmin(
+      id,
+      1,
+      999999,
+      ""
+    );
+
+    const data = result.data || [];
+
+    const formattedData = formatExcelData(
+      data.map((item) => ({
+        ...item,
+        ismock: item.ismock ? "Yes" : "No",
+      })),
+      [
+        {
+          key: "paper_set",
+          label: "Paper Set",
+        },
+        {
+          key: "ismock",
+          label: "Is Test Set",
+        },
+        {
+          key: "total_time",
+          label: "Time ( HH:MM:SS )",
+        },
+        {
+          key: "total_question",
+          label: "Total Questions",
+        },
+        {
+          key: "level",
+          label: "Level",
+        },
+        {
+          key: "set",
+          label: "Set",
+        },
+      ]
+    );
+
+    const buffer = exportToExcel({
+      data: formattedData,
+      sheetName: "Question Sets",
+    });
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="question-sets.xlsx"'
+    );
+
+    return res.send(buffer);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

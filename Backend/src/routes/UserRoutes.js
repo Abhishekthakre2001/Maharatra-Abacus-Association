@@ -23,4 +23,17 @@ router.put("/:id", verifyJwt, allowedRoles("admin"), controller.updateUser);
 router.delete("/:id", verifyJwt, allowedRoles("admin"), controller.deleteUser);
 router.post("/login", controller.loginUser);
 router.post("/refresh-token", controller.refreshToken);
+
+router.get(
+  "/export/:id",
+  verifyJwt,
+  allowedRoles("admin"),
+  controller.exportUserByAdminId,
+);
+router.get(
+  "/test-result/export/:id",
+  verifyJwt,
+  allowedRoles("admin"),
+  controller.exportTestResultData,
+);
 module.exports = router;

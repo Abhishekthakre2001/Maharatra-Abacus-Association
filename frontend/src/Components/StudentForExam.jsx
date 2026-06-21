@@ -5,6 +5,7 @@ import userApi from "../api/userApi";
 import DataTable from "../UI/DataTable";
 import { useNavigate } from "react-router-dom";
 import useTableState from "../hooks/useTableState";
+import { downloadExcelFile } from "../utils/downloadExcelFile";
 export default function StudentForExam() {
   const storedUser = localStorage.getItem("user");
   const {
@@ -167,7 +168,9 @@ export default function StudentForExam() {
     },
   ];
 
-  console.log("students", students);
+ const handleExport = () => {
+     downloadExcelFile(() => userApi.exportExamRegistrationData(user?.id), "exam-registration.xlsx");
+   };
 
   return (
     <>
@@ -196,6 +199,7 @@ export default function StudentForExam() {
           pagination
           showActions
           loading={loading}
+          onExport={handleExport}
         />
       </div>
     </>
