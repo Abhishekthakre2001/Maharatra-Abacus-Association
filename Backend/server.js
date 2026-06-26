@@ -21,7 +21,9 @@ const theme = require("./src/routes/ThemeRoutes");
 const ExamResultRoutes = require("./src/routes/ExamResultRoutes");
 const State = require("./src/routes/stateRoutes");
 const District = require("./src/routes/districtRoutes");
+const Institute = require("./src/routes/InstituteRoutes");
 const cookieParser = require("cookie-parser");
+
 
 const app = express();
 const PORT = 4001;
@@ -70,6 +72,7 @@ if (cluster.isMaster) {
   app.use("/exam-registration", Exam_registartion);
   app.use("/states", State);
   app.use("/districts", District);
+  app.use("/institute", Institute);
 
   // ✅ Error Handling
   app.use(errorHandler);
