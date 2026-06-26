@@ -1,0 +1,109 @@
+paths:
+  /states:
+    get:
+      tags: [States]
+      summary: Get all states (pagination + search)
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            example: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+        - in: query
+          name: search
+          schema:
+            type: string
+            example: maharashtra
+      responses:
+        200:
+          description: State list
+
+    post:
+      tags: [States]
+      summary: Create state
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              country_id: 1
+              name: Maharashtra
+              description: Indian state
+              alpha2_code: MH
+              alpha3_code: IND
+              image: mh.png
+              is_active: 1
+              zone_id: 2
+      responses:
+        201:
+          description: State created
+
+  /states/{id}:
+    get:
+      tags: [States]
+      summary: Get state by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: State found
+
+    put:
+      tags: [States]
+      summary: Update state
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              name: Updated State
+              description: Updated desc
+      responses:
+        200:
+          description: State updated
+
+    delete:
+      tags: [States]
+      summary: Delete state
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: State deleted
+
+  /states/export:
+    get:
+      tags: [States]
+      summary: Export states (JSON/CSV)
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: format
+          schema:
+            type: string
+            example: csv
+      responses:
+        200:
+          description: Exported data

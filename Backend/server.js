@@ -19,6 +19,8 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
 const theme = require("./src/routes/ThemeRoutes");
 const ExamResultRoutes = require("./src/routes/ExamResultRoutes");
+const State = require("./src/routes/stateRoutes");
+const District = require("./src/routes/districtRoutes");
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -66,6 +68,8 @@ if (cluster.isMaster) {
   app.use("/summary", summary);
   app.use("/theme", theme);
   app.use("/exam-registration", Exam_registartion);
+  app.use("/states", State);
+  app.use("/districts", District);
 
   // ✅ Error Handling
   app.use(errorHandler);

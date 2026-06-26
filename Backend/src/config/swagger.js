@@ -17,6 +17,8 @@ module.exports = swaggerJsdoc({
     path.join(__dirname, "../docs/levels.swagger.yaml"),
     path.join(__dirname, "../docs/exam-schedule.swagger.yaml"),
     path.join(__dirname, "../docs/result.swagger.yaml"),
-    path.join(__dirname, "../docs/admin-setting.swagger.yaml")
+    path.join(__dirname, "../docs/admin-setting.swagger.yaml"),
+    path.join(__dirname, "../docs/state.swagger.yaml"),
+    path.join(__dirname, "../docs/district.swagger.yaml"),
   ]
 });
