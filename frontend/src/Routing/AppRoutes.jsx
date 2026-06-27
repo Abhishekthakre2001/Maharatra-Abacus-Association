@@ -29,6 +29,11 @@ import ExamStudentadmin from "../Pages/Examresult-admin";
 import Examnotattemp from "../Pages/Examnotattemp";
 
 
+// Superadmin Dashboard
+import SuperAdminDashboard from "../Components/Superadmin/Dashboard";
+import SuperadminMaster from "../Components/Superadmin/Master"
+
+
 
 
 const AppRoutes = () => {
@@ -77,7 +82,7 @@ const AppRoutes = () => {
         }
       />
 
-       <Route
+      <Route
         path="/exam-not-attempt"
         element={
           <RoleProtectedRoute allowedRoles={["Admin"]}>
@@ -210,6 +215,25 @@ const AppRoutes = () => {
         element={
           <RoleProtectedRoute allowedRoles={["student"]}>
             <StudentResultPage />
+          </RoleProtectedRoute>
+        }
+      />
+
+      {/* Superadmin */}
+      <Route
+        path="/superadmin"
+        element={
+          <RoleProtectedRoute allowedRoles={["Superadmin"]}>
+            <SuperAdminDashboard />
+          </RoleProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/superadmin/master"
+        element={
+          <RoleProtectedRoute allowedRoles={["Superadmin"]}>
+            <SuperadminMaster />
           </RoleProtectedRoute>
         }
       />

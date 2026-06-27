@@ -3,6 +3,7 @@ import Tabs from '../UI/Tabs';
 import Sets from './Sets';
 import Level from './Level';
 import AppBar from '../UI/AppBar';
+import Institute from './Institute';
 
 export default function Masters() {
     return (
@@ -26,7 +27,8 @@ export default function Masters() {
                 <Tabs
                     tabs={[
                         { label: 'Sets', content: <Sets /> },
-                        { label: 'Level', content: <Level /> }
+                        { label: 'Level', content: <Level /> },
+                         { label: 'Institute', content: <Institute /> }
                     ]}
                 />
             </div>

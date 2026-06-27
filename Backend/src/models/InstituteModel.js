@@ -4,9 +4,20 @@ module.exports = {
   // CREATE
   create: (data) =>
     pool.query(
-      `INSERT INTO institutes 
-      (institute_name, institute_contact, country_id, state_id, district_id, city, address, pincode, is_active)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO institutes
+      (
+        institute_name,
+        institute_contact,
+        country_id,
+        state_id,
+        district_id,
+        city,
+        address,
+        pincode,
+        is_active,
+        created_by
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         data.institute_name,
         data.institute_contact,
@@ -17,45 +28,66 @@ module.exports = {
         data.address,
         data.pincode,
         data.is_active ?? 1,
+        data.created_by,
       ]
     ),
 
-  // PAGINATION + SEARCH
-  findAllPaginated: async (page = 1, limit = 10, search = "") => {
+  // GET ALL
+  findAllPaginated: async (
+    adminId,
+    page = 1,
+    limit = 10,
+    search = ""
+  ) => {
     const offset = (page - 1) * limit;
 
     const [countRows] = await pool.query(
       `
-      SELECT COUNT(*) AS total
+      SELECT COUNT(*) total
       FROM institutes
-      WHERE (? = '' OR institute_name LIKE ? OR city LIKE ?)
+      WHERE created_by=?
+      AND (?='' OR institute_name LIKE ? OR city LIKE ?)
       `,
-      [search, `%${search}%`, `%${search}%`]
+      [
+        adminId,
+        search,
+        `%${search}%`,
+        `%${search}%`,
+      ]
     );
 
     const totalRecords = countRows[0].total;
 
     const [rows] = await pool.query(
       `
-      SELECT i.*,
-             c.name AS country_name,
-             s.name AS state_name,
-             d.name AS district_name
+      SELECT
+        i.*,
+        c.name country_name,
+        s.name state_name,
+        d.name district_name
       FROM institutes i
-      LEFT JOIN countries c ON c.id = i.country_id
-      LEFT JOIN states s ON s.id = i.state_id
-      LEFT JOIN districts d ON d.id = i.district_id
-      WHERE (? = '' OR i.institute_name LIKE ? OR i.city LIKE ?)
+      LEFT JOIN countries c ON c.id=i.country_id
+      LEFT JOIN states s ON s.id=i.state_id
+      LEFT JOIN districts d ON d.id=i.district_id
+      WHERE i.created_by=?
+      AND (?='' OR i.institute_name LIKE ? OR i.city LIKE ?)
       ORDER BY i.id DESC
       LIMIT ? OFFSET ?
       `,
-      [search, `%${search}%`, `%${search}%`, Number(limit), Number(offset)]
+      [
+        adminId,
+        search,
+        `%${search}%`,
+        `%${search}%`,
+        Number(limit),
+        Number(offset),
+      ]
     );
 
     return {
       data: rows,
       pagination: {
-        total: totalRecords,
+        totalRecords,
         page: Number(page),
         limit: Number(limit),
         totalPages: Math.ceil(totalRecords / limit),
@@ -64,26 +96,30 @@ module.exports = {
   },
 
   // GET BY ID
-  findById: (id) =>
+  findById: (id, adminId) =>
     pool.query(
       `
-      SELECT i.*,
-             c.name AS country_name,
-             s.name AS state_name,
-             d.name AS district_name
+      SELECT
+        i.*,
+        c.name country_name,
+        s.name state_name,
+        d.name district_name
       FROM institutes i
-      LEFT JOIN countries c ON c.id = i.country_id
-      LEFT JOIN states s ON s.id = i.state_id
-      LEFT JOIN districts d ON d.id = i.district_id
-      WHERE i.id = ?
+      LEFT JOIN countries c ON c.id=i.country_id
+      LEFT JOIN states s ON s.id=i.state_id
+      LEFT JOIN districts d ON d.id=i.district_id
+      WHERE i.id=?
+      AND i.created_by=?
       `,
-      [id]
+      [id, adminId]
     ),
 
   // UPDATE
-  update: (id, data) =>
+  update: (id, adminId, data) =>
     pool.query(
-      `UPDATE institutes SET
+      `
+      UPDATE institutes
+      SET
         institute_name=?,
         institute_contact=?,
         country_id=?,
@@ -93,7 +129,9 @@ module.exports = {
         address=?,
         pincode=?,
         is_active=?
-      WHERE id=?`,
+      WHERE id=?
+      AND created_by=?
+      `,
       [
         data.institute_name,
         data.institute_contact,
@@ -105,29 +143,44 @@ module.exports = {
         data.pincode,
         data.is_active,
         id,
+        adminId,
       ]
     ),
 
   // DELETE
-  remove: (id) =>
-    pool.query("DELETE FROM institutes WHERE id = ?", [id]),
+  remove: (id, adminId) =>
+    pool.query(
+      `
+      DELETE FROM institutes
+      WHERE id=?
+      AND created_by=?
+      `,
+      [id, adminId]
+    ),
 
   // EXPORT
-  exportAll: async (search = "") => {
+  exportAll: async (adminId, search = "") => {
     const [rows] = await pool.query(
       `
-      SELECT i.*,
-             c.name AS country_name,
-             s.name AS state_name,
-             d.name AS district_name
+      SELECT
+        i.*,
+        c.name country_name,
+        s.name state_name,
+        d.name district_name
       FROM institutes i
-      LEFT JOIN countries c ON c.id = i.country_id
-      LEFT JOIN states s ON s.id = i.state_id
-      LEFT JOIN districts d ON d.id = i.district_id
-      WHERE (? = '' OR i.institute_name LIKE ? OR i.city LIKE ?)
+      LEFT JOIN countries c ON c.id=i.country_id
+      LEFT JOIN states s ON s.id=i.state_id
+      LEFT JOIN districts d ON d.id=i.district_id
+      WHERE i.created_by=?
+      AND (?='' OR i.institute_name LIKE ? OR i.city LIKE ?)
       ORDER BY i.id DESC
       `,
-      [search, `%${search}%`, `%${search}%`]
+      [
+        adminId,
+        search,
+        `%${search}%`,
+        `%${search}%`,
+      ]
     );
 
     return rows;

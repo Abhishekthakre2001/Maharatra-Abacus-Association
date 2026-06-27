@@ -29,58 +29,60 @@ const Login = () => {
     try {
       const res = await userApi.login({ username, password });
 
-     const {
-  accessToken,
-  refreshToken,
-  refreshTokenExpiry,
-  user,
-} = res.data;
+      const {
+        accessToken,
+        refreshToken,
+        refreshTokenExpiry,
+        user,
+      } = res.data;
 
       // clear old data
       localStorage.clear();
       sessionStorage.clear();
-// clear old data
-localStorage.clear();
-sessionStorage.clear();
+      // clear old data
+      localStorage.clear();
+      sessionStorage.clear();
 
-if (rememberMe) {
-  // Access Token
-  localStorage.setItem("token", accessToken);
+      if (rememberMe) {
+        // Access Token
+        localStorage.setItem("token", accessToken);
 
-  // User
-  localStorage.setItem("user", JSON.stringify(user));
+        // User
+        localStorage.setItem("user", JSON.stringify(user));
 
-  // Refresh Token
-  localStorage.setItem("refreshToken", refreshToken);
+        // Refresh Token
+        localStorage.setItem("refreshToken", refreshToken);
 
-  // Expiry
-  localStorage.setItem(
-    "refreshTokenExpiry",
-    refreshTokenExpiry
-  );
+        // Expiry
+        localStorage.setItem(
+          "refreshTokenExpiry",
+          refreshTokenExpiry
+        );
 
-  localStorage.setItem("isremeber", "true");
-} else {
-  // Access Token
-  sessionStorage.setItem("token", accessToken);
+        localStorage.setItem("isremeber", "true");
+      } else {
+        // Access Token
+        sessionStorage.setItem("token", accessToken);
 
-  // User
-  localStorage.setItem("user", JSON.stringify(user));
+        // User
+        localStorage.setItem("user", JSON.stringify(user));
 
-  // Refresh Token
-  sessionStorage.setItem("refreshToken", refreshToken);
+        // Refresh Token
+        sessionStorage.setItem("refreshToken", refreshToken);
 
-  // Expiry
-  sessionStorage.setItem(
-    "refreshTokenExpiry",
-    refreshTokenExpiry
-  );
+        // Expiry
+        sessionStorage.setItem(
+          "refreshTokenExpiry",
+          refreshTokenExpiry
+        );
 
-  sessionStorage.setItem("isremeber", "false");
-}
+        sessionStorage.setItem("isremeber", "false");
+      }
       // role based redirect AFTER login
       if (user.usertype.toLowerCase() === "student") {
         navigate("/student-dashboard");
+      }if(user.usertype.toLowerCase() === "superadmin"){
+        navigate("/superadmin");
       } else {
         navigate("/dashboard");
       }

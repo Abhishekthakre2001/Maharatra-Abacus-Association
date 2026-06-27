@@ -31,6 +31,11 @@ exports.getById = async (req, res) => {
   res.json(row);
 };
 
+exports.getDistrictByState = async (req, res) => {
+    const data = await StateModel.getDistrictByState(req.params.id);
+    res.json(data);
+};
+
 exports.update = async (req, res) => {
   try {
     await StateModel.update(req.params.id, req.body);

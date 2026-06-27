@@ -4,10 +4,27 @@ const { buildPaginationResponse } = require("../utils/getPaginationParams");
 const UserModel = {
   create: async (data) => {
     const sql = `
-    INSERT INTO users
-    (name, class, address, mobilenumber, username, password,
-     level, dob, subscription_end_date, usertype, createdby, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+   INSERT INTO users
+(
+name,
+class,
+address,
+mobilenumber,
+username,
+password,
+level,
+dob,
+subscription_end_date,
+usertype,
+createdby,
+status,
+state_id,
+district_id,
+city,
+pincode,
+institute_id
+)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   `;
 
     const username = data.username?.trim();
@@ -26,6 +43,11 @@ const UserModel = {
       data.usertype,
       data.createdby,
       data.status ?? 1,
+      data.state_id,
+      data.district_id,
+      data.city,
+      data.pincode,
+      data.institute_id
     ]);
 
     return result;
@@ -143,10 +165,25 @@ const UserModel = {
 
   update: async (id, data) => {
     const sql = `
-      UPDATE users SET
-      name=?, class=?, address=?, mobilenumber=?, username=?, password= ?, level=?, dob=?, subscription_end_date=?, usertype=?, status=?
-      WHERE id=?
-    `;
+    UPDATE users SET
+      name=?,
+      class=?,
+      address=?,
+      mobilenumber=?,
+      username=?,
+      password=?,
+      level=?,
+      dob=?,
+      subscription_end_date=?,
+      usertype=?,
+      status=?,
+      state_id=?,
+      district_id=?,
+      city=?,
+      pincode=?,
+      institute_id=?
+    WHERE id=?
+  `;
 
     const username = data.username?.trim();
     const password = data.password?.trim();
@@ -163,8 +200,14 @@ const UserModel = {
       data.subscription_end_date,
       data.usertype,
       data.status,
-      id,
+      data.state_id,
+      data.district_id,
+      data.city,
+      data.pincode,
+      data.institute_id,
+      id
     ]);
+
     return result;
   },
 

@@ -3,9 +3,9 @@ const bcrypt = require("bcryptjs");
 
 const UserService = {
   createUser: async (data) => {
-    if (data.password) {
-      data.password = await bcrypt.hash(data.password.trim(), 10);
-    }
+    // if (data.password) {
+    //   data.password = await bcrypt.hash(data.password.trim(), 10);
+    // }
     return UserModel.create(data);
   },
 
@@ -28,7 +28,8 @@ const UserService = {
     if (!user) return null;
 
     // ✅ PLAIN TEXT comparison
-    const isMatch = await bcrypt.compare(password.trim(), user.password);
+     const isMatch = password.trim() === user.password.trim();
+    // const isMatch = await bcrypt.compare(password.trim(), user.password);
 
     if (!isMatch) {
       return null;
@@ -36,6 +37,8 @@ const UserService = {
 
     return user;
   },
+
+
   saveRefreshToken: async (userId, refreshToken, refreshTokenExpiry) => {
     return UserModel.saveRefreshToken(userId, refreshToken, refreshTokenExpiry);
   },

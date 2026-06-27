@@ -44,17 +44,80 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     navigate("/");
   };
 
+  // const menuItems = [
+  //   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+  //   { id: "student-list", label: "Students", icon: Users, path: "/students-list" },
+  //   { id: "questions", label: "Questions", icon: FileQuestionMark, path: "/questions" },
+  //   { id: "result", label: "Result", icon: FileUser, path: "/results" },
+  //   { id: "exam-schedule", label: "Exam Schedule", icon: FileClock, path: "/exam-schedule" },
+  //   // { id: "exam-result", label: "Exam Result", icon: FileUser, path: "/exam-result" },
+  //   { id: "master", label: "Master", icon: Settings, path: "/masters" },
+  //   // ✅ Only visible for admin id 55
+  //   ...(user?.id === 50
+  //     ? [{ id: "exam-student", label: "Exam Registration", icon: BookCheck, path: "/exam-student" }]
+  //     : []),
+  // ];
+  const role = user?.usertype?.trim().toLowerCase();
+
   const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-    { id: "student-list", label: "Students", icon: Users, path: "/students-list" },
-    { id: "questions", label: "Questions", icon: FileQuestionMark, path: "/questions" },
-    { id: "result", label: "Result", icon: FileUser, path: "/results" },
-    { id: "exam-schedule", label: "Exam Schedule", icon: FileClock, path: "/exam-schedule" },
-    // { id: "exam-result", label: "Exam Result", icon: FileUser, path: "/exam-result" },
-    { id: "master", label: "Master", icon: Settings, path: "/masters" },
-    // ✅ Only visible for admin id 55
-    ...(user?.id === 50
-      ? [{ id: "exam-student", label: "Exam Registration", icon: BookCheck, path: "/exam-student" }]
+    // ================= ADMIN + SUPERADMIN =================
+    ...(role === "admin"
+      ? [
+        { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+        { id: "student-list", label: "Students", icon: Users, path: "/students-list" },
+        { id: "questions", label: "Questions", icon: FileQuestionMark, path: "/questions" },
+        { id: "result", label: "Result", icon: FileUser, path: "/results" },
+        { id: "exam-schedule", label: "Exam Schedule", icon: FileClock, path: "/exam-schedule" },
+        { id: "master", label: "Master", icon: Settings, path: "/masters" },
+      ]
+      : []),
+
+    // ================= ONLY SUPERADMIN =================
+    ...(role === "superadmin"
+      ? [
+        {
+          id: "super-dashboard",
+          label: "Dashboard",
+          icon: BookCheck,
+          path: "/superadmin",
+        },
+         {
+          id: "superadmin-master",
+          label: "Master",
+          icon: Settings,
+          path: "/superadmin/master",
+        },
+      ]
+      : []),
+
+    // ================= STUDENT =================
+    ...(role === "student"
+      ? [
+        {
+          id: "student-dashboard",
+          label: "Dashboard",
+          icon: LayoutDashboard,
+          path: "/student-dashboard",
+        },
+        {
+          id: "exam-rule",
+          label: "Exam Rule",
+          icon: FileQuestionMark,
+          path: "/exam-rule",
+        },
+        {
+          id: "exam-page",
+          label: "Exam",
+          icon: BookCheck,
+          path: "/exam-page",
+        },
+        {
+          id: "student-result",
+          label: "Result",
+          icon: FileUser,
+          path: "/student-result",
+        },
+      ]
       : []),
   ];
 
@@ -102,8 +165,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
             {!isCollapsed && (
               <div>
-                <p className=" font-semibold text-md" style={{ color: `${colors.sidebar.text.deveraa}`}}>{colors.Client.brand_name}</p>
-                <p className="text-[14px]" style={{ color: `${colors.sidebar.text.grow_with_deveraa}`}}>{colors.Client.brand_sub_title}</p>
+                <p className=" font-semibold text-md" style={{ color: `${colors.sidebar.text.deveraa}` }}>{colors.Client.brand_name}</p>
+                <p className="text-[14px]" style={{ color: `${colors.sidebar.text.grow_with_deveraa}` }}>{colors.Client.brand_sub_title}</p>
               </div>
             )}
           </div>

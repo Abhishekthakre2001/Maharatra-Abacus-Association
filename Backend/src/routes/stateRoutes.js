@@ -4,6 +4,7 @@ const controller = require("../controllers/StateController");
 
 router.get("/", controller.getAll);
 router.get("/:id", controller.getById);
+router.get("/state/:id", controller.getDistrictByState);
 router.post("/", controller.create);
 router.put("/:id", controller.update);
 router.get("/export", controller.exportData); 

@@ -66,6 +66,16 @@ module.exports = {
       [id]
     ),
 
+  // getDistrictByState: (id) => DistrictModel.getDistrictByState(id),
+  getDistrictByState: async (stateId) => {
+    const [rows] = await pool.query(
+      "SELECT * FROM districts WHERE state_id=? ORDER BY name",
+      [stateId]
+    );
+
+    return rows;
+  },
+
   update: (id, data) =>
     pool.query(
       `UPDATE states SET 
