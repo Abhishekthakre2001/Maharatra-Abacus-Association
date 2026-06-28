@@ -2,70 +2,81 @@ const pool = require("../config/db");
 const { buildPaginationResponse } = require("../utils/getPaginationParams");
 
 const ExamRegistration = {
-  createWithTransaction: async (data) => {
+  createRegistration: async (data) => {
     const connection = await pool.getConnection();
 
     try {
       await connection.beginTransaction();
 
-      const fullName =
-        `${data.firstName} ${data.middleName} ${data.lastName}`.trim();
-
-      const username = data.username?.trim();
-      const password = data.password?.trim();
-
-      // 1️⃣ Insert into users table
-      const [userResult] = await connection.query(
-        `INSERT INTO users
-        (name, class, address, mobilenumber, username, password,
-         level, dob, subscription_end_date, usertype, createdby, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          fullName,
-          data.class,
-          data.address,
-          data.mobile,
-          username,
-          password,
-          data.level,
-          data.dob,
-          data.subscription_end_date,
-          data.usertype,
-          data.createdby,
-          data.status ?? 0,
-        ],
+      // Find Admin ID from URL username
+      const [admin] = await connection.query(
+        `SELECT id
+         FROM users
+         WHERE username = ?
+         LIMIT 1`,
+        [data.createdByUsername]
       );
 
-      const userId = userResult.insertId;
+      if (admin.length === 0) {
+        throw new Error("Invalid registration link.");
+      }
 
-      // 2️⃣ Insert into student_registration table
-      await connection.query(
-        `INSERT INTO student_registration
-        (user_id, student_name, date_of_birth,
-         learning_center_name, city, address,
-         level, registration_date,
-         parent_name, whatsapp_number, age)
-         VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE(), ?, ?, ?)`,
+      const createdBy = admin[0].id;
+
+      // Insert Student
+      const [result] = await connection.query(
+        `INSERT INTO users
+        (
+            name,
+            class,
+            mobilenumber,
+            institute_id,
+            dob,
+            address,
+            state_id,
+            district_id,
+            city,
+            pincode,
+            level,
+            username,
+            password,
+            createdby,
+            usertype,
+            status,
+            individual_registration
+        )
+        VALUES
+        (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         [
-          userId,
-          fullName,
+          data.name,
+          data.class,
+          data.mobile,
+          data.institute_id,
           data.dob,
-          data.learningCenter,
-          data.city,
           data.address,
+          0,
+          data.district_id,
+          data.city,
+          data.pincode,
           data.level,
-          data.parentName,
-          data.whatsapp,
-          data.age,
-        ],
+          data.username.trim(),
+          data.password.trim(),
+          createdBy,
+          "Student",
+          1,
+          1,
+        ]
       );
 
       await connection.commit();
 
-      return { success: true, userId };
-    } catch (error) {
+      return {
+        success: true,
+        userId: result.insertId,
+      };
+    } catch (err) {
       await connection.rollback();
-      throw error;
+      throw err;
     } finally {
       connection.release();
     }

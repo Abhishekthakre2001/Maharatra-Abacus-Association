@@ -52,7 +52,7 @@ const AppRoutes = () => {
 
       <Route path="/install" element={<InstallApp />} />
 
-      <Route path="/registration" element={<Registration />} />
+      <Route path="/registration/:username" element={<Registration />} />
 
 
       <Route

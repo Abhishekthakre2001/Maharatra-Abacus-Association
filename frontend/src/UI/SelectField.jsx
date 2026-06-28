@@ -18,19 +18,19 @@ const SelectField = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [touched, setTouched] = useState(false);
+  // const [touched, setTouched] = useState(false);
 
   const containerRef = useRef(null);
   const inputRef = useRef(null);
 
-  const shouldShowError = showError && error && touched;
+  const shouldShowError = showError && !!error;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
         setOpen(false);
         setSearch("");
-        setTouched(true);
+        // setTouched(true);
         onBlur?.();
       }
     };
@@ -47,7 +47,7 @@ const SelectField = ({
   const handleSelect = (option) => {
     const selectedValue = typeof option === 'string' ? option : option.value;
     onChange({ target: { value: selectedValue } }); // ✅ sends event-like object
-    setTouched(true);
+    // setTouched(true);
     setSearch("");
     setOpen(false);
     onBlur?.();
@@ -89,7 +89,7 @@ const SelectField = ({
             disabled={disabled}
             className="w-full focus:outline-none bg-transparent"
             onBlur={() => {
-              setTouched(true);
+              // setTouched(true);
               onBlur?.();
             }}
             readOnly={!open}

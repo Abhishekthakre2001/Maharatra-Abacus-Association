@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useCreate = (apiFunc, onSuccess) => {
+export const useCreate = (apiFunc, onSuccess, onError) => {
     const [loading, setLoading] = useState(false);
 
     const create = async (payload) => {
@@ -8,6 +8,8 @@ export const useCreate = (apiFunc, onSuccess) => {
         try {
             const res = await apiFunc(payload);
             onSuccess(res.data);
+        } catch (err) {
+            onError?.(err);
         } finally {
             setLoading(false);
         }

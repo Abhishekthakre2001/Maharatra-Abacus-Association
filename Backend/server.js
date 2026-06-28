@@ -23,6 +23,7 @@ const State = require("./src/routes/stateRoutes");
 const District = require("./src/routes/districtRoutes");
 const Institute = require("./src/routes/InstituteRoutes");
 const cookieParser = require("cookie-parser");
+const RegistartionRoute = require("./src/routes/Individualregistration")
 
 
 const app = express();
@@ -73,6 +74,8 @@ if (cluster.isMaster) {
   app.use("/states", State);
   app.use("/districts", District);
   app.use("/institute", Institute);
+  app.use("/individual-registration", RegistartionRoute);
+  
 
   // ✅ Error Handling
   app.use(errorHandler);
