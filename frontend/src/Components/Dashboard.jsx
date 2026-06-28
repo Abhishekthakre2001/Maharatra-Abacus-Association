@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import jsPDF from "jspdf";
+import ReactQRCode from "react-qr-code";
+import QRCode from "qrcode";
+import { Copy, Download } from "lucide-react";
 import {
   Package, ShoppingCart, BarChart3, Users
 } from 'lucide-react';
@@ -17,7 +21,6 @@ import {
   CartesianGrid
 } from "recharts";
 import ResultApi from "../api/result.js";
-import { Download } from "lucide-react";
 
 
 
@@ -30,6 +33,10 @@ export default function Dashboard() {
 
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : {};
+
+  const registrationLink = `${window.location.origin}/registration/${user?.username}`;
+
+  console.log(registrationLink);
 
   const { data: summary, reload } = useFetchData(() => {
     if (!user?.id) return Promise.resolve(null);
@@ -77,6 +84,62 @@ export default function Dashboard() {
     }
   };
 
+  const downloadRegistrationPDF = async () => {
+    try {
+      const registrationLink = `${window.location.origin}/registration/${user?.username}`;
+
+      // Generate QR as Data URL
+      const qrDataUrl = await QRCode.toDataURL(registrationLink);
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // Title
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(22);
+      pdf.text("Student Registration", 105, 25, { align: "center" });
+
+      // Name
+      pdf.setFontSize(18);
+      pdf.text(user?.name || user?.username, 105, 40, { align: "center" });
+
+      // QR Code
+      pdf.addImage(qrDataUrl, "PNG", 65, 55, 80, 80);
+
+      // Text below QR
+      pdf.setFontSize(16);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Scan QR For Registration", 105, 145, {
+        align: "center",
+      });
+
+      // Registration Link
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(registrationLink, 105, 155, {
+        align: "center",
+        maxWidth: 170,
+      });
+
+      pdf.save(`${user?.username}_Registration_QR.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to generate PDF");
+    }
+  };
+
+  const copyRegistrationLink = async () => {
+    try {
+      await navigator.clipboard.writeText(registrationLink);
+      alert("Registration link copied!");
+    } catch {
+      alert("Failed to copy link");
+    }
+  };
+
   return (
     <>
       {/* header */}
@@ -112,6 +175,56 @@ export default function Dashboard() {
             icon={BarChart3}
           />
 
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg p-6 my-8">
+          <h2 className="text-xl font-semibold mb-2">
+            Student Registration Link
+          </h2>
+
+          <p className="text-gray-500 mb-4">
+            Share this link with students to register.
+          </p>
+
+          <div className="flex flex-col lg:flex-row items-center gap-8">
+
+            <div className="bg-white p-4 rounded-xl border">
+              <ReactQRCode
+                id="registration-qr"
+                value={registrationLink}
+                size={180}
+              />
+            </div>
+
+            <div className="flex-1 space-y-4 w-full">
+
+              <div className="p-3 rounded-lg border bg-gray-50 break-all">
+                {registrationLink}
+              </div>
+
+              <div className="flex gap-3">
+
+                <button
+                  onClick={copyRegistrationLink}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  <Copy size={18} />
+                  Copy Link
+                </button>
+
+                <button
+                  onClick={downloadRegistrationPDF}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                >
+                  <Download size={18} />
+                  Download QR
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
         </div>
 
       </div>
