@@ -29,4 +29,7 @@ router.delete("/question/:questionId", controller.deleteQuestion);
 // Update single question
 router.put("/question/:questionId", controller.updateQuestion);
 
+router.get("/export", controller.exportQuestionPapers);
+router.get("/:id/export", controller.exportQuestionPaper);
+
 module.exports = router;

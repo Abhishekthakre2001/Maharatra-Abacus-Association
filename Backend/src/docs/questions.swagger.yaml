@@ -1,57 +1,4 @@
-# paths:
-#   /questions:
-#     get:
-#       tags: [Questions]
-#       summary: Get all questions
-#       responses:
-#         200:
-#           description: Question list
 
-#     post:
-#       tags: [Questions]
-#       summary: Create question
-#       requestBody:
-#         required: true
-#         content:
-#           application/json:
-#             schema:
-#               $ref: '#/components/schemas/Question'
-#       responses:
-#         201:
-#           description: Question created
-
-#   /questions/{id}:
-#     put:
-#       tags: [Questions]
-#       summary: Update question
-#       parameters:
-#         - in: path
-#           name: id
-#           required: true
-#           schema:
-#             type: integer
-#       requestBody:
-#         required: true
-#         content:
-#           application/json:
-#             schema:
-#               $ref: '#/components/schemas/Question'
-#       responses:
-#         200:
-#           description: Question updated
-
-#     delete:
-#       tags: [Questions]
-#       summary: Delete question
-#       parameters:
-#         - in: path
-#           name: id
-#           required: true
-#           schema:
-#             type: integer
-#       responses:
-#         200:
-#           description: Question deleted
 openapi: 3.0.0
 
 components:
@@ -66,7 +13,7 @@ security:
 
 paths:
 
-  /questions/import:
+  /questions:
     post:
       tags: [Question Papers]
       summary: Import question paper (created_by taken from token)
@@ -99,32 +46,80 @@ paths:
         201:
           description: Created successfully
 
-  /questions:
+    /questions:
     get:
       tags: [Question Papers]
       summary: Get all question papers (only logged-in user's data)
       security:
         - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+            example: 1
+
+        - in: query
+          name: limit
+          description: Number of records per page
+          schema:
+            type: integer
+            default: 10
+            example: 10
+
+        - in: query
+          name: search
+          description: Search by paper name
+          schema:
+            type: string
+            example: Maths
+
       responses:
         200:
-          description: Success
+          description: Paginated list of question papers
 
   /questions/{id}/questions:
     get:
       tags: [Question Papers]
-      summary: Get all questions of a question paper (owner only)
+      summary: Get questions of a question paper (owner only)
       security:
         - bearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
+          description: Question Paper ID
           schema:
             type: integer
-          description: Question Paper ID
+
+        - in: query
+          name: page
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+            example: 1
+
+        - in: query
+          name: limit
+          description: Number of records per page
+          schema:
+            type: integer
+            default: 10
+            example: 10
+
+        - in: query
+          name: search
+          description: Search by question text
+          schema:
+            type: string
+            example: addition
+
       responses:
         200:
-          description: Success
+          description: Paginated list of questions
 
   /questions/{id}:
     put:
@@ -216,3 +211,35 @@ paths:
       responses:
         200:
           description: Deleted successfully
+    /questions/export:
+  get:
+    tags: [Question Papers]
+    summary: Export all question papers
+    parameters:
+      - in: query
+        name: search
+        schema:
+          type: string
+          example: math
+    responses:
+      200:
+        description: PDF exported
+
+/questions/{id}/export:
+  get:
+    tags: [Question Papers]
+    summary: Export a question paper with questions
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+          example: addition
+    responses:
+      200:
+        description: PDF exported

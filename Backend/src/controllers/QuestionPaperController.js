@@ -15,26 +15,67 @@ exports.importQuestions = async (req, res) => {
 
 // Get all papers
 exports.getQuestionPapers = async (req, res) => {
+
     try {
-        const data = await QuestionPaperService.getQuestionPapers(req.user.id);
-        res.json({ success: true, data });
+
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const search = req.query.search || "";
+
+        const data = await QuestionPaperService.getQuestionPapers(
+            req.user.id,
+            page,
+            limit,
+            search
+        );
+
+        res.json({
+            success: true,
+            ...data
+        });
+
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
     }
+
 };
 
 // Get questions by paper
 exports.getQuestionsByPaper = async (req, res) => {
+
     try {
+
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const search = req.query.search || "";
+
         const data = await QuestionPaperService.getQuestionsByPaper(
             req.params.id,
-            req.user.id
+            req.user.id,
+            page,
+            limit,
+            search
         );
 
-        res.json({ success: true, data });
+        res.json({
+            success: true,
+            ...data
+        });
+
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
     }
+
 };
 
 // Update paper
@@ -92,5 +133,45 @@ exports.updateQuestion = async (req, res) => {
         res.json({ success: true, message: "Question Updated" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+
+// Export
+exports.exportQuestionPapers = async (req, res) => {
+    try {
+        const search = req.query.search || "";
+
+        await QuestionPaperService.exportQuestionPapers(
+            req.user.id,
+            search,
+            res
+        );
+
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
+
+exports.exportQuestionPaper = async (req, res) => {
+    try {
+
+        const search = req.query.search || "";
+
+        await QuestionPaperService.exportQuestionPaper(
+            req.params.id,
+            req.user.id,
+            search,
+            res
+        );
+
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
     }
 };
