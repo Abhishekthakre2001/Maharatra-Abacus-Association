@@ -23,7 +23,8 @@ const State = require("./src/routes/stateRoutes");
 const District = require("./src/routes/districtRoutes");
 const Institute = require("./src/routes/InstituteRoutes");
 const cookieParser = require("cookie-parser");
-const RegistartionRoute = require("./src/routes/Individualregistration")
+const RegistartionRoute = require("./src/routes/Individualregistration");
+const questionpaperroute = require("./src/routes/Questionpaper")
 
 
 const app = express();
@@ -61,7 +62,13 @@ if (cluster.isMaster) {
   // ✅ Routes
   app.use("/users", userRoutes);
   app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  app.use("/questions", questionRoutes);
+
+  // do not use this question routes
+  // app.use("/questions", questionRoutes);
+
+  // new Question paper route
+  app.use("/questions", questionpaperroute);
+
   app.use("/levels", levelRoutes);
   app.use("/sets", setRoutes);
   app.use("/exam-schedule", examschedule);
@@ -75,7 +82,7 @@ if (cluster.isMaster) {
   app.use("/districts", District);
   app.use("/institute", Institute);
   app.use("/individual-registration", RegistartionRoute);
-  
+
 
   // ✅ Error Handling
   app.use(errorHandler);

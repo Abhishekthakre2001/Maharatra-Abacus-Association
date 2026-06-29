@@ -1,0 +1,96 @@
+const QuestionPaperService = require("../services/QuestionPaper");
+
+// Import
+exports.importQuestions = async (req, res) => {
+    try {
+        req.body.created_by = req.user.id;
+
+        const result = await QuestionPaperService.importQuestions(req.body);
+
+        res.status(201).json(result);
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// Get all papers
+exports.getQuestionPapers = async (req, res) => {
+    try {
+        const data = await QuestionPaperService.getQuestionPapers(req.user.id);
+        res.json({ success: true, data });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// Get questions by paper
+exports.getQuestionsByPaper = async (req, res) => {
+    try {
+        const data = await QuestionPaperService.getQuestionsByPaper(
+            req.params.id,
+            req.user.id
+        );
+
+        res.json({ success: true, data });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// Update paper
+exports.updateQuestionPaper = async (req, res) => {
+    try {
+        await QuestionPaperService.updateQuestionPaper(
+            req.params.id,
+            req.body,
+            req.user.id
+        );
+
+        res.json({ success: true, message: "Question Paper Updated" });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// Delete paper
+exports.deleteQuestionPaper = async (req, res) => {
+    try {
+        await QuestionPaperService.deleteQuestionPaper(
+            req.params.id,
+            req.user.id
+        );
+
+        res.json({ success: true, message: "Question Paper Deleted" });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// Delete question
+exports.deleteQuestion = async (req, res) => {
+    try {
+        await QuestionPaperService.deleteQuestion(
+            req.params.questionId,
+            req.user.id
+        );
+
+        res.json({ success: true, message: "Question Deleted" });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// Update question
+exports.updateQuestion = async (req, res) => {
+    try {
+        await QuestionPaperService.updateQuestion(
+            req.params.questionId,
+            req.body,
+            req.user.id
+        );
+
+        res.json({ success: true, message: "Question Updated" });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
