@@ -9,9 +9,12 @@ import userApi from "../api/userApi";
 import { useDelete } from "../hooks/useDelete";
 import useTableState from "../hooks/useTableState";
 import { downloadExcelFile } from "../utils/downloadExcelFile";
+import Tabs from "../UI/Tabs";
 
 export default function StudentList() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(0);
+  const [registrationType, setRegistrationType] = useState(undefined);
   const {
     page,
     limit,
@@ -40,9 +43,15 @@ export default function StudentList() {
     () => {
       if (!user?.id) return Promise.resolve(null);
 
-      return userApi.getbyadminid(user.id, page, limit, debouncedSearch);
+      return userApi.getbyadminid(
+        user.id,
+        page,
+        limit,
+        debouncedSearch,
+        registrationType,
+      );
     },
-    [page, limit, debouncedSearch],
+    [page, limit, debouncedSearch, activeTab, registrationType],
     { preserveResponse: true },
   );
 
@@ -181,6 +190,18 @@ export default function StudentList() {
   const handleExport = () => {
     downloadExcelFile(() => userApi.exportData(user?.id), "users.xlsx");
   };
+  const handleTabChange = (index) => {
+    console.log("Clicked:", index);
+    setActiveTab(index);
+
+    if (index === 0) {
+      setRegistrationType(undefined);
+    } else if (index === 1) {
+      setRegistrationType(1);
+    } else {
+      setRegistrationType(0);
+    }
+  };
   return (
     <>
       <DeleteConfirmModal
@@ -199,8 +220,98 @@ export default function StudentList() {
         />
       </div>
 
+      <div className="p-6">
+        <Tabs
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          tabs={[
+            {
+              label: "All Students",
+              content: (
+                <div className="p-0 my-8">
+                  <DataTable
+                    columns={columns}
+                    data={students}
+                    title="All Students"
+                    currentPage={page}
+                    totalPages={totalPages}
+                    totalRecords={totalRecords}
+                    onPageChange={setPage}
+                    onLimitChange={handleLimitChange}
+                    searchTerm={search}
+                    onSearchChange={handleSearchChange}
+                    onCreate={() => navigate("/add-student")}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    searchable
+                    pagination
+                    showActions
+                    loading={loading}
+                    onExport={handleExport}
+                  />
+                </div>
+              ),
+            },
+            {
+              label: "Admin Registered",
+              content: (
+                <div className="p-0 my-8">
+                  <DataTable
+                    columns={columns}
+                    data={students}
+                    title="Admin Registered"
+                    currentPage={page}
+                    totalPages={totalPages}
+                    totalRecords={totalRecords}
+                    onPageChange={setPage}
+                    onLimitChange={handleLimitChange}
+                    searchTerm={search}
+                    onSearchChange={handleSearchChange}
+                    // onCreate={() => navigate("/add-student")}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    searchable
+                    pagination
+                    showActions
+                    loading={loading}
+                    onExport={handleExport}
+                  />
+                </div>
+              ),
+            },
+            {
+              label: "Self Registered",
+              content: (
+                <div className="p-0 my-8">
+                  <DataTable
+                    columns={columns}
+                    data={students}
+                    title="Self Registered"
+                    currentPage={page}
+                    totalPages={totalPages}
+                    totalRecords={totalRecords}
+                    onPageChange={setPage}
+                    onLimitChange={handleLimitChange}
+                    searchTerm={search}
+                    onSearchChange={handleSearchChange}
+                    // onCreate={() => navigate("/add-student")}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    searchable
+                    pagination
+                    showActions
+                    loading={loading}
+                    onExport={handleExport}
+                  />
+                </div>
+              ),
+            },
+          ]}
+        />
+      </div>
+
       {/* Student Table */}
-      <div className="p-0 my-8">
+      {/* <div className="p-0 my-8">
         <DataTable
           columns={columns}
           data={students}
@@ -221,7 +332,7 @@ export default function StudentList() {
           loading={loading}
           onExport={handleExport}
         />
-      </div>
+      </div> */}
     </>
   );
 }
