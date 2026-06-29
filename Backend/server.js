@@ -24,6 +24,7 @@ const District = require("./src/routes/districtRoutes");
 const Institute = require("./src/routes/InstituteRoutes");
 const cookieParser = require("cookie-parser");
 const RegistartionRoute = require("./src/routes/Individualregistration");
+const questionpaperroute = require("./src/routes/Questionpaper")
 
 const app = express();
 const PORT = 4001;
@@ -60,6 +61,9 @@ if (cluster.isMaster) {
   // ✅ Routes
   app.use("/users", userRoutes);
   app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+  // do not use this question routes
+  // app.use("/questions", questionRoutes);
 
   // do not use this question routes
   // app.use("/questions", questionRoutes);
