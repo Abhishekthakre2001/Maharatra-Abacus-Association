@@ -23,12 +23,13 @@ exports.getUserById = async (req, res) => {
 
 exports.getUserByadminId = async (req, res) => {
   const { page, limit, search } = getPaginationParams(req);
-
+  const { individual_registration } = req.query;
   const result = await UserService.getUserByadminId(
     req.params.id,
     page,
     limit,
     search,
+    individual_registration,
   );
 
   res.json(result);
@@ -103,7 +104,7 @@ exports.loginUser = async (req, res) => {
         id: user.id,
         username: user.username,
         usertype: user.usertype,
-        createdby: user.createdby
+        createdby: user.createdby,
       },
       process.env.JWT_ACCESS_SECRET,
       {
@@ -314,7 +315,6 @@ exports.exportUserByAdminId = async (req, res) => {
   }
 };
 
-
 exports.exportTestResultData = async (req, res) => {
   try {
     const { id } = req.params;
@@ -323,7 +323,7 @@ exports.exportTestResultData = async (req, res) => {
       id,
       1,
       999999,
-      ""
+      "",
     );
 
     const data = result.data || [];
@@ -331,9 +331,7 @@ exports.exportTestResultData = async (req, res) => {
     const formattedData = formatExcelData(
       data.map((item) => ({
         ...item,
-        date: item.date
-          ? new Date(item.date).toLocaleDateString("en-IN")
-          : "",
+        date: item.date ? new Date(item.date).toLocaleDateString("en-IN") : "",
       })),
       [
         {
@@ -396,7 +394,7 @@ exports.exportTestResultData = async (req, res) => {
           key: "date",
           label: "Date",
         },
-      ]
+      ],
     );
 
     const buffer = exportToExcel({
@@ -406,12 +404,12 @@ exports.exportTestResultData = async (req, res) => {
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
 
     res.setHeader(
       "Content-Disposition",
-      'attachment; filename="exam-results.xlsx"'
+      'attachment; filename="exam-results.xlsx"',
     );
 
     return res.send(buffer);
