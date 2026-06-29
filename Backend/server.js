@@ -6,7 +6,6 @@ const morgan = require("morgan"); // logging every incomeing api request to the 
 // const limiter = require("./src/middlewares/rateLimiter");
 const corsConfig = require("./src/middlewares/corsConfig");
 const userRoutes = require("./src/routes/UserRoutes");
-const questionRoutes = require("./src/routes/QuestionRoutes");
 const levelRoutes = require("./src/routes/LevelRoutes");
 const examschedule = require("./src/routes/ExamScheduleRoutes");
 const setRoutes = require("./src/routes/SetRoutes");
@@ -61,12 +60,6 @@ if (cluster.isMaster) {
   // ✅ Routes
   app.use("/users", userRoutes);
   app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-  // do not use this question routes
-  // app.use("/questions", questionRoutes);
-
-  // do not use this question routes
-  // app.use("/questions", questionRoutes);
 
   // new Question paper route
   app.use("/questions", questionpaperroute);
