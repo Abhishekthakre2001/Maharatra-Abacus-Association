@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import Questionscreate from '../Components/Questionscreate';
+import AddUpdateQuestion from '../Components/AddUpdateQuestion';
 import Sidebar from "../Components/Sidebar";
+import AppBar from '../UI/AppBar';
 
 export default function Addquestion() {
      const [isCollapsed, setIsCollapsed] = useState(false);
@@ -19,7 +20,11 @@ export default function Addquestion() {
                px-2 md:px-8 py-6 mb-12
              `}
             >
-                <Questionscreate />
+                   <AppBar
+                    title="Question Management"
+                    subtitle="Configure and manage system-wide master data"
+                />
+                <AddUpdateQuestion />
             </main>
         </>
     )
