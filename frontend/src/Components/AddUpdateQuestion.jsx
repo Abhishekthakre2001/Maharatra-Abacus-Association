@@ -834,9 +834,8 @@ export default function AddUpdateQuestion() {
                   {questions.map((q, index) => (
                     <tr
                       key={index}
-                      className={`${
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-blue-50 transition`}
+                      className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        } hover:bg-blue-50 transition`}
                     >
                       <td className="px-3 py-3 border-t border-gray-100 font-medium text-gray-600">
                         {index + 1}
@@ -850,38 +849,34 @@ export default function AddUpdateQuestion() {
                         <span className="line-clamp-2">{stripHtml(q.question) || "-"}</span>
                       </td>
                       <td
-                        className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${
-                          q.correct_option === "option1"
+                        className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${q.correct_option === "option1"
                             ? "bg-green-50 font-medium text-green-800"
                             : ""
-                        }`}
+                          }`}
                       >
                         <span className="line-clamp-2">{stripHtml(q.option1) || "-"}</span>
                       </td>
                       <td
-                        className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${
-                          q.correct_option === "option2"
+                        className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${q.correct_option === "option2"
                             ? "bg-green-50 font-medium text-green-800"
                             : ""
-                        }`}
+                          }`}
                       >
                         <span className="line-clamp-2">{stripHtml(q.option2) || "-"}</span>
                       </td>
                       <td
-                        className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${
-                          q.correct_option === "option3"
+                        className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${q.correct_option === "option3"
                             ? "bg-green-50 font-medium text-green-800"
                             : ""
-                        }`}
+                          }`}
                       >
                         <span className="line-clamp-2">{stripHtml(q.option3) || "-"}</span>
                       </td>
                       <td
-                        className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${
-                          q.correct_option === "option4"
+                        className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${q.correct_option === "option4"
                             ? "bg-green-50 font-medium text-green-800"
                             : ""
-                        }`}
+                          }`}
                       >
                         <span className="line-clamp-2">{stripHtml(q.option4) || "-"}</span>
                       </td>

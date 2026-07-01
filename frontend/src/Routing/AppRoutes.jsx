@@ -27,6 +27,7 @@ import Registration from "../Registration/Registartion";
 import ExamStudent from "../Pages/ExamStudent";
 import ExamStudentadmin from "../Pages/Examresult-admin";
 import Examnotattemp from "../Pages/Examnotattemp";
+import ViewQuestionPage from "../Components/ViewQuestionPage";
 
 
 // Superadmin Dashboard
@@ -168,6 +169,15 @@ const AppRoutes = () => {
         element={
           <RoleProtectedRoute allowedRoles={["Admin"]}>
             <QuestionPage />
+          </RoleProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/view-question"
+        element={
+          <RoleProtectedRoute allowedRoles={["Admin"]}>
+            <ViewQuestionPage />
           </RoleProtectedRoute>
         }
       />
