@@ -66,8 +66,9 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
         { id: "student-list", label: "Students", icon: Users, path: "/students-list" },
         { id: "questions", label: "Questions", icon: FileQuestionMark, path: "/questions" },
-        { id: "result", label: "Result", icon: FileUser, path: "/results" },
         { id: "exam-schedule", label: "Exam Schedule", icon: FileClock, path: "/exam-schedule" },
+        { id: "result", label: "Result", icon: FileUser, path: "/results" },
+
         { id: "master", label: "Master", icon: Settings, path: "/masters" },
       ]
       : []),
@@ -81,7 +82,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
           icon: BookCheck,
           path: "/superadmin",
         },
-         {
+        {
           id: "superadmin-master",
           label: "Master",
           icon: Settings,
