@@ -9,7 +9,8 @@ import {
   FileClock,
   List,
   Users,
-  BookCheck
+  BookCheck,
+  Settings2,
 } from "lucide-react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import logo from "../assets/logo.png";
@@ -63,73 +64,108 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     // ================= ADMIN + SUPERADMIN =================
     ...(role === "admin"
       ? [
-        { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-        { id: "student-list", label: "Students", icon: Users, path: "/students-list" },
-        { id: "questions", label: "Questions", icon: FileQuestionMark, path: "/questions" },
-        { id: "result", label: "Result", icon: FileUser, path: "/results" },
-        { id: "exam-schedule", label: "Exam Schedule", icon: FileClock, path: "/exam-schedule" },
-        { id: "master", label: "Master", icon: Settings, path: "/masters" },
-      ]
+          {
+            id: "dashboard",
+            label: "Dashboard",
+            icon: LayoutDashboard,
+            path: "/dashboard",
+          },
+          {
+            id: "student-list",
+            label: "Students",
+            icon: Users,
+            path: "/students-list",
+          },
+          {
+            id: "questions",
+            label: "Questions",
+            icon: FileQuestionMark,
+            path: "/questions",
+          },
+          { id: "result", label: "Result", icon: FileUser, path: "/results" },
+          {
+            id: "exam-schedule",
+            label: "Exam Schedule",
+            icon: FileClock,
+            path: "/exam-schedule",
+          },
+          { id: "master", label: "Master", icon: Settings, path: "/masters" },
+        ]
       : []),
 
     // ================= ONLY SUPERADMIN =================
     ...(role === "superadmin"
       ? [
-        {
-          id: "super-dashboard",
-          label: "Dashboard",
-          icon: BookCheck,
-          path: "/superadmin",
-        },
-         {
-          id: "superadmin-master",
-          label: "Master",
-          icon: Settings,
-          path: "/superadmin/master",
-        },
-      ]
+          {
+            id: "super-dashboard",
+            label: "Dashboard",
+            icon: BookCheck,
+            path: "/superadmin",
+          },
+          {
+            id: "admins",
+            label: "Admins",
+            icon: Settings2,
+            path: "/admins",
+          },
+          {
+            id: "superadmin-master",
+            label: "Master",
+            icon: Settings,
+            path: "/superadmin/master",
+          },
+        ]
       : []),
 
     // ================= STUDENT =================
     ...(role === "student"
       ? [
-        {
-          id: "student-dashboard",
-          label: "Dashboard",
-          icon: LayoutDashboard,
-          path: "/student-dashboard",
-        },
-        {
-          id: "exam-rule",
-          label: "Exam Rule",
-          icon: FileQuestionMark,
-          path: "/exam-rule",
-        },
-        {
-          id: "exam-page",
-          label: "Exam",
-          icon: BookCheck,
-          path: "/exam-page",
-        },
-        {
-          id: "student-result",
-          label: "Result",
-          icon: FileUser,
-          path: "/student-result",
-        },
-      ]
+          {
+            id: "student-dashboard",
+            label: "Dashboard",
+            icon: LayoutDashboard,
+            path: "/student-dashboard",
+          },
+          {
+            id: "exam-rule",
+            label: "Exam Rule",
+            icon: FileQuestionMark,
+            path: "/exam-rule",
+          },
+          {
+            id: "exam-page",
+            label: "Exam",
+            icon: BookCheck,
+            path: "/exam-page",
+          },
+          {
+            id: "student-result",
+            label: "Result",
+            icon: FileUser,
+            path: "/student-result",
+          },
+        ]
       : []),
   ];
 
   const isActive = (path) => {
-    if (path === "/students-list" && location.pathname.startsWith("/add-student") && searchParams.get('from') === 'students-list') return true;
-    if (path === "/exam-student" && location.pathname.startsWith("/add-student") && searchParams.get('from') === 'exam-student') return true;
-    if (path === "/questions" && location.pathname.startsWith("/add-question")) return true;
-
     if (
-      path === "/results" &&
-      location.pathname.startsWith("/studentresults")
-    ) return true;
+      path === "/students-list" &&
+      location.pathname.startsWith("/add-student") &&
+      searchParams.get("from") === "students-list"
+    )
+      return true;
+    if (
+      path === "/exam-student" &&
+      location.pathname.startsWith("/add-student") &&
+      searchParams.get("from") === "exam-student"
+    )
+      return true;
+    if (path === "/questions" && location.pathname.startsWith("/add-question"))
+      return true;
+
+    if (path === "/results" && location.pathname.startsWith("/studentresults"))
+      return true;
     return location.pathname === path;
   };
 
@@ -152,21 +188,34 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     to bottom,
     ${colors.sidebar.bg.gradientFrom},
     ${colors.sidebar.bg.gradientTo}
-  )`
+  )`,
         }}
-
       >
         {/* HEADER */}
         <div className="flex justify-between items-center p-5">
           <div className="flex items-center gap-3 px-2">
             <div className="w-10 h-10 rounded-2xl overflow-hidden bg-white/10">
-              <img src={colors.Client.logo_url} alt="Logo" className="w-full h-full object-cover" />
+              <img
+                src={colors.Client.logo_url}
+                alt="Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
 
             {!isCollapsed && (
               <div>
-                <p className=" font-semibold text-md" style={{ color: `${colors.sidebar.text.deveraa}` }}>{colors.Client.brand_name}</p>
-                <p className="text-[14px]" style={{ color: `${colors.sidebar.text.grow_with_deveraa}` }}>{colors.Client.brand_sub_title}</p>
+                <p
+                  className=" font-semibold text-md"
+                  style={{ color: `${colors.sidebar.text.deveraa}` }}
+                >
+                  {colors.Client.brand_name}
+                </p>
+                <p
+                  className="text-[14px]"
+                  style={{ color: `${colors.sidebar.text.grow_with_deveraa}` }}
+                >
+                  {colors.Client.brand_sub_title}
+                </p>
               </div>
             )}
           </div>
@@ -178,7 +227,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               backgroundColor: colors.sidebar.toggle.background,
               color: colors.sidebar.toggle.text,
             }}
-
           >
             <ChevronLeft
               size={20}
@@ -188,7 +236,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         </div>
 
         <div className="flex flex-col justify-between h-[80%]">
-
           {/* MENU */}
           <div className="px-3 space-y-2 mt-10">
             {menuItems.map((item) => {
@@ -211,7 +258,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                       ? colors.sidebar.menu.active_text
                       : colors.sidebar.menu.default_text,
                   }}
-
                 >
                   <Icon size={20} />
                   {!isCollapsed && <span>{item.label}</span>}
@@ -235,18 +281,18 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                 backgroundColor: colors.sidebar.logout.logout_Bg,
                 color: colors.sidebar.logout.logout_Text,
               }}
-
             >
               <LogOut size={20} />
               {!isCollapsed && <span>Logout</span>}
             </button>
           </div>
         </div>
-
       </div>
 
       {/* CONTENT SHIFT */}
-      <div className={`${isCollapsed ? "md:ml-20" : "md:ml-64"} transition-all duration-500`} />
+      <div
+        className={`${isCollapsed ? "md:ml-20" : "md:ml-64"} transition-all duration-500`}
+      />
 
       {/* ✅ LOGOUT CONFIRMATION MODAL */}
       <MessageModal
