@@ -29,18 +29,16 @@ import ExamStudentadmin from "../Pages/Examresult-admin";
 import Examnotattemp from "../Pages/Examnotattemp";
 import ViewQuestionPage from "../Components/ViewQuestionPage";
 
-
 // Superadmin Dashboard
 import SuperAdminDashboard from "../Components/Superadmin/Dashboard";
-import SuperadminMaster from "../Components/Superadmin/Master"
-
-
-
+import SuperadminMaster from "../Components/Superadmin/Master";
+import AdminList from "../Components/Superadmin/AdminList";
+import AdminPage from "../Pages/superAdmin/AdminPage";
+import AddAdminPage from "../Pages/superAdmin/AddAdmin";
 
 const AppRoutes = () => {
   return (
     <Routes>
-
       {/* 🔓 Public Route */}
       <Route
         path="/"
@@ -54,7 +52,6 @@ const AppRoutes = () => {
       <Route path="/install" element={<InstallApp />} />
 
       <Route path="/registration/:username" element={<Registration />} />
-
 
       <Route
         path="/dashboard"
@@ -191,7 +188,6 @@ const AppRoutes = () => {
         }
       />
 
-
       {/*  student dashboard route added here */}
       <Route
         path="/student-dashboard"
@@ -247,8 +243,30 @@ const AppRoutes = () => {
           </RoleProtectedRoute>
         }
       />
-
-
+      <Route
+        path="/admins"
+        element={
+          <RoleProtectedRoute allowedRoles={["Superadmin"]}>
+            <AdminPage />
+          </RoleProtectedRoute>
+        }
+      />
+      <Route
+        path="/add-admin"
+        element={
+          <RoleProtectedRoute allowedRoles={["Superadmin"]}>
+            <AddAdminPage />
+          </RoleProtectedRoute>
+        }
+      />
+      <Route
+        path="/add-admin/:id"
+        element={
+          <RoleProtectedRoute allowedRoles={["Superadmin"]}>
+            <AddAdminPage />
+          </RoleProtectedRoute>
+        }
+      />
     </Routes>
   );
 };

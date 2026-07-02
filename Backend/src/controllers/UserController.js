@@ -34,6 +34,19 @@ exports.getUserByadminId = async (req, res) => {
 
   res.json(result);
 };
+
+exports.getAdminsBySuperAdminId = async (req, res) => {
+  const { page, limit, search } = getPaginationParams(req);
+  console.log("req.params.id", req.params.id);
+  const result = await UserService.getAdminBySuperAdminId(
+    req.params.id,
+    page,
+    limit,
+    search,
+  );
+
+  res.json(result);
+};
 exports.getResultUserByadminId = async (req, res) => {
   const user = await UserService.getResultUserByadminId(req.params.id);
   res.json(user);

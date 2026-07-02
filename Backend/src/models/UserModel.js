@@ -47,7 +47,7 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
       data.district_id,
       data.city,
       data.pincode,
-      data.institute_id
+      data.institute_id,
     ]);
 
     return result;
@@ -108,8 +108,8 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   //   // Main Data
   //   const [rows] = await pool.query(
   //     `
-  //   SELECT 
-  //     u.*, 
+  //   SELECT
+  //     u.*,
   //     l.level_name
   //   FROM users u
   //   LEFT JOIN levels l
@@ -146,16 +146,16 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   // },
 
   findByadminId: async (
-  id,
-  page = 1,
-  limit = 5,
-  search = "",
-  individual_registration
-) => {
-  const offset = (page - 1) * limit;
+    id,
+    page = 1,
+    limit = 5,
+    search = "",
+    individual_registration,
+  ) => {
+    const offset = (page - 1) * limit;
 
-  const [countRows] = await pool.query(
-    `
+    const [countRows] = await pool.query(
+      `
     SELECT COUNT(*) as total
     FROM users u
     WHERE u.createdby = ?
@@ -172,22 +172,22 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         OR u.individual_registration = ?
       )
     `,
-    [
-      id,
-      search,
-      `%${search}%`,
-      `%${search}%`,
-      `%${search}%`,
-      `%${search}%`,
-      individual_registration ?? null,
-      individual_registration,
-    ]
-  );
+      [
+        id,
+        search,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        individual_registration ?? null,
+        individual_registration,
+      ],
+    );
 
-  const totalRecords = countRows[0].total;
+    const totalRecords = countRows[0].total;
 
-  const [rows] = await pool.query(
-    `
+    const [rows] = await pool.query(
+      `
     SELECT
       u.*,
       l.level_name
@@ -212,6 +212,39 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     LIMIT ?
     OFFSET ?
     `,
+      [
+        id,
+        search,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        individual_registration ?? null,
+        individual_registration,
+        Number(limit),
+        Number(offset),
+      ],
+    );
+
+    return buildPaginationResponse(rows, page, limit, totalRecords);
+  },
+ findBySuperAdminId: async (id, page = 1, limit = 5, search = "") => {
+  const offset = (page - 1) * limit;
+
+  const [countRows] = await pool.query(
+    `
+    SELECT COUNT(*) as total
+    FROM users u
+    WHERE u.createdby = ?
+      AND u.usertype = 'admin'
+      AND (
+        ? = ''
+        OR u.name LIKE ?
+        OR u.username LIKE ?
+        OR u.mobilenumber LIKE ?
+        OR u.class LIKE ?
+      )
+    `,
     [
       id,
       search,
@@ -219,8 +252,40 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
       `%${search}%`,
       `%${search}%`,
       `%${search}%`,
-      individual_registration ?? null,
-      individual_registration,
+    ]
+  );
+
+  const totalRecords = countRows[0].total;
+
+  const [rows] = await pool.query(
+    `
+    SELECT
+      u.*,
+      l.level_name
+    FROM users u
+    LEFT JOIN levels l
+      ON u.level = l.level
+      AND u.createdby = l.createdby
+    WHERE u.createdby = ?
+      AND u.usertype = 'admin'
+      AND (
+        ? = ''
+        OR u.name LIKE ?
+        OR u.username LIKE ?
+        OR u.mobilenumber LIKE ?
+        OR u.class LIKE ?
+      )
+    ORDER BY u.id DESC
+    LIMIT ?
+    OFFSET ?
+    `,
+    [
+      id,
+      search,
+      `%${search}%`,
+      `%${search}%`,
+      `%${search}%`,
+      `%${search}%`,
       Number(limit),
       Number(offset),
     ]
@@ -289,7 +354,7 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
       data.city,
       data.pincode,
       data.institute_id,
-      id
+      id,
     ]);
 
     return result;

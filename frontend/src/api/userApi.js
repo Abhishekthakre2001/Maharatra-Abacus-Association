@@ -19,6 +19,10 @@ const userApi = {
           : ""
       }`,
     ),
+  getBySuperAdminId: (id, page = 1, limit = 5, search = "") =>
+    axiosInstance.get(
+      `/users/super-admin/admins/${id}?page=${page}&limit=${limit}&search=${search}`,
+    ),
   create: (payload) => axiosInstance.post("/users", payload),
   update: (id, payload) => axiosInstance.put(`/users/${id}`, payload),
   delete: (id) => axiosInstance.delete(`/users/${id}`),

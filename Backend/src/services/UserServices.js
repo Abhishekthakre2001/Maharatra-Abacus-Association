@@ -14,8 +14,10 @@ const UserService = {
   getUserById: (id) => UserModel.findById(id),
 
   // getUserByadminId: (id) => UserModel.findByadminId(id),
-  getUserByadminId: (id, page, limit, search,individual_registration) =>
-  UserModel.findByadminId(id, page, limit, search,individual_registration),
+  getUserByadminId: (id, page, limit, search, individual_registration) =>
+    UserModel.findByadminId(id, page, limit, search, individual_registration),
+  getAdminBySuperAdminId: (id, page, limit, search) =>
+    UserModel.findBySuperAdminId(id, page, limit, search),
 
   getResultUserByadminId: (id) => UserModel.ResultfindByadminId(id),
 
@@ -28,7 +30,7 @@ const UserService = {
     if (!user) return null;
 
     // ✅ PLAIN TEXT comparison
-     const isMatch = password.trim() === user.password.trim();
+    const isMatch = password.trim() === user.password.trim();
     // const isMatch = await bcrypt.compare(password.trim(), user.password);
 
     if (!isMatch) {
@@ -37,7 +39,6 @@ const UserService = {
 
     return user;
   },
-
 
   saveRefreshToken: async (userId, refreshToken, refreshTokenExpiry) => {
     return UserModel.saveRefreshToken(userId, refreshToken, refreshTokenExpiry);
