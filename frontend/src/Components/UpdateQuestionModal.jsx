@@ -1,145 +1,195 @@
-import React, { useState, useEffect } from 'react';
-import { Save } from 'lucide-react';
-import InputField from '../UI/InputField';
-import SelectField from '../UI/SelectField';
-import Button from '../UI/Button';
-import Modal from '../UI/Modal';
+import React, { useEffect, useState } from "react";
+import Modal from "../UI/Modal";
+import InputField from "../UI/InputField";
+import { useFetchData } from "../hooks/useFetchData";
+import levelApi from "../api/LevelApi";
+import setsApi from "../api/SetsApi";
+import SelectField from "../UI/SelectField";
 
-const UpdateQuestionModal = ({ open, onClose, onUpdate, question, loading = false }) => {
-    const [formData, setFormData] = useState({
-        question: '',
-        option1: '',
-        option2: '',
-        option3: '',
-        option4: '',
-        correctoption: '',
-        level: '',
-        category: ''
+export default function UpdateQuestionModal({
+    open,
+    onClose,
+    onUpdate,
+    question,
+    loading,
+}) {
+
+    const adminId = localStorage.getItem("user")
+        ? JSON.parse(localStorage.getItem("user")).id
+        : null;
+
+
+    const [form, setForm] = useState({
+        id: "",
+        paper_name: "",
+        level_id: "",
+        set_id: "",
+        duration: "",
+        paper_type: "",
+        status: "ACTIVE",
     });
 
     useEffect(() => {
         if (question) {
-            setFormData({
-                question: question.question || '',
-                option1: question.option1 || '',
-                option2: question.option2 || '',
-                option3: question.option3 || '',
-                option4: question.option4 || '',
-                correctoption: question.correctoption || '',
-                level: question.level || '',
-                category: question.category || ''
+            setForm({
+                id: question.id,
+                paper_name: question.paper_name || "",
+                level_id: question.level_id || "",
+                set_id: question.set_id || "",
+                duration: question.duration || "",
+                paper_type: question.paper_type || "",
+                status: question.status || "ACTIVE",
             });
         }
     }, [question]);
 
-    if (!open) return null;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
 
-    const handleChange = (field) => (e) => {
-        setFormData(prev => ({
+        setForm((prev) => ({
             ...prev,
-            [field]: e.target.value
+            [name]:
+                name === "level_id" ||
+                    name === "set_id" ||
+                    name === "duration"
+                    ? Number(value)
+                    : value,
         }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onUpdate({ ...question, ...formData });
+    const handleSubmit = () => {
+        onUpdate(form);
     };
+
+    const { data: levelResponse } = useFetchData(
+        () => levelApi.getbyadminid(adminId, 1, 1000, ""),
+        [adminId],
+        { preserveResponse: true }
+    );
+
+    const levels = levelResponse?.data || [];
+
+    const { data: setResponse } = useFetchData(
+        () => setsApi.getbyadminid(adminId, 1, 1000, ""),
+        [adminId],
+        { preserveResponse: true }
+    );
+
+    const sets = setResponse?.data || [];
 
     return (
         <Modal
             open={open}
             onClose={onClose}
-            title="Update Question"
-            width="max-w-3xl"
-            footer={
-                <div className="flex justify-end gap-3">
-                    <Button
-                        type="button"
-                        onClick={onClose}
-                        variant="secondary"
-                        disabled={loading}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        type="submit"
-                        icon={Save}
-                        disabled={loading}
-                        onClick={handleSubmit}
-                    >
-                        {loading ? 'Updating...' : 'Update Question'}
-                    </Button>
-                </div>
-            }
+            title="Update Question Paper"
+            width="max-w-lg"
         >
             <div className="space-y-4">
-                {/* Question */}
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Question <span className="text-red-500">*</span>
-                    </label>
-                    <InputField
-                        value={formData.question}
-                        onChange={(e) => setFormData(prev => ({ ...prev, question: e.target.value }))}
-                        required
-                        rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                        placeholder="Enter question..."
-                    />
-                </div>
+                <InputField
+                    label="Paper Name"
+                    name="paper_name"
+                    value={form.paper_name}
+                    onChange={handleChange}
+                />
 
-                {/* Options Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InputField
-                        label="Option A"
-                        value={formData.option1}
-                        onChange={handleChange('option1')}
-                        placeholder="Enter option A"
-                        required
-                    />
-                    <InputField
-                        label="Option B"
-                        value={formData.option2}
-                        onChange={handleChange('option2')}
-                        placeholder="Enter option B"
-                        required
-                    />
-                    <InputField
-                        label="Option C"
-                        value={formData.option3}
-                        onChange={handleChange('option3')}
-                        placeholder="Enter option C"
-                        required
-                    />
-                    <InputField
-                        label="Option D"
-                        value={formData.option4}
-                        onChange={handleChange('option4')}
-                        placeholder="Enter option D"
-                        required
-                    />
-                </div>
+                <SelectField
+                    label="Level"
+                    value={form.level_id}
+                    onChange={handleChange}
+                    options={levels.map((item) => ({
+                        value: item.id,
+                        label: `${item.level} - ${item.level_name}`,
+                    }))}
+                    placeholder="Select Level"
+                />
 
-                {/* Correct Answer */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <SelectField
-                        label="Correct Answer"
-                        value={formData.correctoption}
-                        onChange={handleChange('correctoption')}
-                        options={[
-                            { value: '', label: 'Select correct answer' },
-                            { value: '1', label: '1' },
-                            { value: '2', label: '2' },
-                            { value: '3', label: '3' },
-                            { value: '4', label: '4' }
-                        ]}
-                        required
-                    />
+                <SelectField
+                    label="Set"
+                    value={form.set_id}
+                    onChange={handleChange}
+                    options={sets.map((item) => ({
+                        value: item.id,
+                        label: item.set_name,
+                    }))}
+                    placeholder="Select Set"
+                />
+
+                <InputField
+                    label="Duration (Minutes)"
+                    name="duration"
+                    type="number"
+                    value={form.duration}
+                    onChange={handleChange}
+                />
+
+                <SelectField
+                    label="Paper Type"
+                    value={form.paper_type}
+                    onChange={(e) =>
+                        handleChange({
+                            target: {
+                                name: "paper_type",
+                                value: e.target.value,
+                            },
+                        })
+                    }
+                    placeholder="Select Paper Type"
+                    options={[
+                        {
+                            value: "PRACTICE",
+                            label: "PRACTICE",
+                        },
+                        {
+                            value: "MOCK",
+                            label: "MOCK",
+                        },
+                        {
+                            value: "MAIN_EXAM",
+                            label: "MAIN EXAM",
+                        },
+                    ]}
+                />
+
+                <SelectField
+                    label="Status"
+                    value={form.status}
+                    onChange={(e) =>
+                        handleChange({
+                            target: {
+                                name: "status",
+                                value: e.target.value,
+                            },
+                        })
+                    }
+                    placeholder="Select Status"
+                    options={[
+                        {
+                            value: "ACTIVE",
+                            label: "ACTIVE",
+                        },
+                        {
+                            value: "INACTIVE",
+                            label: "INACTIVE",
+                        },
+                    ]}
+                />
+                <div className="flex justify-end gap-3 pt-4">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 border rounded-lg"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        disabled={loading}
+                        onClick={handleSubmit}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                    >
+                        {loading ? "Updating..." : "Update"}
+                    </button>
                 </div>
             </div>
         </Modal>
     );
-};
-
-export default UpdateQuestionModal;
+}

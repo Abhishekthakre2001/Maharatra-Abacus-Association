@@ -6,7 +6,6 @@ const morgan = require("morgan"); // logging every incomeing api request to the 
 // const limiter = require("./src/middlewares/rateLimiter");
 const corsConfig = require("./src/middlewares/corsConfig");
 const userRoutes = require("./src/routes/UserRoutes");
-const questionRoutes = require("./src/routes/QuestionRoutes");
 const levelRoutes = require("./src/routes/LevelRoutes");
 const examschedule = require("./src/routes/ExamScheduleRoutes");
 const setRoutes = require("./src/routes/SetRoutes");
@@ -24,6 +23,7 @@ const District = require("./src/routes/districtRoutes");
 const Institute = require("./src/routes/InstituteRoutes");
 const cookieParser = require("cookie-parser");
 const RegistartionRoute = require("./src/routes/Individualregistration");
+const questionpaperroute = require("./src/routes/Questionpaper")
 
 const app = express();
 const PORT = 4001;
@@ -60,7 +60,10 @@ if (cluster.isMaster) {
   // ✅ Routes
   app.use("/users", userRoutes);
   app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  app.use("/questions", questionRoutes);
+
+  // new Question paper route
+  app.use("/questions", questionpaperroute);
+
   app.use("/levels", levelRoutes);
   app.use("/sets", setRoutes);
   app.use("/exam-schedule", examschedule);
