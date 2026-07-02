@@ -23,7 +23,7 @@ const District = require("./src/routes/districtRoutes");
 const Institute = require("./src/routes/InstituteRoutes");
 const cookieParser = require("cookie-parser");
 const RegistartionRoute = require("./src/routes/Individualregistration");
-const questionpaperroute = require("./src/routes/Questionpaper")
+const questionpaperroute = require("./src/routes/Questionpaper");
 
 const app = express();
 const PORT = 4001;
