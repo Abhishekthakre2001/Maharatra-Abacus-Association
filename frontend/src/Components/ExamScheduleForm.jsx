@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useFetchData } from "../hooks/useFetchData";
 import examScheduleApi from "../api/examScheduleApi";
+import LevelApi from "../api/LevelApi";
+import SetApi from "../api/SetsApi";
 import InputField from "../UI/InputField";
 import SelectField from "../UI/SelectField";
 import Button from "../UI/Button";
@@ -18,9 +20,9 @@ const ExamScheduleForm = ({ onClose, onSuccess, editingData = null }) => {
     exam_type: "",
     exam_level: "",
     exam_set: "",
-    exam_state: "",
-    exam_district: "",
-    exam_institute: "",
+    exam_state: [],
+    exam_district: [],
+    exam_institute: [],
     exam_paper_id: "",
   });
 
@@ -32,12 +34,12 @@ const ExamScheduleForm = ({ onClose, onSuccess, editingData = null }) => {
   // Fetch Dependent Data
   // ==========================================
   const { data: levelsData } = useFetchData(
-    () => examScheduleApi.getLevels(),
+    () => LevelApi.getbyadminid(),
     [],
     { preserveResponse: true },
   );
 
-  const { data: setsData } = useFetchData(() => examScheduleApi.getSets(), [], {
+  const { data: setsData } = useFetchData(() => SetApi.getByAdmin(), [], {
     preserveResponse: true,
   });
 
@@ -47,24 +49,22 @@ const ExamScheduleForm = ({ onClose, onSuccess, editingData = null }) => {
     { preserveResponse: true },
   );
 
-  useEffect(() => {
-    console.log("Selected State:", formData.exam_state);
-  }, [formData.exam_state]);
-
   // ==========================================
   // Conditional Data Fetching
   // ==========================================
   const { data: districtData } = useFetchData(
     () =>
-      formData.exam_state
-        ? examScheduleApi.getDistricts(formData.exam_state)
-        : Promise.resolve({ data: [] }),
+      formData.exam_state.length
+        ? Promise.all(formData.exam_state.map((stateId) => examScheduleApi.getDistricts(stateId)))
+          .then((responses) => responses.flatMap((response) => response.data || []))
+        : Promise.resolve([]),
     [formData.exam_state],
     { preserveResponse: true },
   );
 
   const { data: instituteData } = useFetchData(
     () => examScheduleApi.getInstitutes(),
+    [],
     { preserveResponse: true },
   );
 
@@ -79,15 +79,15 @@ const ExamScheduleForm = ({ onClose, onSuccess, editingData = null }) => {
   const { data: paperData } = useFetchData(
     () =>
       formData.exam_level &&
-      formData.exam_set &&
-      formData.exam_category &&
-      formData.exam_type
+        formData.exam_set &&
+        formData.exam_category &&
+        formData.exam_type
         ? examScheduleApi.getQuestionPapers({
-            question_paper_type: formData.exam_category,
-            level_id: formData.exam_level,
-            set_id: formData.exam_set,
-            paper_type: formData.exam_type?.toUpperCase(),
-          })
+          question_paper_type: formData.exam_category,
+          level_id: formData.exam_level,
+          set_id: formData.exam_set,
+          paper_type: formData.exam_type?.toUpperCase(),
+        })
         : Promise.resolve({ data: { records: [] } }),
     [
       formData.exam_category,
@@ -125,24 +125,30 @@ const ExamScheduleForm = ({ onClose, onSuccess, editingData = null }) => {
   //     });
   //   }
   // }, [editingData]);
-useEffect(() => {
-  if (editingData) {
-    setFormData({
-      exam_title: editingData.exam_title || "",
-      start_datetime: formatDateTimeLocal(editingData.start_datetime),
-      end_datetime: formatDateTimeLocal(editingData.end_datetime),
-      exam_status: editingData.exam_status || "Active",
-      exam_category: editingData.exam_category || "",
-      exam_type: editingData.exam_type || "",
-      exam_level: editingData.exam_level || "",
-      exam_set: editingData.exam_set || "",
-      exam_state: editingData.exam_state || "",
-      exam_district: editingData.exam_district || "",
-      exam_institute: editingData.exam_institute || "",
-      exam_paper_id: editingData.exam_paper_id || "",
-    });
-  }
-}, [editingData]);
+  useEffect(() => {
+    if (editingData) {
+      setFormData({
+        exam_title: editingData.exam_title || "",
+        start_datetime: formatDateTimeLocal(editingData.start_datetime),
+        end_datetime: formatDateTimeLocal(editingData.end_datetime),
+        exam_status: editingData.exam_status || "Active",
+        exam_category: editingData.exam_category || "",
+        exam_type: editingData.exam_type || "",
+        exam_level: editingData.exam_level || "",
+        exam_set: editingData.exam_set || "",
+        exam_state: Array.isArray(editingData.exam_state)
+          ? editingData.exam_state
+          : editingData.exam_state ? [editingData.exam_state] : [],
+        exam_district: Array.isArray(editingData.exam_district)
+          ? editingData.exam_district
+          : editingData.exam_district ? [editingData.exam_district] : [],
+        exam_institute: Array.isArray(editingData.exam_institute)
+          ? editingData.exam_institute
+          : editingData.exam_institute ? [editingData.exam_institute] : [],
+        exam_paper_id: editingData.exam_paper_id || "",
+      });
+    }
+  }, [editingData]);
   // ==========================================
   // Options for Dropdowns
   // ==========================================
@@ -150,7 +156,7 @@ useEffect(() => {
     Array.isArray(levelsData) ? levelsData : levelsData?.data || []
   ).map((item) => ({
     value: item.id,
-    label: item.level_name,
+    label: item.level + " - " + item.level_name,
   }));
 
   const setsOptions = (
@@ -165,19 +171,22 @@ useEffect(() => {
     label: item.name,
   }));
 
-  const districtOptions = (
-    Array.isArray(districtData) ? districtData : districtData?.data || []
-  ).map((item) => ({
+  const districtOptions = (Array.isArray(districtData) ? districtData : []).map((item) => ({
     value: item.id,
     label: item.name,
   }));
 
   console.log("editingData", editingData);
 
-  const instituteOptions = (instituteData || []).map((item) => ({
-    value: item.id,
-    label: item.institute_name,
-  }));
+  const allInstitutes = Array.isArray(instituteData)
+    ? instituteData
+    : instituteData?.data || [];
+  const instituteOptions = allInstitutes
+    .filter((item) => formData.exam_district.includes(item.district_id))
+    .map((item) => ({
+      value: item.id,
+      label: item.institute_name,
+    }));
 
   const paperOptions = (paperData?.records || []).map((item) => ({
     value: item.id,
@@ -251,15 +260,15 @@ useEffect(() => {
       newErrors.exam_paper_id = "Question paper is required";
     }
 
-    if (!formData.exam_state) {
+    if (!formData.exam_state.length) {
       newErrors.exam_state = "State is required";
     }
 
-    if (!formData.exam_district) {
+    if (!formData.exam_district.length) {
       newErrors.exam_district = "District is required";
     }
 
-    if (!formData.exam_institute) {
+    if (!formData.exam_institute.length) {
       newErrors.exam_institute = "Institute is required";
     }
 
@@ -294,8 +303,8 @@ useEffect(() => {
   };
 
   const handleMultiSelectChange = (fieldName, selectedOptions) => {
-    const values = selectedOptions.map((opt) =>
-      typeof opt === "string" ? opt : opt.value,
+    const values = selectedOptions.map((option) =>
+      option && typeof option === "object" ? option.value : option,
     );
 
     setFormData((prev) => ({
@@ -424,11 +433,10 @@ useEffect(() => {
             onBlur={() =>
               setTouched((prev) => ({ ...prev, start_datetime: true }))
             }
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-              errors.start_datetime && touched.start_datetime
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${errors.start_datetime && touched.start_datetime
                 ? "border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:ring-blue-500"
-            }`}
+              }`}
           />
           {errors.start_datetime && touched.start_datetime && (
             <p className="text-red-500 text-sm mt-1">{errors.start_datetime}</p>
@@ -447,11 +455,10 @@ useEffect(() => {
             onBlur={() =>
               setTouched((prev) => ({ ...prev, end_datetime: true }))
             }
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-              errors.end_datetime && touched.end_datetime
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${errors.end_datetime && touched.end_datetime
                 ? "border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:ring-blue-500"
-            }`}
+              }`}
           />
           {errors.end_datetime && touched.end_datetime && (
             <p className="text-red-500 text-sm mt-1">{errors.end_datetime}</p>
@@ -576,9 +583,9 @@ useEffect(() => {
         options={paperOptions}
         placeholder={
           !formData.exam_category ||
-          !formData.exam_type ||
-          !formData.exam_level ||
-          !formData.exam_set
+            !formData.exam_type ||
+            !formData.exam_level ||
+            !formData.exam_set
             ? "Select Category, Type, Level & Set first"
             : "Select Question Paper"
         }
@@ -598,15 +605,9 @@ useEffect(() => {
           </label>
           <SelectField
             value={formData.exam_state}
-            onChange={(e) => {
-              setFormData((prev) => ({
-                ...prev,
-                exam_state: e.target.value,
-                exam_district: "",
-                exam_institute: "",
-              }));
-            }}
+            onChange={(e) => handleMultiSelectChange("exam_state", e.target.value)}
             options={statesOptions}
+            multiple
           />
           {errors.exam_state && touched.exam_state && (
             <p className="text-red-500 text-sm mt-1">{errors.exam_state}</p>
@@ -619,14 +620,9 @@ useEffect(() => {
           </label>
           <SelectField
             value={formData.exam_district}
-            onChange={(e) => {
-              setFormData((prev) => ({
-                ...prev,
-                exam_district: e.target.value,
-                exam_institute: "",
-              }));
-            }}
+            onChange={(e) => handleMultiSelectChange("exam_district", e.target.value)}
             options={districtOptions}
+            multiple
           />
           {errors.exam_district && touched.exam_district && (
             <p className="text-red-500 text-sm mt-1">{errors.exam_district}</p>
@@ -639,13 +635,9 @@ useEffect(() => {
           </label>
           <SelectField
             value={formData.exam_institute}
-            onChange={(e) => {
-              setFormData((prev) => ({
-                ...prev,
-                exam_institute: e.target.value,
-              }));
-            }}
+            onChange={(e) => handleMultiSelectChange("exam_institute", e.target.value)}
             options={instituteOptions}
+            multiple
           />
           {errors.exam_institute && touched.exam_institute && (
             <p className="text-red-500 text-sm mt-1">{errors.exam_institute}</p>

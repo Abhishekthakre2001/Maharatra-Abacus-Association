@@ -9,6 +9,8 @@ import Sidebar from "../Components/Sidebar";
 import AppBar from "../UI/AppBar";
 import DataTable from "../UI/DataTable";
 import DeleteConfirmModal from "../UI/DeleteConfirmModal";
+import InputField from "../UI/InputField";
+import SelectField from "../UI/SelectField";
 import MessageModal from "../utils/MessageModal";
 
 import { useFetchData } from "../hooks/useFetchData";
@@ -257,99 +259,99 @@ export default function ViewQuestionPage() {
     };
 
     // ---- Add Question ----
-   
-//     const handleAddQuestion = async () => {
-//         try {
-//             setButtonLoading(true);
-// console.log("Questions",newQuestion)
-//             await questionApi.create({
-//                 question_paper_id:paper.id,
-//                 section: newQuestion.section,
-//                 question_type: newQuestion.question_type,
-//                 marks: Number(newQuestion.marks),
-//                 negative_marks: Number(newQuestion.negative_marks),
-//                 question: newQuestion.question,
-//                 option1: newQuestion.option1,
-//                 option2: newQuestion.option2,
-//                 option3: newQuestion.option3,
-//                 option4: newQuestion.option4,
-//                 correct_option: newQuestion.correct_option,
-//                 explanation: newQuestion.explanation,
-//             });
 
-//             await reload();
+    //     const handleAddQuestion = async () => {
+    //         try {
+    //             setButtonLoading(true);
+    // console.log("Questions",newQuestion)
+    //             await questionApi.create({
+    //                 question_paper_id:paper.id,
+    //                 section: newQuestion.section,
+    //                 question_type: newQuestion.question_type,
+    //                 marks: Number(newQuestion.marks),
+    //                 negative_marks: Number(newQuestion.negative_marks),
+    //                 question: newQuestion.question,
+    //                 option1: newQuestion.option1,
+    //                 option2: newQuestion.option2,
+    //                 option3: newQuestion.option3,
+    //                 option4: newQuestion.option4,
+    //                 correct_option: newQuestion.correct_option,
+    //                 explanation: newQuestion.explanation,
+    //             });
 
-//             setShowAddModal(false);
-//             setNewQuestion(EMPTY_QUESTION);
+    //             await reload();
 
-//             setModal({
-//                 open: true,
-//                 type: "success",
-//                 title: "Success",
-//                 message: "Question added successfully.",
-//             });
-//         } catch (err) {
-//             console.error(err);
+    //             setShowAddModal(false);
+    //             setNewQuestion(EMPTY_QUESTION);
 
-//             setModal({
-//                 open: true,
-//                 type: "error",
-//                 title: "Error",
-//                 message: "Failed to add question.",
-//             });
-//         } finally {
-//             setButtonLoading(false);
-//         }
-//     };
+    //             setModal({
+    //                 open: true,
+    //                 type: "success",
+    //                 title: "Success",
+    //                 message: "Question added successfully.",
+    //             });
+    //         } catch (err) {
+    //             console.error(err);
+
+    //             setModal({
+    //                 open: true,
+    //                 type: "error",
+    //                 title: "Error",
+    //                 message: "Failed to add question.",
+    //             });
+    //         } finally {
+    //             setButtonLoading(false);
+    //         }
+    //     };
 
     // ---- Paper Preview ----
 
 
-const handleAddQuestion = async () => {
-    try {
-        setButtonLoading(true);
+    const handleAddQuestion = async () => {
+        try {
+            setButtonLoading(true);
 
-        await questionApi.addQuestion(paper.id, {
-            section: newQuestion.section,
-            question_type: newQuestion.question_type,
-            marks: Number(newQuestion.marks),
-            negative_marks: Number(newQuestion.negative_marks),
-            question: newQuestion.question,
-            option1: newQuestion.option1,
-            option2: newQuestion.option2,
-            option3: newQuestion.option3,
-            option4: newQuestion.option4,
-            correct_option: newQuestion.correct_option,
-            explanation: newQuestion.explanation,
-        });
+            await questionApi.addQuestion(paper.id, {
+                section: newQuestion.section,
+                question_type: newQuestion.question_type,
+                marks: Number(newQuestion.marks),
+                negative_marks: Number(newQuestion.negative_marks),
+                question: newQuestion.question,
+                option1: newQuestion.option1,
+                option2: newQuestion.option2,
+                option3: newQuestion.option3,
+                option4: newQuestion.option4,
+                correct_option: newQuestion.correct_option,
+                explanation: newQuestion.explanation,
+            });
 
-        await reload();
+            await reload();
 
-        setShowAddModal(false);
-        setNewQuestion(EMPTY_QUESTION);
+            setShowAddModal(false);
+            setNewQuestion(EMPTY_QUESTION);
 
-        setModal({
-            open: true,
-            type: "success",
-            title: "Success",
-            message: "Question added successfully.",
-        });
-    } catch (err) {
-        console.error(err);
+            setModal({
+                open: true,
+                type: "success",
+                title: "Success",
+                message: "Question added successfully.",
+            });
+        } catch (err) {
+            console.error(err);
 
-        setModal({
-            open: true,
-            type: "error",
-            title: "Error",
-            message:
-                err?.response?.data?.message || "Failed to add question.",
-        });
-    } finally {
-        setButtonLoading(false);
-    }
-};
+            setModal({
+                open: true,
+                type: "error",
+                title: "Error",
+                message:
+                    err?.response?.data?.message || "Failed to add question.",
+            });
+        } finally {
+            setButtonLoading(false);
+        }
+    };
 
-    
+
     const handleOpenPreview = async () => {
         setShowPreviewModal(true);
         setPreviewIndex(0);
@@ -439,6 +441,7 @@ const handleAddQuestion = async () => {
                             loading={loading}
                             searchable
                             pagination
+                            exportable={false}
                             showActions
                             searchTerm={search}
                             currentPage={page}
@@ -494,80 +497,57 @@ const handleAddQuestion = async () => {
 
                             <div className="grid md:grid-cols-2 gap-4">
 
-                                <div>
-                                    <label className="block mb-2 font-medium">
-                                        Section
-                                    </label>
+                                <InputField
+                                    label="Section"
+                                    name="section"
+                                    value={selectedQuestion.section}
+                                    onChange={(e) =>
+                                        setSelectedQuestion({
+                                            ...selectedQuestion,
+                                            section: e.target.value,
+                                        })
+                                    }
+                                />
 
-                                    <input
-                                        type="text"
-                                        value={selectedQuestion.section}
-                                        onChange={(e) =>
-                                            setSelectedQuestion({
-                                                ...selectedQuestion,
-                                                section: e.target.value,
-                                            })
-                                        }
-                                        className="w-full border rounded-lg p-3"
-                                    />
-                                </div>
+                                <SelectField
+                                    label="Question Type"
+                                    name="question_type"
+                                    value={selectedQuestion.question_type}
+                                    options={[{ value: "MCQ", label: "MCQ" }]}
+                                    placeholder="Select question type"
+                                    onChange={(e) =>
+                                        setSelectedQuestion({
+                                            ...selectedQuestion,
+                                            question_type: e.target.value,
+                                        })
+                                    }
+                                />
 
-                                <div>
-                                    <label className="block mb-2 font-medium">
-                                        Question Type
-                                    </label>
+                                <InputField
+                                    label="Marks"
+                                    name="marks"
+                                    type="number"
+                                    value={selectedQuestion.marks}
+                                    onChange={(e) =>
+                                        setSelectedQuestion({
+                                            ...selectedQuestion,
+                                            marks: e.target.value,
+                                        })
+                                    }
+                                />
 
-                                    <select
-                                        value={selectedQuestion.question_type}
-                                        onChange={(e) =>
-                                            setSelectedQuestion({
-                                                ...selectedQuestion,
-                                                question_type: e.target.value,
-                                            })
-                                        }
-                                        className="w-full border rounded-lg p-3"
-                                    >
-                                        <option value="MCQ">MCQ</option>
-                                        <option value="Subjective">Subjective</option>
-                                        <option value="True/False">True/False</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block mb-2 font-medium">
-                                        Marks
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        value={selectedQuestion.marks}
-                                        onChange={(e) =>
-                                            setSelectedQuestion({
-                                                ...selectedQuestion,
-                                                marks: e.target.value,
-                                            })
-                                        }
-                                        className="w-full border rounded-lg p-3"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block mb-2 font-medium">
-                                        Negative Marks
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        value={selectedQuestion.negative_marks}
-                                        onChange={(e) =>
-                                            setSelectedQuestion({
-                                                ...selectedQuestion,
-                                                negative_marks: e.target.value,
-                                            })
-                                        }
-                                        className="w-full border rounded-lg p-3"
-                                    />
-                                </div>
+                                <InputField
+                                    label="Negative Marks"
+                                    name="negative_marks"
+                                    type="number"
+                                    value={selectedQuestion.negative_marks}
+                                    onChange={(e) =>
+                                        setSelectedQuestion({
+                                            ...selectedQuestion,
+                                            negative_marks: e.target.value,
+                                        })
+                                    }
+                                />
 
                             </div>
 
@@ -587,6 +567,7 @@ const handleAddQuestion = async () => {
                                     }
                                 />
                             </div>
+
                             <div>
                                 <label className="block mb-2 font-medium">
                                     Option 1
@@ -657,33 +638,23 @@ const handleAddQuestion = async () => {
 
                             <div className="grid md:grid-cols-2 gap-4">
 
-                                <div>
-                                    <label className="block mb-2 font-medium">
-                                        Correct Option
-                                    </label>
-
-                                    <select
-                                        value={selectedQuestion.correct_option}
-                                        onChange={(e) =>
-                                            setSelectedQuestion({
-                                                ...selectedQuestion,
-                                                correct_option: e.target.value,
-                                            })
-                                        }
-                                        className="w-full border rounded-lg p-3"
-                                    >
-                                        <option value="1">Option 1</option>
-                                        <option value="2">Option 2</option>
-                                        <option value="3">Option 3</option>
-                                        <option value="4">Option 4</option>
-
-                                        {/* if your API stores option1/option2 instead of 1/2 */}
-                                        <option value="option1">option1</option>
-                                        <option value="option2">option2</option>
-                                        <option value="option3">option3</option>
-                                        <option value="option4">option4</option>
-                                    </select>
-                                </div>
+                                <SelectField
+                                    label="Correct Option"
+                                    name="correct_option"
+                                    value={selectedQuestion.correct_option}
+                                    options={[
+                                        { value: "1", label: "Option 1" },
+                                        { value: "2", label: "Option 2" },
+                                        { value: "3", label: "Option 3" },
+                                        { value: "4", label: "Option 4" },
+                                    ]}
+                                    onChange={(e) =>
+                                        setSelectedQuestion({
+                                            ...selectedQuestion,
+                                            correct_option: e.target.value,
+                                        })
+                                    }
+                                />
 
                             </div>
 
@@ -769,80 +740,57 @@ const handleAddQuestion = async () => {
 
                             <div className="grid md:grid-cols-2 gap-4">
 
-                                <div>
-                                    <label className="block mb-2 font-medium">
-                                        Section
-                                    </label>
+                                <InputField
+                                    label="Section"
+                                    name="section"
+                                    value={newQuestion.section}
+                                    onChange={(e) =>
+                                        setNewQuestion({
+                                            ...newQuestion,
+                                            section: e.target.value,
+                                        })
+                                    }
+                                />
 
-                                    <input
-                                        type="text"
-                                        value={newQuestion.section}
-                                        onChange={(e) =>
-                                            setNewQuestion({
-                                                ...newQuestion,
-                                                section: e.target.value,
-                                            })
-                                        }
-                                        className="w-full border rounded-lg p-3"
-                                    />
-                                </div>
+                                <SelectField
+                                    label="Question Type"
+                                    name="question_type"
+                                    value={newQuestion.question_type}
+                                    options={[{ value: "MCQ", label: "MCQ" }]}
+                                    placeholder="Select question type"
+                                    onChange={(e) =>
+                                        setNewQuestion({
+                                            ...newQuestion,
+                                            question_type: e.target.value,
+                                        })
+                                    }
+                                />
 
-                                <div>
-                                    <label className="block mb-2 font-medium">
-                                        Question Type
-                                    </label>
+                                <InputField
+                                    label="Marks"
+                                    name="marks"
+                                    type="number"
+                                    value={newQuestion.marks}
+                                    onChange={(e) =>
+                                        setNewQuestion({
+                                            ...newQuestion,
+                                            marks: e.target.value,
+                                        })
+                                    }
+                                />
 
-                                    <select
-                                        value={newQuestion.question_type}
-                                        onChange={(e) =>
-                                            setNewQuestion({
-                                                ...newQuestion,
-                                                question_type: e.target.value,
-                                            })
-                                        }
-                                        className="w-full border rounded-lg p-3"
-                                    >
-                                        <option value="MCQ">MCQ</option>
-                                        <option value="Subjective">Subjective</option>
-                                        <option value="True/False">True/False</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block mb-2 font-medium">
-                                        Marks
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        value={newQuestion.marks}
-                                        onChange={(e) =>
-                                            setNewQuestion({
-                                                ...newQuestion,
-                                                marks: e.target.value,
-                                            })
-                                        }
-                                        className="w-full border rounded-lg p-3"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block mb-2 font-medium">
-                                        Negative Marks
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        value={newQuestion.negative_marks}
-                                        onChange={(e) =>
-                                            setNewQuestion({
-                                                ...newQuestion,
-                                                negative_marks: e.target.value,
-                                            })
-                                        }
-                                        className="w-full border rounded-lg p-3"
-                                    />
-                                </div>
+                                <InputField
+                                    label="Negative Marks"
+                                    name="negative_marks"
+                                    type="number"
+                                    value={newQuestion.negative_marks}
+                                    onChange={(e) =>
+                                        setNewQuestion({
+                                            ...newQuestion,
+                                            negative_marks: e.target.value,
+                                        })
+                                    }
+                                />
 
                             </div>
 
@@ -933,31 +881,23 @@ const handleAddQuestion = async () => {
 
                             <div className="grid md:grid-cols-2 gap-4">
 
-                                <div>
-                                    <label className="block mb-2 font-medium">
-                                        Correct Option
-                                    </label>
-
-                                    <select
-                                        value={newQuestion.correct_option}
-                                        onChange={(e) =>
-                                            setNewQuestion({
-                                                ...newQuestion,
-                                                correct_option: e.target.value,
-                                            })
-                                        }
-                                        className="w-full border rounded-lg p-3"
-                                    >
-                                        <option value="1">Option 1</option>
-                                        <option value="2">Option 2</option>
-                                        <option value="3">Option 3</option>
-                                        <option value="4">Option 4</option>
-                                        <option value="option1">option1</option>
-                                        <option value="option2">option2</option>
-                                        <option value="option3">option3</option>
-                                        <option value="option4">option4</option>
-                                    </select>
-                                </div>
+                                <SelectField
+                                    label="Correct Option"
+                                    name="correct_option"
+                                    value={newQuestion.correct_option}
+                                    options={[
+                                        { value: "1", label: "Option 1" },
+                                        { value: "2", label: "Option 2" },
+                                        { value: "3", label: "Option 3" },
+                                        { value: "4", label: "Option 4" },
+                                    ]}
+                                    onChange={(e) =>
+                                        setNewQuestion({
+                                            ...newQuestion,
+                                            correct_option: e.target.value,
+                                        })
+                                    }
+                                />
 
                             </div>
 

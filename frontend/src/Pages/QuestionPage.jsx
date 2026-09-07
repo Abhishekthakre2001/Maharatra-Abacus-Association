@@ -153,32 +153,46 @@ export default function QuestionPage() {
       label: "Set",
     },
     {
+      key: "paper_type",
+      label: "Paper Type",
+    },
+    {
       key: "duration",
       label: "Duration (Min)",
+    },
+    {
+      key: "negative_marking",
+      label: "Negative Marking",
+      render: (value) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-semibold ${Number(value) === 1
+            ? "bg-green-100 text-green-700"
+            : "bg-red-100 text-red-700"
+            }`}
+        >
+          {Number(value) === 1 ? "Yes" : "No"}
+        </span>
+      ),
     },
     {
       key: "total_questions",
       label: "Questions",
     },
+
     {
-      key: "paper_type",
-      label: "Paper Type",
+      key: "question_paper_type",
+      label: "Question Paper Category",
+      render: (value) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-semibold ${value === "Vedic"
+            ? "bg-purple-100 text-purple-700"
+            : "bg-blue-100 text-blue-700"
+            }`}
+        >
+          {value}
+        </span>
+      ),
     },
-    {
-  key: "question_paper_type",
-  label: "Question Paper Category",
-  render: (value) => (
-    <span
-      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-        value === "Vedic"
-          ? "bg-purple-100 text-purple-700"
-          : "bg-blue-100 text-blue-700"
-      }`}
-    >
-      {value}
-    </span>
-  ),
-},
     {
       key: "status",
       label: "Status",
@@ -240,6 +254,7 @@ export default function QuestionPage() {
               loading={loading}
               searchable
               pagination
+              exportable={false}
               showActions
               currentPage={page}
               totalPages={totalPages}
@@ -250,7 +265,7 @@ export default function QuestionPage() {
               onLimitChange={handleLimitChange}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              onExport={handleExport}
+              // onExport={handleExport}
               onCreate={handleCreate}
               onView={handleView}
             />

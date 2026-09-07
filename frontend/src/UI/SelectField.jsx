@@ -16,6 +16,7 @@ const SelectField = ({
   className = "",
   onBlur,
   name="",
+  multiple = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -57,9 +58,25 @@ const SelectField = ({
 
 
 
+  const selectedValues = Array.isArray(value) ? value : [];
+
   const handleSelect = (option) => {
     const selectedValue =
         typeof option === "string" ? option : option.value;
+
+    if (multiple) {
+      const nextValues = selectedValues.includes(selectedValue)
+        ? selectedValues.filter((item) => item !== selectedValue)
+        : [...selectedValues, selectedValue];
+
+      onChange({
+        target: {
+          name,
+          value: nextValues,
+        },
+      });
+      return;
+    }
 
     onChange({
         target: {
@@ -72,6 +89,23 @@ const SelectField = ({
     setOpen(false);
     onBlur?.();
 };
+
+  const handleSelectAll = () => {
+    const filteredValues = filteredOptions.map((option) =>
+      typeof option === "object" ? option.value : option,
+    );
+    const allSelected = filteredValues.every((item) => selectedValues.includes(item));
+    const nextValues = allSelected
+      ? selectedValues.filter((item) => !filteredValues.includes(item))
+      : [...selectedValues, ...filteredValues.filter((item) => !selectedValues.includes(item))];
+
+    onChange({
+      target: {
+        name,
+        value: nextValues,
+      },
+    });
+  };
   const handleFocus = () => {
     if (!disabled) {
       setOpen(true);
@@ -99,9 +133,14 @@ const SelectField = ({
             ref={inputRef}
             type="text"
             value={open ? search : (
-              typeof value === 'object'
-                ? (options.find(o => o.value === value)?.label || value?.label || '')
-                : (options.find(o => (typeof o === 'object' ? o.value === value : o === value))?.label || value || '')
+              multiple
+                ? options
+                    .filter((option) => selectedValues.includes(typeof option === "object" ? option.value : option))
+                    .map((option) => typeof option === "object" ? option.label : option)
+                    .join(", ")
+                : typeof value === 'object'
+                  ? (options.find(o => o.value === value)?.label || value?.label || '')
+                  : (options.find(o => (typeof o === 'object' ? o.value === value : o === value))?.label || value || '')
             )}
             placeholder={!value ? placeholder : ""}
             onChange={(e) => setSearch(e.target.value)}
@@ -123,6 +162,19 @@ const SelectField = ({
         {open && (
           <div className="absolute z-50 w-full bg-white  border border-gray-300
  rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+            {multiple && filteredOptions.length > 0 && (
+              <label className="px-3 py-2 border-b border-gray-200 cursor-pointer flex items-center gap-2 font-medium">
+                <input
+                  type="checkbox"
+                  checked={filteredOptions.every((option) =>
+                    selectedValues.includes(typeof option === "object" ? option.value : option),
+                  )}
+                  onChange={handleSelectAll}
+                  className="h-4 w-4"
+                />
+                <span>Select all</span>
+              </label>
+            )}
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option, index) => {
                 const optValue = typeof option === 'string' ? option : option.value;
@@ -130,9 +182,9 @@ const SelectField = ({
                 return (
                   <div
                     key={`${optValue}-${index}`}
-                    className={`px-3 py-2 cursor-pointer transition-all
+                    className={`px-3 py-2 cursor-pointer transition-all flex items-center gap-2
   hover:bg-gray-100
-  ${value === optValue
+  ${(multiple ? selectedValues.includes(optValue) : value === optValue)
                         ? "bg-gray-100 text-gray-900 border border-gray-400 rounded-md"
                         : "border border-transparent"
                       }
@@ -140,7 +192,16 @@ const SelectField = ({
 
                     onClick={() => handleSelect(option)}
                   >
-                    {optLabel}
+                    {multiple && (
+                      <input
+                        type="checkbox"
+                        checked={selectedValues.includes(optValue)}
+                        onChange={() => handleSelect(option)}
+                        onClick={(event) => event.stopPropagation()}
+                        className="h-4 w-4"
+                      />
+                    )}
+                    <span>{optLabel}</span>
                   </div>
                 );
               })

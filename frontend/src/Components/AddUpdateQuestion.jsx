@@ -218,9 +218,7 @@ function validatePaper(paper) {
 }
 
 export default function AddUpdateQuestion() {
-  const adminId = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user")).id
-    : null;
+
 
   const [levelOptions, setLevelOptions] = useState([]);
   const [setOptions, setSetOptions] = useState([]);
@@ -232,6 +230,7 @@ export default function AddUpdateQuestion() {
     set_id: "",
     duration: "",
     paper_type: "",
+    paper_category: "",
     status: "ACTIVE",
   });
 
@@ -294,8 +293,8 @@ export default function AddUpdateQuestion() {
   const loadDropdowns = async () => {
     try {
       const [levelsRes, setsRes] = await Promise.all([
-        levelApi.getbyadminid(adminId, 1, 1000, ""),
-        setsApi.getbyadminid(adminId, 1, 1000, ""),
+        levelApi.getbyadminid(1, 100, ""),
+        setsApi.getByAdmin(1, 100, ""),
       ]);
 
       setLevelOptions(
@@ -480,11 +479,13 @@ export default function AddUpdateQuestion() {
 
     try {
       const payload = {
-        ...paper,
+        paper_name: paper.paper_name.trim(),
         level_id: Number(paper.level_id),
         set_id: Number(paper.set_id),
         duration: Number(paper.duration),
-        status: paper.status.toLowerCase(),
+        paper_type: paper.paper_type,
+        paper_category: paper.paper_category,
+        status: paper.status,
         questions: questions.map((q) => ({
           ...q,
           section: q.section.trim().toUpperCase(),
@@ -498,6 +499,15 @@ export default function AddUpdateQuestion() {
 
       showSuccess("Question paper created successfully.");
 
+      setPaper({
+        paper_name: "",
+        level_id: "",
+        set_id: "",
+        duration: "",
+        paper_type: "",
+        paper_category: "",
+        status: "ACTIVE",
+      });
       setQuestions([]);
       setCurrentQuestion(EMPTY_QUESTION);
       setMode("choice");
@@ -549,9 +559,9 @@ export default function AddUpdateQuestion() {
           <SelectField
             label="Paper Type"
             options={[
-              { label: "Exam", value: "exam" },
-              { label: "Practice", value: "practice" },
-              { label: "Mock", value: "mock" },
+              { label: "Exam", value: "MAIN_EXAM" },
+              { label: "Practice", value: "PRACTICE" },
+              { label: "Mock", value: "MOCK" },
             ]}
             value={paper.paper_type}
             onChange={(e) =>
@@ -585,7 +595,7 @@ export default function AddUpdateQuestion() {
             }
           />
 
-           <SelectField
+          <SelectField
             label="Paper Category"
             options={[
               { label: "Vedic", value: "Vedic" },
@@ -862,32 +872,32 @@ export default function AddUpdateQuestion() {
                       </td>
                       <td
                         className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${q.correct_option === "option1"
-                            ? "bg-green-50 font-medium text-green-800"
-                            : ""
+                          ? "bg-green-50 font-medium text-green-800"
+                          : ""
                           }`}
                       >
                         <span className="line-clamp-2">{stripHtml(q.option1) || "-"}</span>
                       </td>
                       <td
                         className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${q.correct_option === "option2"
-                            ? "bg-green-50 font-medium text-green-800"
-                            : ""
+                          ? "bg-green-50 font-medium text-green-800"
+                          : ""
                           }`}
                       >
                         <span className="line-clamp-2">{stripHtml(q.option2) || "-"}</span>
                       </td>
                       <td
                         className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${q.correct_option === "option3"
-                            ? "bg-green-50 font-medium text-green-800"
-                            : ""
+                          ? "bg-green-50 font-medium text-green-800"
+                          : ""
                           }`}
                       >
                         <span className="line-clamp-2">{stripHtml(q.option3) || "-"}</span>
                       </td>
                       <td
                         className={`px-3 py-3 border-t border-gray-100 max-w-[180px] ${q.correct_option === "option4"
-                            ? "bg-green-50 font-medium text-green-800"
-                            : ""
+                          ? "bg-green-50 font-medium text-green-800"
+                          : ""
                           }`}
                       >
                         <span className="line-clamp-2">{stripHtml(q.option4) || "-"}</span>

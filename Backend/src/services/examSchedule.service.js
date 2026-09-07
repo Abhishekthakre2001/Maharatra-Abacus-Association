@@ -48,7 +48,7 @@ const ExamScheduleService = {
     }
 
     // Validate exam_type
-    const validTypes = ["Mock", "Main Exam"];
+    const validTypes = ["Mock", "Main Exam", "Practice"];
     if (data.exam_type && !validTypes.includes(data.exam_type)) {
       errors.push(`exam_type must be one of: ${validTypes.join(", ")}`);
     }

@@ -9,6 +9,8 @@ const QuestionPaperModel = {
     try {
       await conn.beginTransaction();
 
+      console.log("data", data);
+
       const [paper] = await conn.query(
         `INSERT INTO question_papers
                 (question_paper_type, paper_name, level_id, set_id, duration, total_questions, negative_marking, paper_type, status, created_by)

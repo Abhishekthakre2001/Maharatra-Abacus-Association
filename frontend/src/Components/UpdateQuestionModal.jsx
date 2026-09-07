@@ -14,9 +14,7 @@ export default function UpdateQuestionModal({
     loading,
 }) {
 
-    const adminId = localStorage.getItem("user")
-        ? JSON.parse(localStorage.getItem("user")).id
-        : null;
+   
 
 
     const [form, setForm] = useState({
@@ -64,16 +62,16 @@ export default function UpdateQuestionModal({
     };
 
     const { data: levelResponse } = useFetchData(
-        () => levelApi.getbyadminid(adminId, 1, 1000, ""),
-        [adminId],
+        () => levelApi.getbyadminid(1, 100, ""),
+        [],
         { preserveResponse: true }
     );
 
     const levels = levelResponse?.data || [];
 
     const { data: setResponse } = useFetchData(
-        () => setsApi.getbyadminid(adminId, 1, 1000, ""),
-        [adminId],
+        () => setsApi.getByAdmin(1, 100, ""),
+        [],
         { preserveResponse: true }
     );
 
